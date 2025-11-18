@@ -2718,121 +2718,123 @@
         // ========================================
 
         // Thème
-        document.getElementById('theme-toggle').addEventListener('click', toggleTheme);
-
-        // Modals
-        document.getElementById('errors-btn').addEventListener('click', () => openModal('errors-modal'));
-        document.getElementById('close-errors').addEventListener('click', () => closeModal('errors-modal'));
-
-        document.getElementById('history-btn').addEventListener('click', () => openModal('history-modal'));
-        document.getElementById('close-history').addEventListener('click', () => closeModal('history-modal'));
-
-        document.getElementById('help-btn').addEventListener('click', () => openModal('help-modal'));
-        document.getElementById('close-help').addEventListener('click', () => closeModal('help-modal'));
-
-        document.getElementById('show-weighting-a').addEventListener('click', () => openModal('weighting-modal-a'));
-        document.getElementById('close-weighting-a').addEventListener('click', () => closeModal('weighting-modal-a'));
-
-        document.getElementById('show-weighting-bc').addEventListener('click', () => openModal('weighting-modal-bc'));
-        document.getElementById('close-weighting-bc').addEventListener('click', () => closeModal('weighting-modal-bc'));
-
-        // Fermer les modals en cliquant en dehors
-        window.addEventListener('click', (e) => {
-            if (e.target.classList.contains('modal')) {
-                e.target.classList.remove('active');
-            }
-        });
-
-        // Sliders principaux - définissent automatiquement la source active
-        document.getElementById('spl-slider').addEventListener('input', (e) => {
-            state.activeSource = 'acoustic';
-            state.dbSPL = parseFloat(e.target.value);
-            updateAllDomains();
-        });
-
-        document.getElementById('dbu-slider').addEventListener('input', (e) => {
-            state.activeSource = 'electric';
-            state.dBu = parseFloat(e.target.value);
-            updateAllDomains();
-        });
-
-        document.getElementById('dbfs-slider').addEventListener('input', (e) => {
-            state.activeSource = 'digital';
-            state.dBFS = parseFloat(e.target.value);
-            updateAllDomains();
-        });
-
-        // Suivre le début et la fin du glissement pour éviter le flickering
-        document.getElementById('spl-slider').addEventListener('pointerdown', () => {
-            state.draggingSlider = 'spl';
-        });
-        document.getElementById('spl-slider').addEventListener('pointerup', () => {
-            state.draggingSlider = null;
-        });
-        document.getElementById('spl-slider').addEventListener('pointercancel', () => {
-            state.draggingSlider = null;
-        });
-
-        document.getElementById('dbu-slider').addEventListener('pointerdown', () => {
-            state.draggingSlider = 'dbu';
-        });
-        document.getElementById('dbu-slider').addEventListener('pointerup', () => {
-            state.draggingSlider = null;
-        });
-        document.getElementById('dbu-slider').addEventListener('pointercancel', () => {
-            state.draggingSlider = null;
-        });
-
-        document.getElementById('dbfs-slider').addEventListener('pointerdown', () => {
-            state.draggingSlider = 'dbfs';
-        });
-        document.getElementById('dbfs-slider').addEventListener('pointerup', () => {
-            state.draggingSlider = null;
-        });
-        document.getElementById('dbfs-slider').addEventListener('pointercancel', () => {
-            state.draggingSlider = null;
-        });
-
-        // Paramètres de conversion
-        document.getElementById('microphone-selector').addEventListener('change', updateMicrophoneSelector);
-        document.getElementById('preamp-selector').addEventListener('change', updatePreampSelector);
-        document.getElementById('custom-ein').addEventListener('input', updateCustomEIN);
-        document.getElementById('mic-sensitivity').addEventListener('input', updateMicSensitivity);
-        document.getElementById('mic-gain').addEventListener('input', updateMicGain);
-        document.getElementById('distance').addEventListener('input', updateDistance);
-        document.getElementById('calibration').addEventListener('change', updateCalibration);
-        document.getElementById('impedance').addEventListener('input', updateImpedance);
-        document.getElementById('bit-depth').addEventListener('change', updateBitDepth);
-        document.getElementById('lufs-profile').addEventListener('change', updateLufsProfile);
-
-        // Pondération
-        document.getElementById('weighting').addEventListener('change', (e) => {
-            state.weighting = e.target.value;
-            updateAttenuationDisplay();
-            updateLoudness(); // Recalculer LUFS avec la nouvelle pondération
-            updateDisplay(); // Mettre à jour le niveau pondéré affiché
-        });
-
-        // Fréquence d'entrée
-        document.getElementById('input-frequency').addEventListener('change', updateInputFrequency);
-
-        // Bouton d'analyse loudness
-        document.getElementById('analyze-loudness').addEventListener('click', analyzeLoudness);
-
-        // Support clavier (accessibilité)
-        document.addEventListener('keydown', (e) => {
-            if (e.key === 'Escape') {
-                document.querySelectorAll('.modal.active').forEach(modal => {
-                    modal.classList.remove('active');
-                });
-            }
-        });
-
         // ========================================
         // INITIALISATION
         // ========================================
 
         document.addEventListener('DOMContentLoaded', () => {
+            // EVENT LISTENERS
+            document.getElementById('theme-toggle').addEventListener('click', toggleTheme);
+
+            // Modals
+            document.getElementById('errors-btn').addEventListener('click', () => openModal('errors-modal'));
+            document.getElementById('close-errors').addEventListener('click', () => closeModal('errors-modal'));
+
+            document.getElementById('history-btn').addEventListener('click', () => openModal('history-modal'));
+            document.getElementById('close-history').addEventListener('click', () => closeModal('history-modal'));
+
+            document.getElementById('help-btn').addEventListener('click', () => openModal('help-modal'));
+            document.getElementById('close-help').addEventListener('click', () => closeModal('help-modal'));
+
+            document.getElementById('show-weighting-a').addEventListener('click', () => openModal('weighting-modal-a'));
+            document.getElementById('close-weighting-a').addEventListener('click', () => closeModal('weighting-modal-a'));
+
+            document.getElementById('show-weighting-bc').addEventListener('click', () => openModal('weighting-modal-bc'));
+            document.getElementById('close-weighting-bc').addEventListener('click', () => closeModal('weighting-modal-bc'));
+
+            // Fermer les modals en cliquant en dehors
+            window.addEventListener('click', (e) => {
+                if (e.target.classList.contains('modal')) {
+                    e.target.classList.remove('active');
+                }
+            });
+
+            // Sliders principaux - définissent automatiquement la source active
+            document.getElementById('spl-slider').addEventListener('input', (e) => {
+                state.activeSource = 'acoustic';
+                state.dbSPL = parseFloat(e.target.value);
+                updateAllDomains();
+            });
+
+            document.getElementById('dbu-slider').addEventListener('input', (e) => {
+                state.activeSource = 'electric';
+                state.dBu = parseFloat(e.target.value);
+                updateAllDomains();
+            });
+
+            document.getElementById('dbfs-slider').addEventListener('input', (e) => {
+                state.activeSource = 'digital';
+                state.dBFS = parseFloat(e.target.value);
+                updateAllDomains();
+            });
+
+            // Suivre le début et la fin du glissement pour éviter le flickering
+            document.getElementById('spl-slider').addEventListener('pointerdown', () => {
+                state.draggingSlider = 'spl';
+            });
+            document.getElementById('spl-slider').addEventListener('pointerup', () => {
+                state.draggingSlider = null;
+            });
+            document.getElementById('spl-slider').addEventListener('pointercancel', () => {
+                state.draggingSlider = null;
+            });
+
+            document.getElementById('dbu-slider').addEventListener('pointerdown', () => {
+                state.draggingSlider = 'dbu';
+            });
+            document.getElementById('dbu-slider').addEventListener('pointerup', () => {
+                state.draggingSlider = null;
+            });
+            document.getElementById('dbu-slider').addEventListener('pointercancel', () => {
+                state.draggingSlider = null;
+            });
+
+            document.getElementById('dbfs-slider').addEventListener('pointerdown', () => {
+                state.draggingSlider = 'dbfs';
+            });
+            document.getElementById('dbfs-slider').addEventListener('pointerup', () => {
+                state.draggingSlider = null;
+            });
+            document.getElementById('dbfs-slider').addEventListener('pointercancel', () => {
+                state.draggingSlider = null;
+            });
+
+            // Paramètres de conversion
+            document.getElementById('microphone-selector').addEventListener('change', updateMicrophoneSelector);
+            document.getElementById('preamp-selector').addEventListener('change', updatePreampSelector);
+            document.getElementById('custom-ein').addEventListener('input', updateCustomEIN);
+            document.getElementById('mic-sensitivity').addEventListener('input', updateMicSensitivity);
+            document.getElementById('mic-gain').addEventListener('input', updateMicGain);
+            document.getElementById('distance').addEventListener('input', updateDistance);
+            document.getElementById('calibration').addEventListener('change', updateCalibration);
+            document.getElementById('impedance').addEventListener('input', updateImpedance);
+            document.getElementById('bit-depth').addEventListener('change', updateBitDepth);
+            document.getElementById('lufs-profile').addEventListener('change', updateLufsProfile);
+
+            // Pondération
+            document.getElementById('weighting').addEventListener('change', (e) => {
+                state.weighting = e.target.value;
+                updateAttenuationDisplay();
+                updateLoudness(); // Recalculer LUFS avec la nouvelle pondération
+                updateDisplay(); // Mettre à jour le niveau pondéré affiché
+            });
+
+            // Fréquence d'entrée
+            document.getElementById('input-frequency').addEventListener('change', updateInputFrequency);
+
+            // Bouton d'analyse loudness
+            document.getElementById('analyze-loudness').addEventListener('click', analyzeLoudness);
+
+            // Support clavier (accessibilité)
+            document.addEventListener('keydown', (e) => {
+                if (e.key === 'Escape') {
+                    document.querySelectorAll('.modal.active').forEach(modal => {
+                        modal.classList.remove('active');
+                    });
+                }
+            });
+
+            // INITIALISATION
             updateMicSensitivity();
             updateDistance();
             updateCalibration();
