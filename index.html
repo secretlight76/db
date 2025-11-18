@@ -457,21 +457,21 @@
                         </span>
                     </label>
                     <select id="microphone-selector" class="w-full px-3 py-2 panel-inner-bg rounded" aria-label="Sélection du microphone">
-                        <optgroup label="Microphones Dynamiques (16 mV/Pa max)">
-                            <option value="sm58">SM58 - Vocal live (16 mV/Pa)</option>
-                            <option value="sm57">SM57 - Instrument (16 mV/Pa)</option>
-                            <option value="sm7b">SM7B - Studio premium (11 mV/Pa)</option>
-                            <option value="shure_ksm8">KSM8 - Dynamique premium (18 mV/Pa)</option>
+                        <optgroup label="Microphones Dynamiques (1-3 mV/Pa)">
+                            <option value="sm58">SM58 - Vocal live (1.85 mV/Pa)</option>
+                            <option value="sm57">SM57 - Instrument (1.6 mV/Pa)</option>
+                            <option value="sm7b">SM7B - Studio premium (1.1 mV/Pa)</option>
+                            <option value="shure_ksm8">KSM8 - Dynamique premium (2.7 mV/Pa)</option>
                         </optgroup>
-                        <optgroup label="Électrostatiques (25+ mV/Pa - TRÈS sensibles!)">
-                            <option value="neumann_u87">Neumann U87 - Référence studio (26 mV/Pa)</option>
-                            <option value="akg_c414">AKG C414 - Polyvalent (28 mV/Pa) ⭐</option>
-                            <option value="rode_nt1">RODE NT1 - Budget (25 mV/Pa)</option>
+                        <optgroup label="Électrostatiques (23-35 mV/Pa - TRÈS sensibles!)">
+                            <option value="neumann_u87">Neumann U87 Ai - Référence (28 mV/Pa)</option>
+                            <option value="akg_c414">AKG C414 XLS - Polyvalent (23 mV/Pa)</option>
+                            <option value="rode_nt1">RODE NT1 2014 - Budget (35 mV/Pa) ⭐</option>
                         </optgroup>
-                        <optgroup label="Ruban (2 mV/Pa max - peu sensibles)">
-                            <option value="royer_r121">Royer R-121 - Professionnel (2.0 mV/Pa)</option>
-                            <option value="coles_4038">Coles 4038 - Vintage (1.8 mV/Pa)</option>
-                            <option value="ribbonmike_sf24">SF-24 - Ruban pro (2.2 mV/Pa)</option>
+                        <optgroup label="Ruban (0.6-12.6 mV/Pa - variables)">
+                            <option value="royer_r121">Royer R-121 - Professionnel (3.2 mV/Pa)</option>
+                            <option value="coles_4038">Coles 4038 - Vintage (0.6 mV/Pa)</option>
+                            <option value="royer_sf24">Royer SF-24 - Stéréo actif (12.6 mV/Pa)</option>
                         </optgroup>
                         <optgroup label="Autre">
                             <option value="custom" selected>Personnalisé (réglable)</option>
@@ -498,34 +498,33 @@
                     </label>
                     <select id="preamp-selector" class="w-full px-3 py-2 panel-inner-bg rounded" aria-label="Sélection du préampli">
                         <optgroup label="🏆 Préamplis Premium (EIN < -128 dBu)">
-                            <option value="millennia">Millennia HV-3D (-131 dBu EIN) 🌟</option>
-                            <option value="grace">Grace m101 (-130 dBu EIN)</option>
+                            <option value="millennia">Millennia HV-3D (-133 dBu EIN) 🌟</option>
                             <option value="api">API 512c (-129 dBu EIN)</option>
+                            <option value="grace">Grace m101 (-128 dBu EIN)</option>
                         </optgroup>
                         <optgroup label="⭐ Préamplis Professionnels (EIN -125 à -128 dBu)">
                             <option value="neve" selected>Neve 1073 (-128 dBu EIN)</option>
-                            <option value="ssl">SSL VHD (-128 dBu EIN)</option>
-                            <option value="focusrite">Focusrite ISA (-128 dBu EIN)</option>
-                            <option value="universal">Universal Audio 610 (-127 dBu EIN)</option>
-                            <option value="rupert_neve">Rupert Neve Designs RNHP (-127 dBu EIN)</option>
+                            <option value="ssl">SSL VHD Pre (-127 dBu EIN)</option>
+                            <option value="focusrite">Focusrite ISA One (-126 dBu EIN)</option>
+                            <option value="universal">Universal Audio 610 (-125 dBu EIN)</option>
                         </optgroup>
-                        <optgroup label="✓ Préamplis Standard (EIN -120 à -125 dBu)">
-                            <option value="focusrite_scarlett">Focusrite Scarlett 2i2 (-125 dBu EIN)</option>
-                            <option value="motu">MOTU UltraLite (-124 dBu EIN)</option>
-                            <option value="presonus">PreSonus AudioBox (-123 dBu EIN)</option>
-                            <option value="steinberg">Steinberg UR22 (-122 dBu EIN)</option>
-                            <option value="behringer">Behringer UMC (-120 dBu EIN)</option>
+                        <optgroup label="✓ Préamplis Standard Home-Studio (EIN -115 à -129 dBu)">
+                            <option value="motu">MOTU UltraLite Mk5 (-129 dBu EIN)</option>
+                            <option value="behringer">Behringer UMC204HD (-129 dBu EIN)</option>
+                            <option value="focusrite_scarlett">Focusrite Scarlett 2i2 (-128 dBu EIN)</option>
+                            <option value="steinberg">Steinberg UR22C (-128 dBu EIN)</option>
+                            <option value="presonus">PreSonus AudioBox USB (-115 dBu EIN)</option>
                         </optgroup>
-                        <optgroup label="⚠️ Préamplis Entrée de Gamme (EIN -110 à -120 dBu)">
-                            <option value="zoom_h6">Zoom H6 (-118 dBu EIN)</option>
-                            <option value="tascam_dr40">Tascam DR-40 (-116 dBu EIN)</option>
-                            <option value="zoom_h4n">Zoom H4n (-115 dBu EIN)</option>
-                            <option value="behringer_um2">Behringer UM2 (-112 dBu EIN)</option>
+                        <optgroup label="⚠️ Préamplis Entrée de Gamme (EIN -105 à -120 dBu)">
+                            <option value="zoom_h6">Zoom H6 (-120 dBu EIN)</option>
+                            <option value="zoom_h4n">Zoom H4n (-108 dBu EIN)</option>
+                            <option value="tascam_dr40">Tascam DR-40 (-107 dBu EIN)</option>
+                            <option value="behringer_um2">Behringer UM2 (-105 dBu EIN)</option>
                         </optgroup>
-                        <optgroup label="❌ Préamplis Bas de Gamme (EIN > -110 dBu)">
-                            <option value="usb_basic">Interface USB Basique (-108 dBu EIN)</option>
-                            <option value="laptop_builtin">Carte son intégrée PC (-105 dBu EIN)</option>
-                            <option value="old_soundcard">Ancienne carte son (-100 dBu EIN)</option>
+                        <optgroup label="❌ Préamplis Bas de Gamme (EIN > -100 dBu)">
+                            <option value="usb_basic">Interface USB Basique (-100 dBu EIN)</option>
+                            <option value="laptop_builtin">Carte son intégrée PC (-92 dBu EIN)</option>
+                            <option value="old_soundcard">Ancienne carte son (-87 dBu EIN)</option>
                         </optgroup>
                         <optgroup label="⚙️ Personnalisé">
                             <option value="custom">Personnalisé (réglable)</option>
@@ -1729,20 +1728,20 @@
         // Les électrostatiques sont beaucoup plus sensibles que les dynamiques!
         const MICROPHONES = {
             // Dynamiques (moins sensibles, nécessitent plus de gain)
-            'sm58': { name: 'Shure SM58 (Dynamique)', sensitivity: 16, type: 'Dynamique', description: 'Vocal live standard' },
-            'sm57': { name: 'Shure SM57 (Dynamique)', sensitivity: 16, type: 'Dynamique', description: 'Instrument, guitare' },
-            'sm7b': { name: 'Shure SM7B (Dynamique)', sensitivity: 11, type: 'Dynamique', description: 'Studio, voix premium' },
-            'shure_ksm8': { name: 'Shure KSM8 (Dynamique)', sensitivity: 18, type: 'Dynamique', description: 'Dynamique premium' },
+            'sm58': { name: 'Shure SM58 (Dynamique)', sensitivity: 1.85, type: 'Dynamique', description: 'Vocal live standard' },
+            'sm57': { name: 'Shure SM57 (Dynamique)', sensitivity: 1.6, type: 'Dynamique', description: 'Instrument, guitare' },
+            'sm7b': { name: 'Shure SM7B (Dynamique)', sensitivity: 1.1, type: 'Dynamique', description: 'Studio, voix premium' },
+            'shure_ksm8': { name: 'Shure KSM8 (Dynamique)', sensitivity: 2.7, type: 'Dynamique', description: 'Dynamique premium' },
 
             // Électrostatiques/Condensateurs (TRÈS sensibles, beaucoup moins de gain nécessaire)
-            'neumann_u87': { name: 'Neumann U87 (Électrostatique)', sensitivity: 26, type: 'Électrostatique', description: 'Référence studio, très sensible' },
-            'akg_c414': { name: 'AKG C414 (Électrostatique)', sensitivity: 28, type: 'Électrostatique', description: 'Polyvalent, très sensible' },
-            'rode_nt1': { name: 'RODE NT1 (Électrostatique)', sensitivity: 25, type: 'Électrostatique', description: 'Budget, très sensible' },
+            'neumann_u87': { name: 'Neumann U87 Ai (Électrostatique)', sensitivity: 28, type: 'Électrostatique', description: 'Référence studio, très sensible' },
+            'akg_c414': { name: 'AKG C414 XLS (Électrostatique)', sensitivity: 23, type: 'Électrostatique', description: 'Polyvalent, très sensible' },
+            'rode_nt1': { name: 'RODE NT1 2014 (Électrostatique)', sensitivity: 35, type: 'Électrostatique', description: 'Budget, très sensible' },
 
             // Ruban (peu sensibles, beaucoup de gain nécessaire)
-            'royer_r121': { name: 'Royer R-121 (Ruban)', sensitivity: 2.0, type: 'Ruban', description: 'Professionnel, chaleureux' },
-            'coles_4038': { name: 'Coles 4038 (Ruban)', sensitivity: 1.8, type: 'Ruban', description: 'Vintage, caractère' },
-            'ribbonmike_sf24': { name: 'Shure SF-24 (Ruban)', sensitivity: 2.2, type: 'Ruban', description: 'Ruban pro' },
+            'royer_r121': { name: 'Royer R-121 (Ruban)', sensitivity: 3.2, type: 'Ruban', description: 'Professionnel, chaleureux' },
+            'coles_4038': { name: 'Coles 4038 (Ruban)', sensitivity: 0.6, type: 'Ruban', description: 'Vintage, caractère' },
+            'royer_sf24': { name: 'Royer SF-24 (Ruban stéréo actif)', sensitivity: 12.6, type: 'Ruban', description: 'Ruban stéréo pro' },
 
             // Personnalisé
             'custom': { name: 'Personnalisé', sensitivity: 22, type: 'Personnalisé', description: 'Réglable manuellement' }
@@ -1753,34 +1752,33 @@
         // SNR augmente avec un meilleur préampli
         const PREAMPS = {
             // Premium (EIN < -128 dBu) - Meilleur SNR
-            'millennia': { name: 'Millennia HV-3D', ein: -131, category: 'Premium' },
-            'grace': { name: 'Grace m101', ein: -130, category: 'Premium' },
+            'millennia': { name: 'Millennia HV-3D', ein: -133, category: 'Premium' },
+            'grace': { name: 'Grace m101', ein: -128, category: 'Premium' },
             'api': { name: 'API 512c', ein: -129, category: 'Premium' },
 
             // Professionnel (EIN -125 à -128 dBu) - Très bon SNR
             'neve': { name: 'Neve 1073', ein: -128, category: 'Professionnel' },
-            'ssl': { name: 'SSL VHD', ein: -128, category: 'Professionnel' },
-            'focusrite': { name: 'Focusrite ISA', ein: -128, category: 'Professionnel' },
-            'universal': { name: 'Universal Audio 610', ein: -127, category: 'Professionnel' },
-            'rupert_neve': { name: 'Rupert Neve Designs RNHP', ein: -127, category: 'Professionnel' },
+            'ssl': { name: 'SSL VHD Pre', ein: -127, category: 'Professionnel' },
+            'focusrite': { name: 'Focusrite ISA One', ein: -126, category: 'Professionnel' },
+            'universal': { name: 'Universal Audio 610', ein: -125, category: 'Professionnel' },
 
-            // Standard (EIN -120 à -125 dBu) - Bon SNR
-            'focusrite_scarlett': { name: 'Focusrite Scarlett 2i2', ein: -125, category: 'Standard' },
-            'motu': { name: 'MOTU UltraLite', ein: -124, category: 'Standard' },
-            'presonus': { name: 'PreSonus AudioBox', ein: -123, category: 'Standard' },
-            'steinberg': { name: 'Steinberg UR22', ein: -122, category: 'Standard' },
-            'behringer': { name: 'Behringer UMC', ein: -120, category: 'Standard' },
+            // Standard Home-Studio (EIN -120 à -129 dBu) - Bon SNR
+            'focusrite_scarlett': { name: 'Focusrite Scarlett 2i2', ein: -128, category: 'Standard' },
+            'motu': { name: 'MOTU UltraLite Mk5', ein: -129, category: 'Standard' },
+            'steinberg': { name: 'Steinberg UR22C', ein: -128, category: 'Standard' },
+            'behringer': { name: 'Behringer UMC204HD', ein: -129, category: 'Standard' },
+            'presonus': { name: 'PreSonus AudioBox USB', ein: -115, category: 'Standard' },
 
-            // Entrée de Gamme (EIN -110 à -120 dBu) - SNR moyen
-            'zoom_h6': { name: 'Zoom H6', ein: -118, category: 'Entrée de Gamme' },
-            'tascam_dr40': { name: 'Tascam DR-40', ein: -116, category: 'Entrée de Gamme' },
-            'zoom_h4n': { name: 'Zoom H4n', ein: -115, category: 'Entrée de Gamme' },
-            'behringer_um2': { name: 'Behringer UM2', ein: -112, category: 'Entrée de Gamme' },
+            // Entrée de Gamme (EIN -105 à -120 dBu) - SNR moyen
+            'zoom_h6': { name: 'Zoom H6', ein: -120, category: 'Entrée de Gamme' },
+            'zoom_h4n': { name: 'Zoom H4n', ein: -108, category: 'Entrée de Gamme' },
+            'tascam_dr40': { name: 'Tascam DR-40', ein: -107, category: 'Entrée de Gamme' },
+            'behringer_um2': { name: 'Behringer UM2', ein: -105, category: 'Entrée de Gamme' },
 
-            // Bas de Gamme (EIN > -110 dBu) - SNR faible
-            'usb_basic': { name: 'Interface USB Basique', ein: -108, category: 'Bas de Gamme' },
-            'laptop_builtin': { name: 'Carte son intégrée PC', ein: -105, category: 'Bas de Gamme' },
-            'old_soundcard': { name: 'Ancienne carte son', ein: -100, category: 'Bas de Gamme' },
+            // Bas de Gamme (EIN > -100 dBu) - SNR faible
+            'usb_basic': { name: 'Interface USB Basique', ein: -100, category: 'Bas de Gamme' },
+            'laptop_builtin': { name: 'Carte son intégrée PC', ein: -92, category: 'Bas de Gamme' },
+            'old_soundcard': { name: 'Ancienne carte son', ein: -87, category: 'Bas de Gamme' },
 
             // Personnalisé
             'custom': { name: 'Personnalisé', ein: -128, category: 'Custom' }
@@ -2226,11 +2224,9 @@
             document.getElementById('dynamic-range-electric').textContent = dynamicElectric.toFixed(1);
 
             // Panneau Numérique
-            console.log('updateDisplay - state.dBFS:', state.dBFS, 'draggingSlider:', state.draggingSlider);
             document.getElementById('dbfs-value').textContent = state.dBFS.toFixed(1);
             if (state.draggingSlider !== 'dbfs') {
                 document.getElementById('dbfs-slider').value = state.dBFS;
-                console.log('Updated dbfs-slider.value to:', state.dBFS);
             }
             document.getElementById('peak-value').textContent = state.dBFS.toFixed(1);
             document.getElementById('peak-meter-value').textContent = state.dBFS.toFixed(1);
@@ -2764,35 +2760,21 @@
             });
 
             // Sliders principaux - définissent automatiquement la source active
-            console.log('Attaching event listeners to sliders...');
-
-            const splSlider = document.getElementById('spl-slider');
-            const dbuSlider = document.getElementById('dbu-slider');
-            const dbfsSlider = document.getElementById('dbfs-slider');
-
-            console.log('SPL slider:', splSlider);
-            console.log('dBu slider:', dbuSlider);
-            console.log('dBFS slider:', dbfsSlider);
-
             document.getElementById('spl-slider').addEventListener('input', (e) => {
-                console.log('SPL slider moved:', e.target.value);
                 state.activeSource = 'acoustic';
                 state.dbSPL = parseFloat(e.target.value);
                 updateAllDomains();
             });
 
             document.getElementById('dbu-slider').addEventListener('input', (e) => {
-                console.log('dBu slider moved:', e.target.value);
                 state.activeSource = 'electric';
                 state.dBu = parseFloat(e.target.value);
                 updateAllDomains();
             });
 
             document.getElementById('dbfs-slider').addEventListener('input', (e) => {
-                console.log('dBFS slider moved:', e.target.value);
                 state.activeSource = 'digital';
                 state.dBFS = parseFloat(e.target.value);
-                console.log('New state.dBFS:', state.dBFS);
                 updateAllDomains();
             });
 
