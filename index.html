@@ -255,35 +255,51 @@
             outline: 2px solid #3b82f6;
             outline-offset: 2px;
         }
+
+        /* Header sticky */
+        header {
+            position: sticky;
+            top: 0;
+            z-index: 50;
+            background-color: var(--bg-primary);
+            padding-top: 1rem;
+            padding-bottom: 1rem;
+            margin-bottom: 2rem;
+        }
+
+        header .absolute {
+            padding: 1rem;
+        }
     </style>
 </head>
 <body class="p-6">
-    <!-- Barre d'outils supérieure -->
-    <div class="fixed top-4 right-4 z-50 flex gap-2">
-        <!-- Bouton Mode Sombre/Clair -->
-        <button id="theme-toggle"
-                class="px-4 py-2 rounded-lg panel-bg border-2 hover:bg-opacity-80 transition"
-                aria-label="Basculer le thème">
-            <span id="theme-icon">🌙</span> <span id="theme-text">Mode Clair</span>
-        </button>
+    <!-- En-tête avec boutons -->
+    <header class="text-center mb-8 relative">
+        <!-- Boutons supérieurs -->
+        <div class="absolute top-0 right-0 flex gap-2">
+            <!-- Bouton Mode Sombre/Clair -->
+            <button id="theme-toggle"
+                    class="px-4 py-2 rounded-lg panel-bg border-2 hover:bg-opacity-80 transition"
+                    aria-label="Basculer le thème">
+                <span id="theme-icon">🌙</span> <span id="theme-text">Mode Clair</span>
+            </button>
 
-        <!-- Bouton Erreurs Courantes -->
-        <button id="errors-btn"
-                class="px-4 py-2 rounded-lg bg-red-600 hover:bg-red-700 text-white transition"
-                aria-label="Voir les erreurs courantes">
-            ⚠️ Erreurs Courantes
-        </button>
+            <!-- Bouton Erreurs Courantes -->
+            <button id="errors-btn"
+                    class="px-4 py-2 rounded-lg bg-red-600 hover:bg-red-700 text-white transition"
+                    aria-label="Voir les erreurs courantes">
+                ⚠️ Erreurs Courantes
+            </button>
 
-        <!-- Bouton Historique -->
-        <button id="history-btn"
-                class="px-4 py-2 rounded-lg bg-purple-600 hover:bg-purple-700 text-white transition"
-                aria-label="Voir l'historique">
-            📚 Historique & Contexte
-        </button>
-    </div>
+            <!-- Bouton Historique -->
+            <button id="history-btn"
+                    class="px-4 py-2 rounded-lg bg-purple-600 hover:bg-purple-700 text-white transition"
+                    aria-label="Voir l'historique">
+                📚 Historique & Contexte
+            </button>
+        </div>
 
-    <!-- En-tête -->
-    <header class="text-center mb-8 pt-16">
+        <!-- Contenu du header -->
         <h1 class="text-4xl font-bold mb-2 bg-gradient-to-r from-blue-500 via-purple-500 to-pink-500 text-transparent bg-clip-text">
             Le Convertisseur de Niveaux Audio
         </h1>
