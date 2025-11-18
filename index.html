@@ -2466,8 +2466,12 @@
             // Recalculer le bruit de fond car le gain affecte le bruit du préampli
             calculateNoiseFloor();
 
+            // Toujours recalculer tous les domaines car le gain affecte la conversion
             if (state.activeSource) {
                 updateAllDomains();
+            } else {
+                // Si aucune source n'est active, au moins mettre à jour l'affichage
+                updateDisplay();
             }
         }
 
@@ -2845,15 +2849,16 @@
             });
 
             // INITIALISATION
+            // Verrouiller le panneau numérique par défaut AVANT les autres initialisations
+            // pour que activeSource soit défini dès le début
+            lockPanel('digital');
+
             updateMicSensitivity();
             updateDistance();
             updateCalibration();
             calculateNoiseFloor();
             updateDisplay();
             updateAttenuationDisplay();
-
-            // Verrouiller le panneau numérique par défaut
-            lockPanel('digital');
         });
     </script>
 </body>
