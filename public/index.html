@@ -2072,7 +2072,16 @@
             // === WARNING SNR (Panneau Électrique) ===
             const snr = state.dbSPL - state.noiseFloor;
             const snrWarning = document.getElementById('snr-warning');
-            if (snr >= 80) {
+            const electricMaxLevel = 24; // +24 dBu est le niveau maximal typique
+
+            // Priorité aux alertes d'overload/écrêtage
+            if (state.dBu > electricMaxLevel) {
+                snrWarning.className = 'alert alert-danger';
+                snrWarning.textContent = '🔴 OVERLOAD ! Signal > +24 dBu (' + state.dBu.toFixed(1) + ' dBu)';
+            } else if (state.dBu > electricMaxLevel - 3) {
+                snrWarning.className = 'alert alert-warning';
+                snrWarning.textContent = '⚠️ Proche saturation (' + state.dBu.toFixed(1) + ' dBu / +24 dBu max)';
+            } else if (snr >= 80) {
                 snrWarning.className = 'alert alert-success';
                 snrWarning.textContent = '✅ SNR excellent (' + snr.toFixed(1) + ' dB)';
             } else if (snr < 30 && state.dbSPL > 0) {
@@ -2265,7 +2274,10 @@
             document.getElementById('snr-digital').textContent = snrDigital.toFixed(1);
 
             // Dynamique numérique (de plancher de bruit à crête en dBFS)
-            const dynamicDigital = state.dBFS - noiseFloorDBFS;
+            // La dynamique est également limitée par la résolution du bit depth
+            let dynamicDigital = state.dBFS - noiseFloorDBFS;
+            // La dynamique ne peut pas dépasser la plage dynamique théorique du convertisseur
+            dynamicDigital = Math.min(dynamicDigital, theoreticalMaxSNR);
             document.getElementById('dynamic-range-digital').textContent = dynamicDigital.toFixed(1);
 
             updateDynamicRange();
