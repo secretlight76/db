@@ -26,23 +26,26 @@ audio-level-converter/
 
 ## Environment Configuration
 
-### Three Environments
+### Two Deployment Environments (Cloudflare Pages)
 
 1. **Development** (`.env.local`)
    - Runs locally: `npm run dev`
    - Debug mode enabled
    - Analytics disabled
+   - No deployment to Cloudflare
 
-2. **Staging** (pull requests)
-   - Deployed to staging.pages.dev
-   - Can be tested before production
-   - Limited resources
+2. **Preview** (Pull Requests)
+   - Automatically deployed by Cloudflare Pages
+   - Temporary preview URL for testing
+   - Auto-deleted after PR closes
+   - `ENVIRONMENT=preview` in wrangler.toml
 
-3. **Production** (main branch)
+3. **Production** (Feature Branch)
    - Deployed to audio-level-converter.pages.dev
    - **Always the same environment** (consistent across deployments)
    - Full analytics enabled
    - Protected by GitHub environment secrets
+   - `ENVIRONMENT=production` in wrangler.toml
 
 ## Setup Instructions
 
@@ -111,19 +114,7 @@ This triggers `.github/workflows/deploy.yml` which:
 
 **Deployment URL:** https://audio-level-converter.pages.dev
 
-### Manual Deployment (Advanced)
-
-**Deploy to staging:**
-```bash
-npm run deploy:staging
-```
-
-**Deploy to production:**
-```bash
-npm run deploy:production
-```
-
-(Requires `wrangler` CLI installed and authenticated)
+**Note:** No manual deployment commands needed. Cloudflare Pages automatically handles deployments based on your branch configuration. All deployments go through the feature branch workflow configured in this repository.
 
 ## Ensuring Consistent Production Environment
 
@@ -156,19 +147,22 @@ npm run deploy:production
 - Don't create new Cloudflare Pages projects per deployment
 
 ✅ **Do this:**
-- Push to `main` for production deployment
-- Use pull requests for staging preview URLs
+- Push to the feature branch for production deployment
+- Use pull requests for preview URLs (automatic)
 - Update Cloudflare environment variables in dashboard
 - All deployments use the same `audio-level-converter` project
+- Keep using `wrangler.toml` with `[env.production]` and `[env.preview]` only
 
 ## Troubleshooting
 
 ### Issue: Different environment each deployment
 
 **Solution:**
-1. Verify you're pushing to `main`: `git branch -v`
-2. Check GitHub Actions: Settings > Actions > All workflows > Deploy to Cloudflare Pages
-3. Confirm Cloudflare project: Settings > Cloudflare Pages > Production branch = `main`
+1. Verify you're pushing to the feature branch: `git branch -v`
+2. Check GitHub Actions logs for any errors
+3. Confirm Cloudflare project deployment settings in dashboard
+4. Run `npm run verify` to check configuration
+5. Check wrangler.toml is valid (only supports `[env.production]` and `[env.preview]`)
 
 ### Issue: Node version mismatch
 
@@ -239,13 +233,13 @@ Should return HTML with "Le Convertisseur de Niveaux Audio"
 ## FAQ
 
 **Q: How do I know my code is in production?**
-A: Check the deployment timestamp at https://audio-level-converter.pages.dev and compare with GitHub's last successful workflow run.
+A: Check the deployment timestamp at https://audio-level-converter.pages.dev (check the bottom of the HTML or via Cloudflare dashboard > Pages > Deployments).
 
-**Q: Can I deploy without pushing to main?**
-A: Not recommended (breaks consistency), but you can use `npm run deploy:production` if authenticated locally.
+**Q: Can I deploy without pushing to the feature branch?**
+A: Not recommended. All deployments should go through the feature branch to maintain consistency. Push changes to the feature branch and Cloudflare Pages will auto-deploy.
 
 **Q: What if I need to rollback?**
-A: Use Cloudflare dashboard > Pages > Deployments > Click previous deployment > Rollback. Or push fix to `main`.
+A: Use Cloudflare dashboard > Pages > audio-level-converter > Deployments > Click previous deployment > Rollback. Then git revert the commit that caused the issue.
 
 **Q: How do I update production variables?**
 A: Cloudflare dashboard > Pages > audio-level-converter > Settings > Environment Variables (production)
