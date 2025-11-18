@@ -387,9 +387,6 @@
         </p>
     </header>
 
-    <!-- Alertes de validation temps réel -->
-    <div id="validation-alerts" class="max-w-7xl mx-auto mb-4"></div>
-
     <!-- Flux du signal visuel -->
     <div class="signal-flow mb-8"></div>
 
@@ -529,6 +526,11 @@
                         ×2 (+6dB)
                     </button>
                 </div>
+            </div>
+
+            <!-- Zone de warning SPL (hauteur fixe) -->
+            <div class="mb-4" style="min-height: 60px;">
+                <div id="spl-warning" class="hidden"></div>
             </div>
 
             <!-- Presets enrichis -->
@@ -702,6 +704,11 @@
                 </div>
             </div>
 
+            <!-- Zone de warning SNR (hauteur fixe) -->
+            <div class="mb-4" style="min-height: 60px;">
+                <div id="snr-warning" class="hidden"></div>
+            </div>
+
             <!-- VU Meter -->
             <div class="mb-6">
                 <label class="block text-sm font-semibold mb-2">
@@ -815,6 +822,11 @@
                         ×2 (+6dB)
                     </button>
                 </div>
+            </div>
+
+            <!-- Zone de warning clip/headroom (hauteur fixe) -->
+            <div class="mb-4" style="min-height: 60px;">
+                <div id="clip-warning" class="hidden"></div>
             </div>
 
             <!-- Indicateur de clip et headroom -->
@@ -1766,75 +1778,52 @@
         // ========================================
 
         function validateAndAlert() {
-            const alertsContainer = document.getElementById('validation-alerts');
-            alertsContainer.innerHTML = '';
+            // Mise à jour des warnings dans chaque panneau (zones à hauteur fixe, pas de scintillement)
 
-            const alerts = [];
-
-            // Vérification clip numérique
-            if (state.dBFS > -0.1) {
-                alerts.push({
-                    type: 'danger',
-                    message: '🔴 DANGER : Niveau numérique au clip ou très proche ! Réduisez le gain immédiatement.'
-                });
-            } else if (state.dBFS > -3) {
-                alerts.push({
-                    type: 'warning',
-                    message: '⚠️ ATTENTION : Très proche du clip numérique. Seulement ' + Math.abs(state.dBFS).toFixed(1) + ' dB de marge.'
-                });
-            }
-
-            // Vérification SPL dangereux
+            // === WARNING SPL (Panneau Acoustique) ===
+            const splWarning = document.getElementById('spl-warning');
             if (state.dbSPL > 120) {
-                alerts.push({
-                    type: 'danger',
-                    message: '🔴 DANGER : Niveau SPL dangereux pour l\'audition ! >120 dB peut causer des dommages immédiats.'
-                });
+                splWarning.className = 'alert alert-danger text-xs';
+                splWarning.textContent = '🔴 DANGER : Niveau SPL dangereux pour l\'audition ! >120 dB peut causer des dommages immédiats.';
             } else if (state.dbSPL > 85) {
-                alerts.push({
-                    type: 'warning',
-                    message: '⚠️ ATTENTION : Exposition prolongée >85 dB peut endommager l\'audition. Limitez le temps d\'exposition.'
-                });
+                splWarning.className = 'alert alert-warning text-xs';
+                splWarning.textContent = '⚠️ ATTENTION : Exposition prolongée >85 dB peut endommager l\'audition. Limitez le temps d\'exposition.';
+            } else {
+                splWarning.className = 'hidden';
+                splWarning.textContent = '';
             }
 
-            // Vérification SNR
+            // === WARNING SNR (Panneau Électrique) ===
             const snr = state.dbSPL - state.noiseFloor;
+            const snrWarning = document.getElementById('snr-warning');
             if (snr < 30 && state.dbSPL > 0) {
-                alerts.push({
-                    type: 'warning',
-                    message: '⚠️ SNR faible (' + snr.toFixed(1) + ' dB). Le bruit de fond sera audible. Augmentez le signal ou réduisez le bruit.'
-                });
+                snrWarning.className = 'alert alert-warning text-xs';
+                snrWarning.textContent = '⚠️ SNR faible (' + snr.toFixed(1) + ' dB). Le bruit de fond sera audible. Augmentez le signal ou réduisez le bruit.';
             } else if (snr > 80) {
-                alerts.push({
-                    type: 'success',
-                    message: '✅ Excellent SNR (' + snr.toFixed(1) + ' dB). Signal très propre.'
-                });
+                snrWarning.className = 'alert alert-success text-xs';
+                snrWarning.textContent = '✅ Excellent SNR (' + snr.toFixed(1) + ' dB). Signal très propre.';
+            } else {
+                snrWarning.className = 'hidden';
+                snrWarning.textContent = '';
             }
 
-            // Vérification headroom
+            // === WARNING CLIP/HEADROOM (Panneau Numérique) ===
+            const clipWarning = document.getElementById('clip-warning');
             const headroom = 0 - state.dBFS;
-            if (headroom < 6 && state.dBFS < 0) {
-                alerts.push({
-                    type: 'warning',
-                    message: '⚠️ Headroom faible (' + headroom.toFixed(1) + ' dB). Risque de clip sur les transitoires.'
-                });
-            }
 
-            // Vérification distance excessive
-            if (state.distance > 8) {
-                alerts.push({
-                    type: 'info',
-                    message: 'ℹ️ À cette distance (' + state.distance + ' m), le bruit ambiant domine probablement le signal.'
-                });
+            if (state.dBFS > -0.1) {
+                clipWarning.className = 'alert alert-danger text-xs';
+                clipWarning.textContent = '🔴 DANGER : Niveau numérique au clip ou très proche ! Réduisez le gain immédiatement.';
+            } else if (state.dBFS > -3) {
+                clipWarning.className = 'alert alert-danger text-xs';
+                clipWarning.textContent = '⚠️ ATTENTION : Très proche du clip numérique. Seulement ' + Math.abs(state.dBFS).toFixed(1) + ' dB de marge.';
+            } else if (headroom < 6 && state.dBFS < 0) {
+                clipWarning.className = 'alert alert-warning text-xs';
+                clipWarning.textContent = '⚠️ Headroom faible (' + headroom.toFixed(1) + ' dB). Risque de clip sur les transitoires.';
+            } else {
+                clipWarning.className = 'hidden';
+                clipWarning.textContent = '';
             }
-
-            // Afficher les alertes
-            alerts.forEach(alert => {
-                const div = document.createElement('div');
-                div.className = `alert alert-${alert.type}`;
-                div.textContent = alert.message;
-                alertsContainer.appendChild(div);
-            });
         }
 
         // ========================================
