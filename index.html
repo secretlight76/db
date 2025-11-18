@@ -1,0 +1,1144 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Le Convertisseur de Niveaux Audio : dB SPL, dBu, dBFS</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        /* Styles personnalisés pour les sliders et indicateurs */
+        .vertical-slider {
+            writing-mode: bt-lr;
+            -webkit-appearance: slider-vertical;
+            width: 40px;
+            height: 300px;
+            padding: 0;
+            margin: 20px auto;
+        }
+
+        .led-indicator {
+            width: 30px;
+            height: 30px;
+            border-radius: 50%;
+            border: 2px solid #333;
+            display: inline-block;
+            transition: all 0.3s;
+        }
+
+        .led-off {
+            background: #333;
+            box-shadow: inset 0 0 5px rgba(0,0,0,0.5);
+        }
+
+        .led-on {
+            background: #ff0000;
+            box-shadow: 0 0 10px #ff0000, inset 0 0 5px rgba(255,0,0,0.5);
+        }
+
+        .vu-meter {
+            width: 100%;
+            height: 40px;
+            background: linear-gradient(to right,
+                #00ff00 0%, #00ff00 60%,
+                #ffff00 60%, #ffff00 80%,
+                #ff0000 80%, #ff0000 100%);
+            border: 2px solid #333;
+            border-radius: 4px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .vu-needle {
+            position: absolute;
+            width: 3px;
+            height: 100%;
+            background: #000;
+            transition: left 0.1s;
+        }
+
+        .tooltip {
+            position: relative;
+            display: inline-block;
+            cursor: help;
+        }
+
+        .tooltip .tooltiptext {
+            visibility: hidden;
+            width: 300px;
+            background-color: #1f2937;
+            color: #fff;
+            text-align: left;
+            border-radius: 6px;
+            padding: 10px;
+            position: absolute;
+            z-index: 1000;
+            bottom: 125%;
+            left: 50%;
+            margin-left: -150px;
+            opacity: 0;
+            transition: opacity 0.3s;
+            font-size: 0.875rem;
+            line-height: 1.4;
+        }
+
+        .tooltip:hover .tooltiptext {
+            visibility: visible;
+            opacity: 1;
+        }
+
+        .panel-locked {
+            border: 3px solid #3b82f6;
+            box-shadow: 0 0 15px rgba(59, 130, 246, 0.5);
+        }
+
+        .signal-flow {
+            position: relative;
+            height: 4px;
+            background: linear-gradient(to right, #3b82f6, #8b5cf6, #ec4899);
+            margin: 20px 0;
+            border-radius: 2px;
+        }
+
+        input[type="range"] {
+            cursor: pointer;
+        }
+
+        input[type="range"]:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+    </style>
+</head>
+<body class="bg-gray-900 text-gray-100 p-6">
+    <!-- En-tête -->
+    <header class="text-center mb-8">
+        <h1 class="text-4xl font-bold mb-2 bg-gradient-to-r from-blue-500 via-purple-500 to-pink-500 text-transparent bg-clip-text">
+            Le Convertisseur de Niveaux Audio
+        </h1>
+        <p class="text-xl text-gray-400">dB SPL • dBu • dBFS</p>
+        <p class="text-sm text-gray-500 mt-2">Outil pédagogique pour comprendre la chaîne audio complète</p>
+    </header>
+
+    <!-- Flux du signal visuel -->
+    <div class="signal-flow mb-8"></div>
+
+    <!-- Conteneur principal avec 4 panneaux -->
+    <div class="grid grid-cols-1 lg:grid-cols-4 gap-6 max-w-7xl mx-auto">
+
+        <!-- PANNEAU 1 : DOMAINE ACOUSTIQUE -->
+        <div id="panel-acoustic" class="bg-gray-800 rounded-lg p-6 border-2 border-gray-700">
+            <h2 class="text-2xl font-bold mb-4 text-blue-400">
+                🔊 Domaine Acoustique
+                <span class="tooltip">
+                    <span class="text-sm">ℹ️</span>
+                    <span class="tooltiptext">
+                        Le domaine acoustique représente la pression sonore dans l'air, mesurée en dB SPL (Sound Pressure Level).
+                        0 dB SPL = seuil d'audition, 94 dB SPL = 1 Pascal, 140 dB SPL = seuil de douleur.
+                    </span>
+                </span>
+            </h2>
+
+            <!-- Contrôle de verrouillage -->
+            <button id="lock-acoustic" class="w-full mb-4 px-4 py-2 bg-gray-700 hover:bg-blue-600 rounded transition">
+                🔓 Définir comme Source
+            </button>
+
+            <!-- Slider principal -->
+            <div class="mb-6">
+                <label class="block text-sm font-semibold mb-2">Niveau dB SPL</label>
+                <div class="flex justify-center items-center">
+                    <input type="range" id="spl-slider" min="0" max="140" value="94" step="0.1"
+                           class="vertical-slider" orient="vertical">
+                </div>
+                <div class="text-center text-2xl font-bold mt-2">
+                    <span id="spl-value">94.0</span> dB SPL
+                </div>
+            </div>
+
+            <!-- Presets -->
+            <div class="mb-6">
+                <label class="block text-sm font-semibold mb-2">Presets</label>
+                <div class="space-y-2">
+                    <button onclick="setPreset('spl', 30)" class="w-full px-3 py-2 bg-gray-700 hover:bg-gray-600 rounded text-sm">
+                        Chuchotement (30 dB)
+                    </button>
+                    <button onclick="setPreset('spl', 65)" class="w-full px-3 py-2 bg-gray-700 hover:bg-gray-600 rounded text-sm">
+                        Voix Normale (65 dB)
+                    </button>
+                    <button onclick="setPreset('spl', 115)" class="w-full px-3 py-2 bg-gray-700 hover:bg-gray-600 rounded text-sm">
+                        Concert Rock (115 dB)
+                    </button>
+                </div>
+            </div>
+
+            <!-- Pondération -->
+            <div class="mb-6">
+                <label class="block text-sm font-semibold mb-2">
+                    Pondération
+                    <span class="tooltip">
+                        <span class="text-sm">ℹ️</span>
+                        <span class="tooltiptext">
+                            dB(Z) ou Linéaire : mesure plate, toutes fréquences égales.<br>
+                            dB(A) : filtre qui simule la sensibilité de l'oreille humaine (atténue les graves et aigus extrêmes).
+                        </span>
+                    </span>
+                </label>
+                <div class="space-x-4">
+                    <label class="inline-flex items-center">
+                        <input type="radio" name="weighting" value="Z" checked class="mr-2">
+                        dB(Z) / Linéaire
+                    </label>
+                    <label class="inline-flex items-center">
+                        <input type="radio" name="weighting" value="A" class="mr-2">
+                        dB(A)
+                    </label>
+                </div>
+            </div>
+
+            <!-- Calculs affichés -->
+            <div class="bg-gray-900 rounded p-4 space-y-2 text-sm">
+                <div class="flex justify-between">
+                    <span>Pression :</span>
+                    <span class="font-mono font-bold" id="pressure-value">1.000</span>
+                    <span>Pa</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- PANNEAU 2 : DOMAINE ÉLECTRIQUE -->
+        <div id="panel-electric" class="bg-gray-800 rounded-lg p-6 border-2 border-gray-700">
+            <h2 class="text-2xl font-bold mb-4 text-purple-400">
+                ⚡ Domaine Électrique
+                <span class="tooltip">
+                    <span class="text-sm">ℹ️</span>
+                    <span class="tooltiptext">
+                        Le domaine électrique représente la tension dans les câbles audio.
+                        dBu : référence 0.775V, dBV : référence 1V, dBm : puissance sur impédance.
+                    </span>
+                </span>
+            </h2>
+
+            <!-- Contrôle de verrouillage -->
+            <button id="lock-electric" class="w-full mb-4 px-4 py-2 bg-gray-700 hover:bg-purple-600 rounded transition">
+                🔓 Définir comme Source
+            </button>
+
+            <!-- Slider principal -->
+            <div class="mb-6">
+                <label class="block text-sm font-semibold mb-2">Niveau dBu</label>
+                <div class="flex justify-center items-center">
+                    <input type="range" id="dbu-slider" min="-60" max="24" value="4" step="0.1"
+                           class="vertical-slider" orient="vertical">
+                </div>
+                <div class="text-center text-2xl font-bold mt-2">
+                    <span id="dbu-value">+4.0</span> dBu
+                </div>
+            </div>
+
+            <!-- VU Meter -->
+            <div class="mb-6">
+                <label class="block text-sm font-semibold mb-2">
+                    VU Meter
+                    <span class="tooltip">
+                        <span class="text-sm">ℹ️</span>
+                        <span class="tooltiptext">
+                            Le VU-mètre (Volume Unit) est calibré selon les réglages.
+                            Typiquement, 0 VU = +4 dBu en studio professionnel.
+                        </span>
+                    </span>
+                </label>
+                <div class="vu-meter">
+                    <div class="vu-needle" id="vu-needle"></div>
+                </div>
+            </div>
+
+            <!-- Calculs affichés -->
+            <div class="bg-gray-900 rounded p-4 space-y-2 text-sm">
+                <div class="flex justify-between">
+                    <span>Tension RMS :</span>
+                    <span class="font-mono font-bold" id="voltage-value">1.228</span>
+                    <span>V</span>
+                </div>
+                <div class="flex justify-between">
+                    <span>dBu :</span>
+                    <span class="font-mono font-bold" id="dbu-display">+4.0</span>
+                    <span>dBu</span>
+                </div>
+                <div class="flex justify-between">
+                    <span>dBV :</span>
+                    <span class="font-mono font-bold" id="dbv-display">+1.8</span>
+                    <span>dBV</span>
+                </div>
+                <div class="flex justify-between">
+                    <span>Puissance :</span>
+                    <span class="font-mono font-bold" id="power-value">2.513</span>
+                    <span>mW</span>
+                </div>
+                <div class="flex justify-between">
+                    <span>dBm :</span>
+                    <span class="font-mono font-bold" id="dbm-display">+4.0</span>
+                    <span>dBm</span>
+                </div>
+                <div class="flex justify-between">
+                    <span>dBW :</span>
+                    <span class="font-mono font-bold" id="dbw-display">-26.0</span>
+                    <span>dBW</span>
+                </div>
+                <div class="flex justify-between">
+                    <span>VU :</span>
+                    <span class="font-mono font-bold" id="vu-display">0</span>
+                    <span>dBVU</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- PANNEAU 3 : DOMAINE NUMÉRIQUE -->
+        <div id="panel-digital" class="bg-gray-800 rounded-lg p-6 border-2 border-gray-700">
+            <h2 class="text-2xl font-bold mb-4 text-pink-400">
+                💻 Domaine Numérique
+                <span class="tooltip">
+                    <span class="text-sm">ℹ️</span>
+                    <span class="tooltiptext">
+                        Le domaine numérique représente les échantillons dans l'ordinateur.
+                        dBFS = dB Full Scale. 0 dBFS = niveau maximum (digital clip).
+                    </span>
+                </span>
+            </h2>
+
+            <!-- Contrôle de verrouillage -->
+            <button id="lock-digital" class="w-full mb-4 px-4 py-2 bg-gray-700 hover:bg-pink-600 rounded transition">
+                🔓 Définir comme Source
+            </button>
+
+            <!-- Slider principal -->
+            <div class="mb-6">
+                <label class="block text-sm font-semibold mb-2">Niveau dBFS</label>
+                <div class="flex justify-center items-center">
+                    <input type="range" id="dbfs-slider" min="-96" max="0" value="-18" step="0.1"
+                           class="vertical-slider" orient="vertical">
+                </div>
+                <div class="text-center text-2xl font-bold mt-2">
+                    <span id="dbfs-value">-18.0</span> dBFS
+                </div>
+            </div>
+
+            <!-- Indicateur de clip -->
+            <div class="mb-6">
+                <label class="block text-sm font-semibold mb-2">Indicateur CLIP</label>
+                <div class="text-center">
+                    <div id="clip-indicator" class="led-indicator led-off mx-auto"></div>
+                    <div class="text-xs mt-2 text-gray-400">Digital Clipping</div>
+                </div>
+            </div>
+
+            <!-- Profondeur de bits -->
+            <div class="mb-6">
+                <label class="block text-sm font-semibold mb-2">
+                    Profondeur de Bits
+                    <span class="tooltip">
+                        <span class="text-sm">ℹ️</span>
+                        <span class="tooltiptext">
+                            La profondeur de bits détermine la plage dynamique théorique.<br>
+                            16 bits ≈ 96 dB, 24 bits ≈ 144 dB, 32 bits float ≈ >1500 dB
+                        </span>
+                    </span>
+                </label>
+                <select id="bit-depth" class="w-full px-3 py-2 bg-gray-700 rounded">
+                    <option value="16">16 bits</option>
+                    <option value="24" selected>24 bits</option>
+                    <option value="32">32 bits float</option>
+                </select>
+                <div class="text-xs mt-2 text-gray-400">
+                    Plage dynamique : <span id="dynamic-range" class="font-bold">144 dB</span>
+                </div>
+            </div>
+
+            <!-- Calculs affichés -->
+            <div class="bg-gray-900 rounded p-4 space-y-2 text-sm">
+                <div class="flex justify-between">
+                    <span>Niveau de Crête :</span>
+                    <span class="font-mono font-bold" id="peak-value">-18.0</span>
+                    <span>dBFS</span>
+                </div>
+            </div>
+
+            <!-- Section Loudness -->
+            <div class="mt-6 bg-gray-900 rounded p-4">
+                <h3 class="text-lg font-bold mb-3 text-pink-300">
+                    Analyse EBU R128
+                    <span class="tooltip">
+                        <span class="text-sm">ℹ️</span>
+                        <span class="tooltiptext">
+                            EBU R128 est une norme de mesure de loudness (volume perçu).<br>
+                            LUFS mesure le volume moyen, pas les crêtes.<br>
+                            LRA = Loudness Range (dynamique du programme).<br>
+                            True Peak = crête réelle en inter-échantillon.
+                        </span>
+                    </span>
+                </h3>
+                <p class="text-xs text-gray-400 mb-3">
+                    Le dBFS mesure les crêtes (peaks), le LUFS mesure le volume perçu (average/loudness).
+                    Cette simulation estime le LUFS basé sur le niveau actuel.
+                </p>
+                <button id="analyze-loudness" class="w-full px-3 py-2 bg-pink-600 hover:bg-pink-700 rounded mb-3">
+                    📊 Analyser le signal
+                </button>
+                <div class="space-y-2 text-sm">
+                    <div class="flex justify-between">
+                        <span>Integrated Loudness :</span>
+                        <span class="font-mono font-bold" id="lufs-value">-23.0</span>
+                        <span>LUFS</span>
+                    </div>
+                    <div class="flex justify-between">
+                        <span>Loudness Range :</span>
+                        <span class="font-mono font-bold" id="lra-value">6.0</span>
+                        <span>LU</span>
+                    </div>
+                    <div class="flex justify-between">
+                        <span>True Peak Max :</span>
+                        <span class="font-mono font-bold" id="truepeak-value">-18.0</span>
+                        <span>dBTP</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- PANNEAU 4 : CŒUR DE CONVERSION (RÉGLAGES) -->
+        <div class="bg-gray-800 rounded-lg p-6 border-2 border-yellow-600">
+            <h2 class="text-2xl font-bold mb-4 text-yellow-400">
+                ⚙️ Cœur de Conversion
+            </h2>
+
+            <!-- Interface 1 : Acoustique <-> Électrique -->
+            <div class="mb-6 pb-6 border-b border-gray-700">
+                <h3 class="text-lg font-bold mb-3 text-blue-300">Interface 1 : Acoustique ↔ Électrique</h3>
+
+                <!-- Sensibilité du microphone -->
+                <div class="mb-4">
+                    <label class="block text-sm font-semibold mb-2">
+                        Sensibilité du Microphone
+                        <span class="tooltip">
+                            <span class="text-sm">ℹ️</span>
+                            <span class="tooltiptext">
+                                La sensibilité indique la tension produite par le micro pour une pression donnée.<br>
+                                Convention : donnée en mV/Pa ou en dBu @ 94 dB SPL (car 94 dB SPL = 1 Pascal).<br>
+                                Exemple : 22 mV/Pa = -37 dBu @ 94 dB SPL
+                            </span>
+                        </span>
+                    </label>
+                    <input type="range" id="mic-sensitivity" min="1" max="100" value="22" step="0.1"
+                           class="w-full">
+                    <div class="flex justify-between text-xs mt-1">
+                        <span><span id="mic-sensitivity-value">22.0</span> mV/Pa</span>
+                        <span><span id="mic-sensitivity-dbu">-37.0</span> dBu @ 94 dB SPL</span>
+                    </div>
+                </div>
+
+                <!-- Distance (Loi inverse du carré) -->
+                <div class="mb-4">
+                    <label class="block text-sm font-semibold mb-2">
+                        Distance de la source
+                        <span class="tooltip">
+                            <span class="text-sm">ℹ️</span>
+                            <span class="tooltiptext">
+                                Loi de l'inverse du carré : le niveau sonore diminue de 6 dB à chaque doublement de distance.<br>
+                                Distance x2 → -6 dB, Distance x4 → -12 dB
+                            </span>
+                        </span>
+                    </label>
+                    <input type="range" id="distance" min="0.5" max="16" value="1" step="0.5"
+                           class="w-full">
+                    <div class="flex justify-between text-xs mt-1">
+                        <span><span id="distance-value">1.0</span> m</span>
+                        <span>Perte : <span id="distance-loss">0.0</span> dB</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Interface 2 : Électrique <-> Numérique -->
+            <div class="mb-6 pb-6 border-b border-gray-700">
+                <h3 class="text-lg font-bold mb-3 text-purple-300">Interface 2 : Électrique ↔ Numérique</h3>
+
+                <!-- Niveau d'étalonnage -->
+                <div class="mb-4">
+                    <label class="block text-sm font-semibold mb-2">
+                        Niveau d'Étalonnage (Calibration)
+                        <span class="tooltip">
+                            <span class="text-sm">ℹ️</span>
+                            <span class="tooltiptext">
+                                L'étalonnage définit le "pont" entre le monde analogique et numérique.<br>
+                                Il indique quel niveau électrique (dBu) correspond à quel niveau numérique (dBFS).<br><br>
+                                EBU : +4 dBu = -18 dBFS (18 dB de headroom)<br>
+                                SMPTE : +4 dBu = -20 dBFS (20 dB de headroom)<br>
+                                DIN : +6 dBu = -15 dBFS<br>
+                                Consumer : -10 dBV = -12 dBFS
+                            </span>
+                        </span>
+                    </label>
+                    <select id="calibration" class="w-full px-3 py-2 bg-gray-700 rounded">
+                        <option value="ebu" selected>EBU : +4 dBu = -18 dBFS</option>
+                        <option value="smpte">SMPTE : +4 dBu = -20 dBFS</option>
+                        <option value="din">DIN : +6 dBu = -15 dBFS</option>
+                        <option value="consumer">Consommateur : -10 dBV = -12 dBFS</option>
+                    </select>
+                    <div class="text-xs mt-2 text-gray-400" id="calibration-info">
+                        Référence analogique : +4 dBu, Référence numérique : -18 dBFS
+                    </div>
+                </div>
+            </div>
+
+            <!-- Interface 3 : Impédance -->
+            <div class="mb-6">
+                <h3 class="text-lg font-bold mb-3 text-yellow-300">Interface 3 : Impédance</h3>
+
+                <!-- Impédance de référence -->
+                <div class="mb-4">
+                    <label class="block text-sm font-semibold mb-2">
+                        Impédance de Référence (Z)
+                        <span class="tooltip">
+                            <span class="text-sm">ℹ️</span>
+                            <span class="tooltiptext">
+                                L'impédance est nécessaire pour calculer la puissance (P = V²/Z).<br>
+                                600 Ω est la référence historique en audio professionnel.<br>
+                                dBm = puissance en dB par rapport à 1 milliwatt.
+                            </span>
+                        </span>
+                    </label>
+                    <input type="number" id="impedance" min="1" max="10000" value="600"
+                           class="w-full px-3 py-2 bg-gray-700 rounded">
+                    <div class="text-xs mt-1 text-gray-400">Ohms (Ω)</div>
+                </div>
+            </div>
+
+            <!-- Info sur la source active -->
+            <div class="bg-blue-900 bg-opacity-30 rounded p-3 text-sm">
+                <div class="font-semibold mb-1">Source active :</div>
+                <div id="active-source" class="text-blue-300">Aucune (verrouiller un panneau)</div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Pied de page pédagogique -->
+    <footer class="mt-8 text-center text-sm text-gray-500">
+        <p class="mb-2">
+            Outil pédagogique pour comprendre les conversions entre domaines acoustique, électrique et numérique.
+        </p>
+        <p>
+            Formules utilisées : dB SPL = 20×log₁₀(P/P₀), dBu = 20×log₁₀(V/0.775), dBFS (référence Full Scale)
+        </p>
+    </footer>
+
+    <script>
+        // ========================================
+        // ÉTAT GLOBAL DE L'APPLICATION
+        // ========================================
+
+        const state = {
+            // Source active : 'acoustic', 'electric', ou 'digital'
+            activeSource: null,
+
+            // Valeurs actuelles
+            dbSPL: 94,
+            dBu: 4,
+            dBFS: -18,
+
+            // Paramètres de conversion
+            micSensitivity: 22, // mV/Pa
+            distance: 1, // mètres
+            calibration: 'ebu',
+            impedance: 600, // Ohms
+            bitDepth: 24,
+            weighting: 'Z',
+
+            // Paramètres de calibration
+            calibrationPresets: {
+                ebu: { dBu: 4, dBFS: -18, dBV: null },
+                smpte: { dBu: 4, dBFS: -20, dBV: null },
+                din: { dBu: 6, dBFS: -15, dBV: null },
+                consumer: { dBu: null, dBFS: -12, dBV: -10 }
+            }
+        };
+
+        // ========================================
+        // CONSTANTES PHYSIQUES
+        // ========================================
+
+        const CONSTANTS = {
+            // Pression de référence pour dB SPL (20 µPa)
+            P_REF: 20e-6, // Pascals
+
+            // Tension de référence pour dBu (0.775 V RMS)
+            V_REF_DBU: 0.775,
+
+            // Tension de référence pour dBV (1 V RMS)
+            V_REF_DBV: 1.0,
+
+            // Puissance de référence pour dBm (1 mW)
+            P_REF_DBM: 0.001, // Watts
+
+            // Puissance de référence pour dBW (1 W)
+            P_REF_DBW: 1.0,
+
+            // 94 dB SPL = 1 Pascal (référence pour sensibilité micro)
+            SPL_94_DB: 94,
+            PRESSURE_1_PA: 1.0
+        };
+
+        // ========================================
+        // FONCTIONS DE CONVERSION - DOMAINE ACOUSTIQUE
+        // ========================================
+
+        /**
+         * Convertit dB SPL en pression (Pascals)
+         * Formule : P = P_ref × 10^(SPL/20)
+         * où P_ref = 20 µPa (seuil d'audition)
+         */
+        function splToPressure(dbSPL) {
+            return CONSTANTS.P_REF * Math.pow(10, dbSPL / 20);
+        }
+
+        /**
+         * Convertit pression (Pascals) en dB SPL
+         * Formule : SPL = 20 × log₁₀(P / P_ref)
+         */
+        function pressureToSPL(pressure) {
+            return 20 * Math.log10(pressure / CONSTANTS.P_REF);
+        }
+
+        /**
+         * Calcule la perte due à la distance (loi inverse du carré)
+         * Formule : Perte = 20 × log₁₀(distance / 1m)
+         * À chaque doublement de distance : -6 dB
+         */
+        function calculateDistanceLoss(distance) {
+            return 20 * Math.log10(distance / 1.0);
+        }
+
+        // ========================================
+        // FONCTIONS DE CONVERSION - DOMAINE ÉLECTRIQUE
+        // ========================================
+
+        /**
+         * Convertit dBu en tension (Volts RMS)
+         * Formule : V = V_ref × 10^(dBu/20)
+         * où V_ref = 0.775 V
+         */
+        function dBuToVoltage(dBu) {
+            return CONSTANTS.V_REF_DBU * Math.pow(10, dBu / 20);
+        }
+
+        /**
+         * Convertit tension (Volts RMS) en dBu
+         * Formule : dBu = 20 × log₁₀(V / 0.775)
+         */
+        function voltageTodBu(voltage) {
+            return 20 * Math.log10(voltage / CONSTANTS.V_REF_DBU);
+        }
+
+        /**
+         * Convertit tension (Volts RMS) en dBV
+         * Formule : dBV = 20 × log₁₀(V / 1.0)
+         */
+        function voltageTodBV(voltage) {
+            return 20 * Math.log10(voltage / CONSTANTS.V_REF_DBV);
+        }
+
+        /**
+         * Convertit dBV en tension (Volts RMS)
+         */
+        function dBVToVoltage(dBV) {
+            return CONSTANTS.V_REF_DBV * Math.pow(10, dBV / 20);
+        }
+
+        /**
+         * Calcule la puissance à partir de la tension et de l'impédance
+         * Formule : P = V² / Z
+         */
+        function voltageToPower(voltage, impedance) {
+            return (voltage * voltage) / impedance;
+        }
+
+        /**
+         * Convertit puissance (Watts) en dBm
+         * Formule : dBm = 10 × log₁₀(P / 0.001)
+         */
+        function powerTodBm(power) {
+            return 10 * Math.log10(power / CONSTANTS.P_REF_DBM);
+        }
+
+        /**
+         * Convertit puissance (Watts) en dBW
+         * Formule : dBW = 10 × log₁₀(P / 1.0)
+         */
+        function powerTodBW(power) {
+            return 10 * Math.log10(power / CONSTANTS.P_REF_DBW);
+        }
+
+        // ========================================
+        // FONCTIONS DE CONVERSION - INTERFACE MICRO
+        // ========================================
+
+        /**
+         * Convertit sensibilité micro (mV/Pa) en dBu @ 94 dB SPL
+         * À 94 dB SPL, la pression = 1 Pascal
+         * Tension produite = sensibilité (mV/Pa) × 1 Pa
+         * Puis convertir cette tension en dBu
+         */
+        function micSensitivityTodBu(mvPerPa) {
+            // Tension en volts pour 1 Pascal
+            const voltageAt1Pa = mvPerPa / 1000; // mV → V
+            // Convertir en dBu
+            return voltageTodBu(voltageAt1Pa);
+        }
+
+        /**
+         * Convertit dB SPL en dBu via la sensibilité du microphone
+         * 1. Calculer la pression (Pa) à partir du SPL
+         * 2. Calculer la tension produite : V = sensibilité × pression
+         * 3. Convertir en dBu
+         */
+        function splTodBuViaMic(dbSPL, micSensitivityMvPerPa, distance) {
+            // Appliquer la perte de distance
+            const adjustedSPL = dbSPL - calculateDistanceLoss(distance);
+
+            // Calculer la pression
+            const pressure = splToPressure(adjustedSPL);
+
+            // Tension produite par le micro (en Volts)
+            const voltage = (micSensitivityMvPerPa / 1000) * pressure;
+
+            // Convertir en dBu
+            return voltageTodBu(voltage);
+        }
+
+        /**
+         * Convertit dBu en dB SPL via la sensibilité du microphone (inverse)
+         */
+        function dBuToSPLViaMic(dBu, micSensitivityMvPerPa, distance) {
+            // Convertir dBu en tension
+            const voltage = dBuToVoltage(dBu);
+
+            // Calculer la pression (Pa) : P = V / sensibilité
+            const pressure = voltage / (micSensitivityMvPerPa / 1000);
+
+            // Convertir en dB SPL
+            const spl = pressureToSPL(pressure);
+
+            // Ajouter la perte de distance (l'inverse)
+            return spl + calculateDistanceLoss(distance);
+        }
+
+        // ========================================
+        // FONCTIONS DE CONVERSION - INTERFACE ADC/DAC
+        // ========================================
+
+        /**
+         * Convertit dBu en dBFS via la calibration
+         * Formule : dBFS = dBFS_ref + (dBu - dBu_ref)
+         */
+        function dBuTodBFS(dBu, calibration) {
+            const preset = state.calibrationPresets[calibration];
+
+            if (preset.dBu !== null) {
+                // Calibration en dBu (EBU, SMPTE, DIN)
+                const delta = dBu - preset.dBu;
+                return preset.dBFS + delta;
+            } else {
+                // Calibration en dBV (Consumer)
+                // Convertir dBu en dBV d'abord
+                const voltage = dBuToVoltage(dBu);
+                const dBV = voltageTodBV(voltage);
+                const delta = dBV - preset.dBV;
+                return preset.dBFS + delta;
+            }
+        }
+
+        /**
+         * Convertit dBFS en dBu via la calibration (inverse)
+         */
+        function dBFSTodBu(dBFS, calibration) {
+            const preset = state.calibrationPresets[calibration];
+
+            if (preset.dBu !== null) {
+                // Calibration en dBu
+                const delta = dBFS - preset.dBFS;
+                return preset.dBu + delta;
+            } else {
+                // Calibration en dBV (Consumer)
+                const delta = dBFS - preset.dBFS;
+                const dBV = preset.dBV + delta;
+                // Convertir dBV en dBu
+                const voltage = dBVToVoltage(dBV);
+                return voltageTodBu(voltage);
+            }
+        }
+
+        // ========================================
+        // FONCTIONS DE CONVERSION - CHAÎNE COMPLÈTE
+        // ========================================
+
+        /**
+         * Recalcule tous les domaines à partir de la source active
+         */
+        function updateAllDomains() {
+            if (state.activeSource === 'acoustic') {
+                // Source = Acoustique → calculer Électrique → calculer Numérique
+                state.dBu = splTodBuViaMic(state.dbSPL, state.micSensitivity, state.distance);
+                state.dBFS = dBuTodBFS(state.dBu, state.calibration);
+
+            } else if (state.activeSource === 'electric') {
+                // Source = Électrique → calculer Acoustique et Numérique
+                state.dBFS = dBuTodBFS(state.dBu, state.calibration);
+                state.dbSPL = dBuToSPLViaMic(state.dBu, state.micSensitivity, state.distance);
+
+            } else if (state.activeSource === 'digital') {
+                // Source = Numérique → calculer Électrique → calculer Acoustique
+                state.dBu = dBFSTodBu(state.dBFS, state.calibration);
+                state.dbSPL = dBuToSPLViaMic(state.dBu, state.micSensitivity, state.distance);
+            }
+
+            // Mettre à jour l'affichage
+            updateDisplay();
+        }
+
+        // ========================================
+        // MISE À JOUR DE L'AFFICHAGE
+        // ========================================
+
+        function updateDisplay() {
+            // Panneau Acoustique
+            document.getElementById('spl-value').textContent = state.dbSPL.toFixed(1);
+            document.getElementById('spl-slider').value = state.dbSPL;
+            const pressure = splToPressure(state.dbSPL);
+            document.getElementById('pressure-value').textContent = pressure.toFixed(3);
+
+            // Panneau Électrique
+            const voltage = dBuToVoltage(state.dBu);
+            const dBV = voltageTodBV(voltage);
+            const power = voltageToPower(voltage, state.impedance);
+            const dBm = powerTodBm(power);
+            const dBW = powerTodBW(power);
+
+            document.getElementById('dbu-value').textContent = state.dBu >= 0 ? `+${state.dBu.toFixed(1)}` : state.dBu.toFixed(1);
+            document.getElementById('dbu-slider').value = state.dBu;
+            document.getElementById('voltage-value').textContent = voltage.toFixed(3);
+            document.getElementById('dbu-display').textContent = state.dBu >= 0 ? `+${state.dBu.toFixed(1)}` : state.dBu.toFixed(1);
+            document.getElementById('dbv-display').textContent = dBV >= 0 ? `+${dBV.toFixed(1)}` : dBV.toFixed(1);
+            document.getElementById('power-value').textContent = (power * 1000).toFixed(3); // mW
+            document.getElementById('dbm-display').textContent = dBm >= 0 ? `+${dBm.toFixed(1)}` : dBm.toFixed(1);
+            document.getElementById('dbw-display').textContent = dBW.toFixed(1);
+
+            // VU Meter (0 VU = calibration reference)
+            const preset = state.calibrationPresets[state.calibration];
+            const vuRef = preset.dBu !== null ? preset.dBu : voltageTodBu(dBVToVoltage(preset.dBV));
+            const vu = state.dBu - vuRef;
+            document.getElementById('vu-display').textContent = vu >= 0 ? `+${vu.toFixed(0)}` : vu.toFixed(0);
+
+            // VU Needle position (0 VU = 60% de la barre)
+            const vuPosition = Math.max(0, Math.min(100, 60 + (vu * 2)));
+            document.getElementById('vu-needle').style.left = vuPosition + '%';
+
+            // Panneau Numérique
+            document.getElementById('dbfs-value').textContent = state.dBFS.toFixed(1);
+            document.getElementById('dbfs-slider').value = state.dBFS;
+            document.getElementById('peak-value').textContent = state.dBFS.toFixed(1);
+
+            // Indicateur de clip
+            const clipIndicator = document.getElementById('clip-indicator');
+            if (state.dBFS > 0) {
+                clipIndicator.classList.remove('led-off');
+                clipIndicator.classList.add('led-on');
+            } else {
+                clipIndicator.classList.remove('led-on');
+                clipIndicator.classList.add('led-off');
+            }
+
+            // Plage dynamique
+            updateDynamicRange();
+
+            // Loudness (simulation)
+            updateLoudness();
+        }
+
+        function updateDynamicRange() {
+            let range;
+            switch(parseInt(state.bitDepth)) {
+                case 16: range = '96 dB'; break;
+                case 24: range = '144 dB'; break;
+                case 32: range = '>1500 dB'; break;
+                default: range = '144 dB';
+            }
+            document.getElementById('dynamic-range').textContent = range;
+        }
+
+        function updateLoudness() {
+            // Simulation simple : LUFS ≈ dBFS - 5 dB (crest factor approximatif)
+            // Dans la réalité, ça dépend du contenu du signal
+            const estimatedLUFS = state.dBFS - 5;
+            document.getElementById('lufs-value').textContent = estimatedLUFS.toFixed(1);
+
+            // True Peak ≈ Peak (simplification)
+            document.getElementById('truepeak-value').textContent = state.dBFS.toFixed(1);
+
+            // LRA simulé (Loudness Range) : valeur fixe pour la démo
+            document.getElementById('lra-value').textContent = '6.0';
+        }
+
+        // ========================================
+        // GESTION DES VERROUILLAGES (SOURCE)
+        // ========================================
+
+        function lockPanel(panel) {
+            // Déverrouiller tous les panneaux
+            unlockAllPanels();
+
+            // Verrouiller le panneau sélectionné
+            state.activeSource = panel;
+
+            // Mettre à jour l'UI
+            const panelIds = {
+                'acoustic': 'panel-acoustic',
+                'electric': 'panel-electric',
+                'digital': 'panel-digital'
+            };
+
+            const lockButtons = {
+                'acoustic': 'lock-acoustic',
+                'electric': 'lock-electric',
+                'digital': 'lock-digital'
+            };
+
+            const sliders = {
+                'acoustic': 'spl-slider',
+                'electric': 'dbu-slider',
+                'digital': 'dbfs-slider'
+            };
+
+            // Ajouter la classe panel-locked
+            document.getElementById(panelIds[panel]).classList.add('panel-locked');
+
+            // Changer le texte du bouton
+            document.getElementById(lockButtons[panel]).innerHTML = '🔒 Source Active';
+            document.getElementById(lockButtons[panel]).classList.add('bg-blue-600');
+
+            // Activer le slider de ce panneau, désactiver les autres
+            Object.keys(sliders).forEach(key => {
+                document.getElementById(sliders[key]).disabled = (key !== panel);
+            });
+
+            // Mettre à jour l'indicateur de source active
+            const sourceNames = {
+                'acoustic': 'Domaine Acoustique (dB SPL)',
+                'electric': 'Domaine Électrique (dBu)',
+                'digital': 'Domaine Numérique (dBFS)'
+            };
+            document.getElementById('active-source').textContent = sourceNames[panel];
+
+            // Recalculer tous les domaines
+            updateAllDomains();
+        }
+
+        function unlockAllPanels() {
+            state.activeSource = null;
+
+            // Retirer toutes les classes panel-locked
+            document.querySelectorAll('.panel-locked').forEach(el => {
+                el.classList.remove('panel-locked');
+            });
+
+            // Réinitialiser les boutons de verrouillage
+            const lockButtons = ['lock-acoustic', 'lock-electric', 'lock-digital'];
+            lockButtons.forEach(id => {
+                const btn = document.getElementById(id);
+                btn.innerHTML = '🔓 Définir comme Source';
+                btn.classList.remove('bg-blue-600', 'bg-purple-600', 'bg-pink-600');
+            });
+
+            // Activer tous les sliders
+            document.getElementById('spl-slider').disabled = false;
+            document.getElementById('dbu-slider').disabled = false;
+            document.getElementById('dbfs-slider').disabled = false;
+
+            // Mettre à jour l'indicateur
+            document.getElementById('active-source').textContent = 'Aucune (verrouiller un panneau)';
+        }
+
+        // ========================================
+        // GESTION DES PARAMÈTRES DE CONVERSION
+        // ========================================
+
+        function updateMicSensitivity() {
+            state.micSensitivity = parseFloat(document.getElementById('mic-sensitivity').value);
+            document.getElementById('mic-sensitivity-value').textContent = state.micSensitivity.toFixed(1);
+
+            // Calculer et afficher l'équivalent en dBu @ 94 dB SPL
+            const dBuAt94 = micSensitivityTodBu(state.micSensitivity);
+            document.getElementById('mic-sensitivity-dbu').textContent = dBuAt94.toFixed(1);
+
+            // Recalculer si une source est active
+            if (state.activeSource) {
+                updateAllDomains();
+            }
+        }
+
+        function updateDistance() {
+            state.distance = parseFloat(document.getElementById('distance').value);
+            document.getElementById('distance-value').textContent = state.distance.toFixed(1);
+
+            // Calculer la perte
+            const loss = calculateDistanceLoss(state.distance);
+            document.getElementById('distance-loss').textContent = loss.toFixed(1);
+
+            // Recalculer si une source est active
+            if (state.activeSource) {
+                updateAllDomains();
+            }
+        }
+
+        function updateCalibration() {
+            state.calibration = document.getElementById('calibration').value;
+
+            // Mettre à jour l'info de calibration
+            const preset = state.calibrationPresets[state.calibration];
+            let info = '';
+
+            if (preset.dBu !== null) {
+                info = `Référence analogique : +${preset.dBu} dBu, Référence numérique : ${preset.dBFS} dBFS`;
+            } else {
+                info = `Référence analogique : ${preset.dBV} dBV, Référence numérique : ${preset.dBFS} dBFS`;
+            }
+
+            document.getElementById('calibration-info').textContent = info;
+
+            // Recalculer si une source est active
+            if (state.activeSource) {
+                updateAllDomains();
+            }
+        }
+
+        function updateImpedance() {
+            state.impedance = parseFloat(document.getElementById('impedance').value);
+
+            // Recalculer l'affichage (impédance affecte les calculs de puissance)
+            updateDisplay();
+        }
+
+        function updateBitDepth() {
+            state.bitDepth = parseInt(document.getElementById('bit-depth').value);
+            updateDynamicRange();
+        }
+
+        // ========================================
+        // PRESETS
+        // ========================================
+
+        function setPreset(domain, value) {
+            if (domain === 'spl') {
+                state.dbSPL = value;
+
+                // Si le panneau acoustique est la source, recalculer
+                if (state.activeSource === 'acoustic') {
+                    updateAllDomains();
+                } else {
+                    // Sinon, juste mettre à jour l'affichage local
+                    document.getElementById('spl-value').textContent = state.dbSPL.toFixed(1);
+                    document.getElementById('spl-slider').value = state.dbSPL;
+                }
+            }
+        }
+
+        // ========================================
+        // ANALYSE LOUDNESS
+        // ========================================
+
+        function analyzeLoudness() {
+            // Simulation d'analyse (dans la réalité, ça nécessiterait l'analyse du signal audio)
+            updateLoudness();
+
+            // Animation visuelle
+            const btn = document.getElementById('analyze-loudness');
+            btn.textContent = '⏳ Analyse en cours...';
+            btn.disabled = true;
+
+            setTimeout(() => {
+                btn.textContent = '✅ Analyse terminée';
+                setTimeout(() => {
+                    btn.textContent = '📊 Analyser le signal';
+                    btn.disabled = false;
+                }, 1000);
+            }, 500);
+        }
+
+        // ========================================
+        // ÉVÉNEMENTS
+        // ========================================
+
+        // Boutons de verrouillage
+        document.getElementById('lock-acoustic').addEventListener('click', () => lockPanel('acoustic'));
+        document.getElementById('lock-electric').addEventListener('click', () => lockPanel('electric'));
+        document.getElementById('lock-digital').addEventListener('click', () => lockPanel('digital'));
+
+        // Sliders principaux
+        document.getElementById('spl-slider').addEventListener('input', (e) => {
+            state.dbSPL = parseFloat(e.target.value);
+            if (state.activeSource === 'acoustic') {
+                updateAllDomains();
+            } else {
+                document.getElementById('spl-value').textContent = state.dbSPL.toFixed(1);
+            }
+        });
+
+        document.getElementById('dbu-slider').addEventListener('input', (e) => {
+            state.dBu = parseFloat(e.target.value);
+            if (state.activeSource === 'electric') {
+                updateAllDomains();
+            } else {
+                document.getElementById('dbu-value').textContent = state.dBu >= 0 ? `+${state.dBu.toFixed(1)}` : state.dBu.toFixed(1);
+            }
+        });
+
+        document.getElementById('dbfs-slider').addEventListener('input', (e) => {
+            state.dBFS = parseFloat(e.target.value);
+            if (state.activeSource === 'digital') {
+                updateAllDomains();
+            } else {
+                document.getElementById('dbfs-value').textContent = state.dBFS.toFixed(1);
+            }
+        });
+
+        // Paramètres de conversion
+        document.getElementById('mic-sensitivity').addEventListener('input', updateMicSensitivity);
+        document.getElementById('distance').addEventListener('input', updateDistance);
+        document.getElementById('calibration').addEventListener('change', updateCalibration);
+        document.getElementById('impedance').addEventListener('input', updateImpedance);
+        document.getElementById('bit-depth').addEventListener('change', updateBitDepth);
+
+        // Pondération
+        document.querySelectorAll('input[name="weighting"]').forEach(radio => {
+            radio.addEventListener('change', (e) => {
+                state.weighting = e.target.value;
+                // Note : L'implémentation complète de la pondération A nécessiterait
+                // un filtre de fréquence, ce qui est hors de portée pour cette démo
+            });
+        });
+
+        // Bouton d'analyse loudness
+        document.getElementById('analyze-loudness').addEventListener('click', analyzeLoudness);
+
+        // ========================================
+        // INITIALISATION
+        // ========================================
+
+        // Initialiser l'affichage au chargement
+        document.addEventListener('DOMContentLoaded', () => {
+            updateMicSensitivity();
+            updateDistance();
+            updateCalibration();
+            updateDisplay();
+
+            // Verrouiller le panneau numérique par défaut (position commune)
+            lockPanel('digital');
+        });
+    </script>
+</body>
+</html>
