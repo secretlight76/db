@@ -2201,8 +2201,8 @@
             document.getElementById('electric-headroom-value').textContent = electricHeadroom.toFixed(1);
 
             // Headroom marker (24 dBu = 100%)
-            const electricHeadroomPosition = Math.max(0, Math.min(100, (state.dBu + 60) / 84 * 100));
-            document.getElementById('electric-headroom-marker').style.left = electricHeadroomPosition + '%';
+            // const electricHeadroomPosition = Math.max(0, Math.min(100, (state.dBu + 60) / 84 * 100));
+            // document.getElementById('electric-headroom-marker').style.left = electricHeadroomPosition + '%';
 
             // Plancher de bruit électrique (dBu) - Bruit du préampli à la sortie
             const noiseFloorDBu = state.preampEIN + state.micGain;
@@ -2217,9 +2217,11 @@
             document.getElementById('dynamic-range-electric').textContent = dynamicElectric.toFixed(1);
 
             // Panneau Numérique
+            console.log('updateDisplay - state.dBFS:', state.dBFS, 'draggingSlider:', state.draggingSlider);
             document.getElementById('dbfs-value').textContent = state.dBFS.toFixed(1);
             if (state.draggingSlider !== 'dbfs') {
                 document.getElementById('dbfs-slider').value = state.dBFS;
+                console.log('Updated dbfs-slider.value to:', state.dBFS);
             }
             document.getElementById('peak-value').textContent = state.dBFS.toFixed(1);
             document.getElementById('peak-meter-value').textContent = state.dBFS.toFixed(1);
@@ -2246,8 +2248,8 @@
             document.getElementById('headroom-value').textContent = headroom.toFixed(1);
 
             // Headroom marker (0 dBFS = 100%)
-            const headroomPosition = Math.max(0, Math.min(100, (state.dBFS + 96) / 96 * 100));
-            document.getElementById('headroom-marker').style.left = headroomPosition + '%';
+            // const headroomPosition = Math.max(0, Math.min(100, (state.dBFS + 96) / 96 * 100));
+            // document.getElementById('headroom-marker').style.left = headroomPosition + '%';
 
             // Plancher de bruit numérique (dBFS) - Conversion du bruit électrique
             // Utilise le même calibrage que pour la conversion du signal
@@ -2750,21 +2752,35 @@
             });
 
             // Sliders principaux - définissent automatiquement la source active
+            console.log('Attaching event listeners to sliders...');
+
+            const splSlider = document.getElementById('spl-slider');
+            const dbuSlider = document.getElementById('dbu-slider');
+            const dbfsSlider = document.getElementById('dbfs-slider');
+
+            console.log('SPL slider:', splSlider);
+            console.log('dBu slider:', dbuSlider);
+            console.log('dBFS slider:', dbfsSlider);
+
             document.getElementById('spl-slider').addEventListener('input', (e) => {
+                console.log('SPL slider moved:', e.target.value);
                 state.activeSource = 'acoustic';
                 state.dbSPL = parseFloat(e.target.value);
                 updateAllDomains();
             });
 
             document.getElementById('dbu-slider').addEventListener('input', (e) => {
+                console.log('dBu slider moved:', e.target.value);
                 state.activeSource = 'electric';
                 state.dBu = parseFloat(e.target.value);
                 updateAllDomains();
             });
 
             document.getElementById('dbfs-slider').addEventListener('input', (e) => {
+                console.log('dBFS slider moved:', e.target.value);
                 state.activeSource = 'digital';
                 state.dBFS = parseFloat(e.target.value);
+                console.log('New state.dBFS:', state.dBFS);
                 updateAllDomains();
             });
 
@@ -2838,7 +2854,7 @@
             updateMicSensitivity();
             updateDistance();
             updateCalibration();
-            updateNoiseFloor();
+            calculateNoiseFloor();
             updateDisplay();
             updateAttenuationDisplay();
 
