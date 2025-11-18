@@ -507,12 +507,12 @@
                         <label class="block text-xs font-semibold mb-1" style="color: var(--text-secondary)">
                             EIN Personnalisé (dBu)
                         </label>
-                        <input type="number" id="custom-ein" min="-140" max="-80" value="-128" step="0.5"
+                        <input type="number" id="custom-ein" min="-140" max="-40" value="-128" step="0.5"
                                class="w-full px-2 py-1 panel-inner-bg rounded text-sm"
                                placeholder="-128"
                                aria-label="EIN personnalisé">
                         <div class="text-xs mt-1 opacity-70">
-                            Plage typique : -100 (bas de gamme) à -131 (premium)
+                            Plage : -140 (premium) à -40 dBu (très basse qualité)
                         </div>
                     </div>
 
@@ -559,12 +559,12 @@
                             </span>
                         </span>
                     </label>
-                    <input type="range" id="mic-gain" min="0" max="70" value="40" step="0.5"
+                    <input type="range" id="mic-gain" min="0" max="80" value="40" step="0.5"
                            class="w-full"
                            aria-label="Gain du préampli">
                     <div class="flex justify-between text-xs mt-1" style="color: var(--text-secondary)">
                         <span>Gain : <span id="mic-gain-value" class="font-bold">+40.0</span> dB</span>
-                        <span class="text-xs opacity-70">0-70 dB</span>
+                        <span class="text-xs opacity-70">0-80 dB</span>
                     </div>
                 </div>
 
@@ -671,10 +671,6 @@
             </h2>
 
             <!-- Contrôle de verrouillage -->
-            <button id="lock-acoustic" class="w-full mb-4 px-4 py-2 panel-inner-bg hover:bg-blue-600 rounded transition">
-                🔓 Définir comme Source
-            </button>
-
             <!-- Slider principal -->
             <div class="mb-6">
                 <label class="block text-sm font-semibold mb-2">Niveau dB SPL</label>
@@ -734,24 +730,12 @@
                         </span>
                     </span>
                 </label>
-                <div class="space-y-2">
-                    <label class="inline-flex items-center">
-                        <input type="radio" name="weighting" value="Z" checked class="mr-2">
-                        dB(Z) - Linéaire
-                    </label>
-                    <label class="inline-flex items-center">
-                        <input type="radio" name="weighting" value="A" class="mr-2">
-                        dB(A) - Perception humaine
-                    </label>
-                    <label class="inline-flex items-center">
-                        <input type="radio" name="weighting" value="B" class="mr-2">
-                        dB(B) - Niveaux moyens
-                    </label>
-                    <label class="inline-flex items-center">
-                        <input type="radio" name="weighting" value="C" class="mr-2">
-                        dB(C) - Basses fréquences
-                    </label>
-                </div>
+                <select id="weighting" class="w-full px-3 py-2 panel-inner-bg rounded text-sm">
+                    <option value="Z" selected>dB(Z) - Linéaire</option>
+                    <option value="A">dB(A) - Perception humaine</option>
+                    <option value="B">dB(B) - Niveaux moyens</option>
+                    <option value="C">dB(C) - Basses fréquences</option>
+                </select>
 
                 <!-- Sélection de la fréquence d'entrée pour simuler l'effet -->
                 <div class="mt-4 mb-4">
@@ -834,10 +818,6 @@
             </h2>
 
             <!-- Contrôle de verrouillage -->
-            <button id="lock-electric" class="w-full mb-4 px-4 py-2 panel-inner-bg hover:bg-purple-600 rounded transition">
-                🔓 Définir comme Source
-            </button>
-
             <!-- Slider principal -->
             <div class="mb-6">
                 <label class="block text-sm font-semibold mb-2">Niveau dBu</label>
@@ -984,10 +964,6 @@
             </h2>
 
             <!-- Contrôle de verrouillage -->
-            <button id="lock-digital" class="w-full mb-4 px-4 py-2 panel-inner-bg hover:bg-pink-600 rounded transition">
-                🔓 Définir comme Source
-            </button>
-
             <!-- Slider principal -->
             <div class="mb-6">
                 <label class="block text-sm font-semibold mb-2">Niveau dBFS</label>
@@ -1081,9 +1057,12 @@
                     </span>
                 </label>
                 <select id="bit-depth" class="w-full px-3 py-2 panel-inner-bg rounded">
-                    <option value="16">16 bits</option>
-                    <option value="24" selected>24 bits</option>
-                    <option value="32">32 bits float</option>
+                    <option value="4">4 bits (≈ 24 dB)</option>
+                    <option value="8">8 bits (≈ 48 dB)</option>
+                    <option value="12">12 bits (≈ 72 dB)</option>
+                    <option value="16">16 bits (≈ 96 dB)</option>
+                    <option value="24" selected>24 bits (≈ 144 dB)</option>
+                    <option value="32">32 bits float (>1500 dB)</option>
                 </select>
                 <div class="text-xs mt-2" style="color: var(--text-secondary)">
                     Plage dynamique : <span id="dynamic-range" class="font-bold">144 dB</span>
@@ -2015,9 +1994,9 @@
             if (state.dbSPL >= 120) {
                 splWarning.className = 'alert alert-danger text-xs';
                 splWarning.textContent = '🔴 DANGER : Niveau SPL dangereux pour l\'audition ! ≥120 dB peut causer des dommages immédiats.';
-            } else if (state.dbSPL >= 85) {
+            } else if (state.dbSPL > 85) {
                 splWarning.className = 'alert alert-warning text-xs';
-                splWarning.textContent = '⚠️ ATTENTION : Exposition prolongée ≥85 dB peut endommager l\'audition. Limitez le temps d\'exposition.';
+                splWarning.textContent = '⚠️ ATTENTION : Exposition prolongée >85 dB peut endommager l\'audition. Limitez le temps d\'exposition.';
             } else {
                 splWarning.className = 'hidden';
                 splWarning.textContent = '';
@@ -2026,12 +2005,12 @@
             // === WARNING SNR (Panneau Électrique) ===
             const snr = state.dbSPL - state.noiseFloor;
             const snrWarning = document.getElementById('snr-warning');
-            if (snr < 30 && state.dbSPL > 0) {
-                snrWarning.className = 'alert alert-warning text-xs';
-                snrWarning.textContent = '⚠️ SNR faible (' + snr.toFixed(1) + ' dB). Le bruit de fond sera audible. Augmentez le signal ou réduisez le bruit.';
-            } else if (snr > 80) {
+            if (snr >= 80) {
                 snrWarning.className = 'alert alert-success text-xs';
                 snrWarning.textContent = '✅ Excellent SNR (' + snr.toFixed(1) + ' dB). Signal très propre.';
+            } else if (snr < 30 && state.dbSPL > 0) {
+                snrWarning.className = 'alert alert-warning text-xs';
+                snrWarning.textContent = '⚠️ SNR faible (' + snr.toFixed(1) + ' dB). Le bruit de fond sera audible. Augmentez le signal ou réduisez le bruit.';
             } else {
                 snrWarning.className = 'hidden';
                 snrWarning.textContent = '';
@@ -2222,6 +2201,9 @@
         function updateDynamicRange() {
             let range;
             switch(parseInt(state.bitDepth)) {
+                case 4: range = '24 dB'; break;
+                case 8: range = '48 dB'; break;
+                case 12: range = '72 dB'; break;
                 case 16: range = '96 dB'; break;
                 case 24: range = '144 dB'; break;
                 case 32: range = '>1500 dB'; break;
@@ -2694,59 +2676,26 @@
             }
         });
 
-        // Boutons de verrouillage
-        document.getElementById('lock-acoustic').addEventListener('click', () => lockPanel('acoustic'));
-        document.getElementById('lock-electric').addEventListener('click', () => lockPanel('electric'));
-        document.getElementById('lock-digital').addEventListener('click', () => lockPanel('digital'));
-
-        // Sliders principaux
+        // Sliders principaux - définissent automatiquement la source active
         document.getElementById('spl-slider').addEventListener('input', (e) => {
             state.draggingSlider = 'spl';
+            state.activeSource = 'acoustic';
             state.dbSPL = parseFloat(e.target.value);
-            // Si une source est active, elle contrôle les conversions
-            if (state.activeSource === 'acoustic') {
-                updateAllDomains();
-            } else if (state.activeSource) {
-                // Si une autre source est active, on met juste à jour l'affichage
-                document.getElementById('spl-value').textContent = state.dbSPL.toFixed(1);
-            } else {
-                // Aucune source active : conversion bidirectionnelle libre
-                // On utilise acoustic comme source par défaut pour propager les changements
-                state.dBu = splTodBuViaMic(state.dbSPL, state.micSensitivity, state.distance, state.micGain);
-                state.dBFS = dBuTodBFS(state.dBu, state.calibration);
-                updateDisplay();
-            }
+            updateAllDomains();
         });
 
         document.getElementById('dbu-slider').addEventListener('input', (e) => {
             state.draggingSlider = 'dbu';
+            state.activeSource = 'electric';
             state.dBu = parseFloat(e.target.value);
-            if (state.activeSource === 'electric') {
-                updateAllDomains();
-            } else if (state.activeSource) {
-                document.getElementById('dbu-value').textContent = state.dBu >= 0 ? `+${state.dBu.toFixed(1)}` : state.dBu.toFixed(1);
-            } else {
-                // Aucune source active : conversion bidirectionnelle libre
-                state.dBFS = dBuTodBFS(state.dBu, state.calibration);
-                state.dbSPL = dBuToSPLViaMic(state.dBu, state.micSensitivity, state.distance, state.micGain);
-                updateDisplay();
-            }
+            updateAllDomains();
         });
 
         document.getElementById('dbfs-slider').addEventListener('input', (e) => {
             state.draggingSlider = 'dbfs';
+            state.activeSource = 'digital';
             state.dBFS = parseFloat(e.target.value);
-            if (state.activeSource === 'digital') {
-                updateAllDomains();
-            } else if (state.activeSource) {
-                document.getElementById('dbfs-value').textContent = state.dBFS.toFixed(1);
-                updateLoudness();
-            } else {
-                // Aucune source active : conversion bidirectionnelle libre
-                state.dBu = dBFSTodBu(state.dBFS, state.calibration);
-                state.dbSPL = dBuToSPLViaMic(state.dBu, state.micSensitivity, state.distance, state.micGain);
-                updateDisplay();
-            }
+            updateAllDomains();
         });
 
         // Suivre le début et la fin du glissement pour éviter le flickering
@@ -2793,13 +2742,11 @@
         document.getElementById('lufs-profile').addEventListener('change', updateLufsProfile);
 
         // Pondération
-        document.querySelectorAll('input[name="weighting"]').forEach(radio => {
-            radio.addEventListener('change', (e) => {
-                state.weighting = e.target.value;
-                updateAttenuationDisplay();
-                updateLoudness(); // Recalculer LUFS avec la nouvelle pondération
-                updateDisplay(); // Mettre à jour le niveau pondéré affiché
-            });
+        document.getElementById('weighting').addEventListener('change', (e) => {
+            state.weighting = e.target.value;
+            updateAttenuationDisplay();
+            updateLoudness(); // Recalculer LUFS avec la nouvelle pondération
+            updateDisplay(); // Mettre à jour le niveau pondéré affiché
         });
 
         // Fréquence d'entrée
