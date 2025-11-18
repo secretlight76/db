@@ -270,33 +270,82 @@
         header .absolute {
             padding: 1rem;
         }
+
+        /* Header responsive - flex layout au lieu de absolute */
+        @media (max-width: 1023px) {
+            header {
+                text-align: center;
+            }
+
+            .header-buttons {
+                display: flex;
+                flex-wrap: wrap;
+                justify-content: center;
+                gap: 0.5rem;
+                margin-bottom: 1rem;
+            }
+
+            .header-buttons button {
+                font-size: 0.875rem;
+                padding: 0.5rem 0.75rem !important;
+            }
+
+            .header-buttons .hidden-text {
+                display: none;
+            }
+        }
+
+        /* Desktop - boutons en haut à droite */
+        @media (min-width: 1024px) {
+            .header-buttons {
+                position: absolute;
+                top: 1rem;
+                right: 1rem;
+                display: flex;
+                gap: 0.5rem;
+            }
+        }
     </style>
 </head>
 <body class="p-6">
-    <!-- En-tête avec boutons -->
+    <!-- En-tête avec boutons responsive -->
     <header class="text-center mb-8 relative">
-        <!-- Boutons supérieurs -->
-        <div class="absolute top-0 right-0 flex gap-2">
-            <!-- Bouton Mode Sombre/Clair -->
-            <button id="theme-toggle"
-                    class="px-4 py-2 rounded-lg panel-bg border-2 hover:bg-opacity-80 transition"
-                    aria-label="Basculer le thème">
-                <span id="theme-icon">🌙</span> <span id="theme-text">Mode Clair</span>
+        <!-- Boutons responsifs -->
+        <div class="header-buttons">
+            <!-- Bouton Aide -->
+            <button id="help-btn"
+                    class="px-4 py-2 rounded-lg bg-cyan-600 hover:bg-cyan-700 text-white transition"
+                    aria-label="Voir l'aide">
+                ❓<span class="hidden-text"> Aide</span>
             </button>
 
             <!-- Bouton Erreurs Courantes -->
             <button id="errors-btn"
                     class="px-4 py-2 rounded-lg bg-red-600 hover:bg-red-700 text-white transition"
                     aria-label="Voir les erreurs courantes">
-                ⚠️ Erreurs Courantes
+                ⚠️<span class="hidden-text"> Erreurs</span>
             </button>
 
             <!-- Bouton Historique -->
             <button id="history-btn"
                     class="px-4 py-2 rounded-lg bg-purple-600 hover:bg-purple-700 text-white transition"
                     aria-label="Voir l'historique">
-                📚 Historique & Contexte
+                📚<span class="hidden-text"> Historique</span>
             </button>
+
+            <!-- Bouton Mode Sombre/Clair -->
+            <button id="theme-toggle"
+                    class="px-4 py-2 rounded-lg panel-bg border-2 hover:bg-opacity-80 transition"
+                    aria-label="Basculer le thème">
+                <span id="theme-icon">🌙</span><span class="hidden-text"> <span id="theme-text">Mode Clair</span></span>
+            </button>
+
+            <!-- Lien Buy Me a Coffee -->
+            <a href="https://buymeacoffee.com/gabrielfadavi" target="_blank" rel="noopener noreferrer"
+               class="px-4 py-2 rounded-lg bg-amber-600 hover:bg-amber-700 text-white transition inline-flex items-center"
+               aria-label="Supporter Gabriel Fadavi">
+                ☕
+            </a>
         </div>
 
         <!-- Contenu du header -->
@@ -305,6 +354,9 @@
         </h1>
         <p class="text-xl" style="color: var(--text-secondary)">dB SPL • dBu • dBFS</p>
         <p class="text-sm mt-2" style="color: var(--text-secondary)">Outil pédagogique pour comprendre la chaîne audio complète</p>
+        <p class="text-xs mt-3" style="color: var(--text-secondary)">
+            Créé par <strong>Gabriel Fadavi</strong>
+        </p>
     </header>
 
     <!-- Alertes de validation temps réel -->
@@ -1062,7 +1114,26 @@
                 <button id="close-history" class="text-3xl hover:opacity-70" aria-label="Fermer">&times;</button>
             </div>
 
-            <div class="space-y-6">
+            <div class="space-y-6 max-h-96 overflow-y-auto pr-2">
+                <div>
+                    <h3 class="text-xl font-bold mb-2 text-blue-400">👂 Psychoacoustique : La Courbe d'Isosonie</h3>
+                    <p class="text-sm mb-2">
+                        Notre oreille ne perçoit pas toutes les fréquences avec la même sensibilité. À bas volume, nous entendons
+                        mal les très basses et très hautes fréquences. C'est décrit par les <strong>courbes d'isosonie</strong>
+                        (courbes d'égale loudness).
+                    </p>
+                    <p class="text-sm mb-2">
+                        <strong>Conséquences :</strong>
+                        <br>• À 100 Hz, nous avons besoin de ~10 dB supplémentaires pour percevoir le même volume qu'à 1 kHz
+                        <br>• À 30 Hz, nous avons besoin de ~40 dB supplémentaires
+                        <br>• À 15 kHz, l'oreille devient moins sensible aussi
+                    </p>
+                    <p class="text-sm">
+                        <strong>Application :</strong> La pondération A simule ces courbes d'isosonie, d'où son utilisation massive
+                        pour mesurer le "bruit perçu".
+                    </p>
+                </div>
+
                 <div>
                     <h3 class="text-xl font-bold mb-2 text-yellow-400">🔌 Pourquoi 600 Ω ?</h3>
                     <p class="text-sm mb-2">
@@ -1072,7 +1143,7 @@
                     <p class="text-sm mb-2">
                         Pour éviter les réflexions du signal, il fallait adapter l'impédance des équipements à celle des lignes.
                         Bien qu'aujourd'hui on utilise des interfaces haute impédance (>10 kΩ), le 600 Ω reste la référence
-                        pour les calculs de dBm.
+                        pour les calculs de dBm et est toujours utilisé dans les studios broadcast.
                     </p>
                 </div>
 
@@ -1084,48 +1155,234 @@
                     </p>
                     <p class="text-sm mb-2">
                         Historiquement, les bandes magnétiques analogiques avaient environ 18-20 dB de headroom au-dessus
-                        du niveau nominal. Les standards numériques ont conservé cette habitude.
+                        du niveau nominal. Les standards numériques ont conservé cette habitude parce qu'elle fonctionne bien
+                        pour la plupart des contenus audio (parole, musique).
                     </p>
                     <p class="text-sm">
-                        <strong>USA (SMPTE) :</strong> -20 dBFS (plus de headroom = 20 dB)<br>
-                        <strong>Allemagne (DIN) :</strong> -15 dBFS (moins de headroom = 15 dB)<br>
-                        <strong>Japon (ARIB) :</strong> -18 dBFS (comme EBU)
+                        <strong>Variations régionales :</strong>
+                        <br>🇪🇺 EBU (Europe) : -18 dBFS (18 dB headroom)
+                        <br>🇺🇸 SMPTE (USA) : -20 dBFS (20 dB headroom, plus conservative)
+                        <br>🇩🇪 ARD (Allemagne) : -9 dBFS (seulement 9 dB headroom)
+                        <br>🇯🇵 ARIB (Japon) : -18 dBFS (comme EBU)
                     </p>
                 </div>
 
                 <div>
-                    <h3 class="text-xl font-bold mb-2 text-blue-400">📻 Évolution des Standards</h3>
+                    <h3 class="text-xl font-bold mb-2 text-orange-400">🎤 Histoire des Microphones</h3>
                     <p class="text-sm mb-2">
-                        <strong>1950s :</strong> VU-mètres et références en dBu pour l'analogique<br>
-                        <strong>1980s :</strong> Arrivée du numérique (CD, DAT), création de dBFS<br>
-                        <strong>1990s :</strong> Guerres du loudness (compression excessive)<br>
-                        <strong>2011 :</strong> EBU R128 introduit le LUFS pour normaliser le loudness<br>
-                        <strong>2015+ :</strong> Adoption généralisée (YouTube, Spotify, TV)
+                        <strong>1876 - Microphone à charbon :</strong> Premiers micros (très bruyants, sensibilité variable)
+                        <br><strong>1920s - Rubans (ribbons) :</strong> Inventés par RCA, son chaud et naturel, très peu sensibles
+                        <br><strong>1940s - Dynamiques :</strong> Shure SM58, robustes, bon pour le live
+                        <br><strong>1950s - Électrostatiques :</strong> Neumann U47, Telefunken, pour l'enregistrement studio premium
                     </p>
-                </div>
-
-                <div>
-                    <h3 class="text-xl font-bold mb-2 text-pink-400">🌍 Standards par Pays/Région</h3>
-                    <div class="text-sm space-y-1">
-                        <p><strong>🇪🇺 EBU (Europe) :</strong> +4 dBu = -18 dBFS, -23 LUFS pour broadcast</p>
-                        <p><strong>🇬🇧 BBC (UK) :</strong> +4 dBu = -18 dBFS (aligné EBU)</p>
-                        <p><strong>🇫🇷 France :</strong> +6 dBu = -18 dBFS (France Télévisions)</p>
-                        <p><strong>🇺🇸 SMPTE (USA) :</strong> +4 dBu = -20 dBFS, -24 LKFS (=LUFS)</p>
-                        <p><strong>🇩🇪 ARD/ZDF (Allemagne) :</strong> +6 dBu = -9 dBFS (beaucoup de headroom)</p>
-                        <p><strong>🇯🇵 ARIB (Japon) :</strong> +4 dBu = -18 dBFS</p>
-                        <p><strong>🏠 Consumer :</strong> -10 dBV = -12 dBFS (équipement grand public)</p>
-                    </div>
                 </div>
 
                 <div>
                     <h3 class="text-xl font-bold mb-2 text-green-400">🔊 94 dB SPL = 1 Pascal : Pourquoi ?</h3>
                     <p class="text-sm mb-2">
                         C'est une convention pour simplifier les calculs de sensibilité microphone.
-                        94 dB SPL est un niveau "fort mais pas excessif" facile à reproduire en laboratoire.
+                        94 dB SPL est un niveau "fort mais pas excessif" facile à reproduire en laboratoire avec un pistonphone.
                     </p>
                     <p class="text-sm">
-                        Mathématiquement : 94 dB SPL = 20 × log₁₀(1 Pa / 20 µPa) ≈ 94 dB
+                        <strong>Mathématiquement :</strong> 94 dB SPL = 20 × log₁₀(1 Pa / 20 µPa) ≈ 94 dB
+                        <br>C'est pratique : un micro avec une sensibilité de 20 mV/Pa recevra 20 mV à 94 dB SPL/1 Pa.
                     </p>
+                </div>
+
+                <div>
+                    <h3 class="text-xl font-bold mb-2 text-pink-400">📻 Évolution des Standards Numériques</h3>
+                    <p class="text-sm mb-2">
+                        <strong>1975 :</strong> Enregistrement PCM sur bande magnétique (Sony, Philips)
+                        <br><strong>1982 :</strong> CD-Audio 16-bit/44.1 kHz lancé (codage linéaire)
+                        <br><strong>1987 :</strong> DAT (Digital Audio Tape) 16/24-bit introduit
+                        <br><strong>1990s :</strong> "Loudness Wars" - compression excessive pour dominer en radio
+                        <br><strong>2011 :</strong> EBU R128 impose le LUFS (-23 LUFS pour broadcast EU)
+                        <br><strong>2012+ :</strong> YouTube, Spotify adoptent le LUFS (-14 LUFS for YouTube, -14 pour Spotify)
+                    </p>
+                </div>
+
+                <div>
+                    <h3 class="text-xl font-bold mb-2 text-indigo-400">💾 Profondeur de Bits et Dynamique</h3>
+                    <p class="text-sm mb-2">
+                        La profondeur de bits détermine la dynamique maximale :
+                    </p>
+                    <p class="text-sm">
+                        <strong>16-bit (CD) :</strong> 96 dB de dynamique théorique (6 dB par bit)
+                        <br><strong>24-bit (Studio) :</strong> 144 dB de dynamique théorique (très au-delà de ce que l'oreille peut entendre)
+                        <br><strong>32-bit float :</strong> Dynamique extrême + protection contre le clipping en cas de débordement
+                    </p>
+                </div>
+
+                <div>
+                    <h3 class="text-xl font-bold mb-2 text-cyan-400">🌍 Standards Spécifiques par Région</h3>
+                    <div class="text-xs space-y-1">
+                        <p><strong>🇪🇺 EBU R128 (Europe) :</strong> +4 dBu = -18 dBFS, -23 LUFS broadcast</p>
+                        <p><strong>🇬🇧 BBC (Royaume-Uni) :</strong> +4 dBu = -18 dBFS (aligné EBU)</p>
+                        <p><strong>🇫🇷 France TV :</strong> +6 dBu = -18 dBFS (référence domestique plus haute)</p>
+                        <p><strong>🇺🇸 SMPTE (USA) :</strong> +4 dBu = -20 dBFS, -24 LKFS (=LUFS)</p>
+                        <p><strong>🇩🇪 ARD/ZDF (Allemagne) :</strong> +6 dBu = -9 dBFS (beaucoup plus de headroom)</p>
+                        <p><strong>🇯🇵 ARIB (Japon) :</strong> +4 dBu = -18 dBFS (comme EBU)</p>
+                        <p><strong>🏠 Consumer :</strong> -10 dBV = -12 dBFS (équipement grand public)</p>
+                        <p><strong>📱 Streaming :</strong> YouTube -14 LUFS, Spotify -14 LUFS, Apple Music -16 LUFS</p>
+                    </div>
+                </div>
+
+                <div>
+                    <h3 class="text-xl font-bold mb-2 text-red-400">⚠️ La "Loudness War"</h3>
+                    <p class="text-sm mb-2">
+                        Entre les années 1990-2010, les labels de musique ont agressivement compressé les chansons
+                        pour les rendre plus "fortes" en radio, sacrifiant la dynamique musicale.
+                    </p>
+                    <p class="text-sm">
+                        <strong>Résultat :</strong> Musique fatigante, moins de détail, clipping audible.
+                        <strong>Solution :</strong> Les standards modernes (EBU R128, LUFS) imposent des limites de loudness
+                        pour restaurer la dynamique.
+                    </p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal Aide -->
+    <div id="help-modal" class="modal" role="dialog" aria-labelledby="help-modal-title" aria-modal="true">
+        <div class="modal-content">
+            <div class="flex justify-between items-center mb-4">
+                <h2 id="help-modal-title" class="text-2xl font-bold">❓ Guide d'Utilisation</h2>
+                <button id="close-help" class="text-3xl hover:opacity-70" aria-label="Fermer">&times;</button>
+            </div>
+
+            <div class="space-y-6 max-h-96 overflow-y-auto pr-2">
+                <div>
+                    <h3 class="text-xl font-bold mb-2 text-blue-400">🎯 Vue Générale</h3>
+                    <p class="text-sm mb-2">
+                        Cet outil vous permet de convertir entre trois domaines fondamentaux de l'audio : les niveaux acoustiques (dB SPL),
+                        les niveaux électriques (dBu, dBm, dBV) et les niveaux numériques (dBFS). Vous pouvez explorer comment
+                        les microphones, la chaîne audio analogique et la conversion numérique interagissent.
+                    </p>
+                </div>
+
+                <div>
+                    <h3 class="text-xl font-bold mb-2 text-cyan-400">🔘 Les Boutons du Header</h3>
+                    <div class="text-sm space-y-2">
+                        <p><strong>❓ Aide</strong> : Affiche ce guide (vous êtes ici !)</p>
+                        <p><strong>⚠️ Erreurs Courantes</strong> : Montre les erreurs typiques en audio et comment les éviter</p>
+                        <p><strong>📚 Historique & Contexte</strong> : Explique l'histoire des standards audio et pourquoi ils existent</p>
+                        <p><strong>🌙 Mode Clair/Sombre</strong> : Bascule le thème de l'interface</p>
+                        <p><strong>☕ Buy Me a Coffee</strong> : Soutenir Gabriel Fadavi qui a créé cet outil</p>
+                    </div>
+                </div>
+
+                <div>
+                    <h3 class="text-xl font-bold mb-2 text-yellow-400">📊 Les 4 Panneaux Principaux</h3>
+                    <div class="text-sm space-y-3">
+                        <div>
+                            <p><strong>⚙️ Cœur de Conversion (Jaune)</strong></p>
+                            <p class="text-xs">Où vous entrez les valeurs pour convertir entre dB SPL, dBu et dBFS.
+                            Déplacez les sliders ou entrez des nombres directement. Un panneau peut être "verrouillé"
+                            pour empêcher les mises à jour automatiques.</p>
+                        </div>
+                        <div>
+                            <p><strong>🎤 Domaine Acoustique (Bleu)</strong></p>
+                            <p class="text-xs">Configuration du microphone et des paramètres acoustiques :
+                            sélectionnez le modèle de microphone, le gain du préampli, la distance à la source,
+                            et le type de signal d'entrée (fréquence).</p>
+                        </div>
+                        <div>
+                            <p><strong>⚡ Domaine Électrique (Rose)</strong></p>
+                            <p class="text-xs">Paramètres de la chaîne analogique : impédance de la ligne (600 Ω par défaut),
+                            calibration (EBU, SMPTE, DIN, etc.), et plancher de bruit.</p>
+                        </div>
+                        <div>
+                            <p><strong>🔢 Domaine Numérique (Vert)</strong></p>
+                            <p class="text-xs">Paramètres de conversion numérique : profondeur de bits (16, 24 bits),
+                            profil LUFS (bruit blanc, sine, parole, musique), et courbe de pondération fréquentielle (A, B, C, Z).</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div>
+                    <h3 class="text-xl font-bold mb-2 text-purple-400">🔒 Système de Verrouillage</h3>
+                    <p class="text-sm mb-2">
+                        Chaque panneau (Acoustique, Électrique, Numérique) peut être "verrouillé" en cliquant sur le bouton 🔒.
+                    </p>
+                    <p class="text-sm mb-2">
+                        <strong>Quand un panneau est verrouillé :</strong> Ses valeurs restent fixes et ne sont pas mises à jour
+                        quand vous modifiez d'autres paramètres.
+                    </p>
+                    <p class="text-sm">
+                        <strong>Cas d'usage :</strong> Si vous voulez tester "Quel est le dBFS si j'ai 94 dB SPL avec ce microphone ?",
+                        vérifiez que le panneau électrique n'est PAS verrouillé, et verrouillez seulement le panneau dont vous
+                        voulez garder les valeurs fixes.
+                    </p>
+                </div>
+
+                <div>
+                    <h3 class="text-xl font-bold mb-2 text-green-400">🎵 Profils LUFS</h3>
+                    <p class="text-sm mb-2">
+                        Le LUFS (Loudness Units relative to Full Scale) est le standard moderne pour mesurer le niveau perçu.
+                        Sélectionnez un profil pour simuler différents types de contenu :
+                    </p>
+                    <div class="text-xs space-y-1">
+                        <p><strong>Générique :</strong> Contenu mixte standard</p>
+                        <p><strong>Bruit Blanc :</strong> Énergie uniforme sur toutes les fréquences</p>
+                        <p><strong>Sinusoïdale :</strong> Ton pur (1 kHz par défaut)</p>
+                        <p><strong>Parole :</strong> Voix humaine, dynamique moyenne</p>
+                        <p><strong>Musique :</strong> Contenu complexe, dynamique haute</p>
+                    </div>
+                </div>
+
+                <div>
+                    <h3 class="text-xl font-bold mb-2 text-pink-400">📈 Pondérations Fréquentiques</h3>
+                    <p class="text-sm mb-2">
+                        L'oreille humaine n'entend pas toutes les fréquences de la même manière. Les courbes de pondération
+                        simulent cette perception :
+                    </p>
+                    <div class="text-xs space-y-1">
+                        <p><strong>Z (Linéaire) :</strong> Pas d'atténuation, réponse plate</p>
+                        <p><strong>A :</strong> La plus courante, atténue beaucoup les basses (< 100 Hz)</p>
+                        <p><strong>B :</strong> Atténue modérément les basses, historique</p>
+                        <p><strong>C :</strong> Atténue peu, bon pour les basses fréquences</p>
+                    </div>
+                    <p class="text-sm mt-2">
+                        <strong>Sélecteur de Fréquence :</strong> Choisissez la fréquence d'entrée pour voir en temps réel
+                        comment l'atténuation de pondération change le niveau LUFS calculé.
+                    </p>
+                </div>
+
+                <div>
+                    <h3 class="text-xl font-bold mb-2 text-orange-400">🎚️ Sélecteur de Microphone</h3>
+                    <p class="text-sm mb-2">
+                        Sélectionnez parmi 10 modèles de microphones réalistes avec leurs sensibilités authentiques :
+                    </p>
+                    <div class="text-xs space-y-1">
+                        <p><strong>Dynamiques (16-18 mV/Pa) :</strong> SM58, SM57, SM7B - mains libres, moins sensibles</p>
+                        <p><strong>Électrostatiques (25-28 mV/Pa) :</strong> Neumann U87, AKG C414 - studio, très sensibles</p>
+                        <p><strong>Rubans (1.8-2.2 mV/Pa) :</strong> Royer R-121 - caractère vintage, très peu sensibles</p>
+                        <p><strong>Personnalisé :</strong> Entrez votre propre sensibilité</p>
+                    </div>
+                    <p class="text-sm mt-2">
+                        <strong>Plus haute sensibilité = moins de gain nécessaire.</strong> Les électrostatiques sont TRÈS sensibles
+                        et capturent plus de bruit de fond.
+                    </p>
+                </div>
+
+                <div>
+                    <h3 class="text-xl font-bold mb-2 text-indigo-400">⚡ Gain du Microphone</h3>
+                    <p class="text-sm">
+                        Simule le préampli ou l'interface audio. La plage -12 à +90 dB vous permet de tester même les microphones
+                        très peu sensibles (rubans). <strong>+18 dB ≈ multiplication par 8 du voltage.</strong>
+                    </p>
+                </div>
+
+                <div>
+                    <h3 class="text-xl font-bold mb-2 text-teal-400">💡 Conseils Pratiques</h3>
+                    <div class="text-xs space-y-1">
+                        <p>• Visez <strong>-18 dBFS</strong> en parlant normalement pour respecter les standards EBU</p>
+                        <p>• Les <strong>bandes magnétiques</strong> avaient ~18 dB de marge, d'où le standard</p>
+                        <p>• <strong>94 dB SPL</strong> est le niveau de référence = 1 Pascal de pression acoustique</p>
+                        <p>• L'<strong>impédance 600 Ω</strong> vient des lignes téléphoniques du XXe siècle</p>
+                        <p>• Consultez "📚 Historique & Contexte" pour en savoir plus</p>
+                    </div>
                 </div>
             </div>
         </div>
@@ -2095,6 +2352,9 @@
 
         document.getElementById('history-btn').addEventListener('click', () => openModal('history-modal'));
         document.getElementById('close-history').addEventListener('click', () => closeModal('history-modal'));
+
+        document.getElementById('help-btn').addEventListener('click', () => openModal('help-modal'));
+        document.getElementById('close-help').addEventListener('click', () => closeModal('help-modal'));
 
         document.getElementById('show-weighting-a').addEventListener('click', () => openModal('weighting-modal-a'));
         document.getElementById('close-weighting-a').addEventListener('click', () => closeModal('weighting-modal-a'));
