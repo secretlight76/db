@@ -730,24 +730,12 @@
                         </span>
                     </span>
                 </label>
-                <div class="space-y-2">
-                    <label class="inline-flex items-center">
-                        <input type="radio" name="weighting" value="Z" checked class="mr-2">
-                        dB(Z) - Linéaire
-                    </label>
-                    <label class="inline-flex items-center">
-                        <input type="radio" name="weighting" value="A" class="mr-2">
-                        dB(A) - Perception humaine
-                    </label>
-                    <label class="inline-flex items-center">
-                        <input type="radio" name="weighting" value="B" class="mr-2">
-                        dB(B) - Niveaux moyens
-                    </label>
-                    <label class="inline-flex items-center">
-                        <input type="radio" name="weighting" value="C" class="mr-2">
-                        dB(C) - Basses fréquences
-                    </label>
-                </div>
+                <select id="weighting" class="w-full px-3 py-2 panel-inner-bg rounded text-sm">
+                    <option value="Z" selected>dB(Z) - Linéaire</option>
+                    <option value="A">dB(A) - Perception humaine</option>
+                    <option value="B">dB(B) - Niveaux moyens</option>
+                    <option value="C">dB(C) - Basses fréquences</option>
+                </select>
 
                 <!-- Sélection de la fréquence d'entrée pour simuler l'effet -->
                 <div class="mt-4 mb-4">
@@ -2754,13 +2742,11 @@
         document.getElementById('lufs-profile').addEventListener('change', updateLufsProfile);
 
         // Pondération
-        document.querySelectorAll('input[name="weighting"]').forEach(radio => {
-            radio.addEventListener('change', (e) => {
-                state.weighting = e.target.value;
-                updateAttenuationDisplay();
-                updateLoudness(); // Recalculer LUFS avec la nouvelle pondération
-                updateDisplay(); // Mettre à jour le niveau pondéré affiché
-            });
+        document.getElementById('weighting').addEventListener('change', (e) => {
+            state.weighting = e.target.value;
+            updateAttenuationDisplay();
+            updateLoudness(); // Recalculer LUFS avec la nouvelle pondération
+            updateDisplay(); // Mettre à jour le niveau pondéré affiché
         });
 
         // Fréquence d'entrée
