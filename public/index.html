@@ -2745,21 +2745,18 @@
 
         // Sliders principaux - définissent automatiquement la source active
         document.getElementById('spl-slider').addEventListener('input', (e) => {
-            state.draggingSlider = 'spl';
             state.activeSource = 'acoustic';
             state.dbSPL = parseFloat(e.target.value);
             updateAllDomains();
         });
 
         document.getElementById('dbu-slider').addEventListener('input', (e) => {
-            state.draggingSlider = 'dbu';
             state.activeSource = 'electric';
             state.dBu = parseFloat(e.target.value);
             updateAllDomains();
         });
 
         document.getElementById('dbfs-slider').addEventListener('input', (e) => {
-            state.draggingSlider = 'dbfs';
             state.activeSource = 'digital';
             state.dBFS = parseFloat(e.target.value);
             updateAllDomains();
