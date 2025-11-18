@@ -470,226 +470,6 @@
                            class="vertical-slider" orient="vertical"
                            aria-label="Niveau dB SPL">
                 </div>
-
-        <!-- PANNEAU 3 : DOMAINE ÉLECTRIQUE -->
-        <div id="panel-electric" class="panel-bg rounded-lg p-6 border-2">
-            <h2 class="text-2xl font-bold mb-4 text-purple-400">
-                ⚡ Domaine Électrique
-                <span class="tooltip">
-                    <span class="text-sm">ℹ️</span>
-                    <span class="tooltiptext">
-                        Le domaine électrique représente la tension dans les câbles audio.
-                        dBu : référence 0.775V, dBV : référence 1V, dBm : puissance sur impédance.
-                    </span>
-                </span>
-            </h2>
-
-            <!-- Contrôle de verrouillage -->
-            <button id="lock-electric" class="w-full mb-4 px-4 py-2 panel-inner-bg hover:bg-purple-600 rounded transition">
-                🔓 Définir comme Source
-            </button>
-
-            <!-- Slider principal -->
-            <div class="mb-6">
-                <label class="block text-sm font-semibold mb-2">Niveau dBu</label>
-                <div class="flex justify-center items-center">
-                    <input type="range" id="dbu-slider" min="-60" max="24" value="4" step="0.1"
-                           class="vertical-slider" orient="vertical"
-                           aria-label="Niveau dBu">
-                </div>
-
-        <!-- PANNEAU 4 : DOMAINE NUMÉRIQUE -->
-        <div id="panel-digital" class="panel-bg rounded-lg p-6 border-2">
-            <h2 class="text-2xl font-bold mb-4 text-pink-400">
-                💻 Domaine Numérique
-                <span class="tooltip">
-                    <span class="text-sm">ℹ️</span>
-                    <span class="tooltiptext">
-                        Le domaine numérique représente les échantillons dans l'ordinateur.
-                        dBFS = dB Full Scale. 0 dBFS = niveau maximum (digital clip).
-                    </span>
-                </span>
-            </h2>
-
-            <!-- Contrôle de verrouillage -->
-            <button id="lock-digital" class="w-full mb-4 px-4 py-2 panel-inner-bg hover:bg-pink-600 rounded transition">
-                🔓 Définir comme Source
-            </button>
-
-            <!-- Slider principal -->
-            <div class="mb-6">
-                <label class="block text-sm font-semibold mb-2">Niveau dBFS</label>
-                <div class="flex justify-center items-center">
-                    <input type="range" id="dbfs-slider" min="-96" max="0" value="-18" step="0.1"
-                           class="vertical-slider" orient="vertical"
-                           aria-label="Niveau dBFS">
-                </div>
-                </div>
-
-                <!-- Sensibilité du microphone -->
-                <div class="mb-4">
-                    <label class="block text-sm font-semibold mb-2">
-                        Sensibilité du Microphone
-                        <span class="tooltip">
-                            <span class="text-sm">ℹ️</span>
-                            <span class="tooltiptext">
-                                La sensibilité indique la tension produite par le micro pour une pression donnée.<br>
-                                Convention : donnée en mV/Pa ou en dBu @ 94 dB SPL (car 94 dB SPL = 1 Pascal).<br>
-                                Exemple : 22 mV/Pa = -37 dBu @ 94 dB SPL
-                            </span>
-                        </span>
-                    </label>
-                    <input type="range" id="mic-sensitivity" min="0.5" max="100" value="22" step="0.1"
-                           class="w-full" aria-label="Sensibilité du microphone">
-                    <div class="flex justify-between text-xs mt-1">
-                        <span><span id="mic-sensitivity-value">22.0</span> mV/Pa</span>
-                        <span><span id="mic-sensitivity-dbu">-37.0</span> dBu @ 94 dB SPL</span>
-                    </div>
-                </div>
-
-                <!-- Gain du microphone -->
-                <div class="mb-4">
-                    <label class="block text-sm font-semibold mb-2">
-                        Gain du Microphone (Préampli)
-                        <span class="tooltip">
-                            <span class="text-sm">ℹ️</span>
-                            <span class="tooltiptext">
-                                Gain appliqué au microphone (préampli/ampli d'entrée).<br>
-                                Plage : -12 dB à +90 dB. Permet d'amplifier des micros faibles.<br>
-                                Voir l'effet direct sur dBu et dBFS.
-                            </span>
-                        </span>
-                    </label>
-                    <input type="range" id="mic-gain" min="-12" max="90" value="0" step="0.1"
-                           class="w-full" aria-label="Gain du microphone">
-                    <div class="flex justify-between text-xs mt-1">
-                        <span>Gain : <span id="mic-gain-value">0.0</span> dB</span>
-                    </div>
-                </div>
-
-                <!-- Distance (Loi inverse du carré) -->
-                <div class="mb-4">
-                    <label class="block text-sm font-semibold mb-2">
-                        Distance de la source
-                        <span class="tooltip">
-                            <span class="text-sm">ℹ️</span>
-                            <span class="tooltiptext">
-                                Loi de l'inverse du carré : le niveau sonore diminue de 6 dB à chaque doublement de distance.<br>
-                                Distance x2 → -6 dB, Distance x4 → -12 dB
-                            </span>
-                        </span>
-                    </label>
-                    <input type="range" id="distance" min="0.5" max="16" value="1" step="0.5"
-                           class="w-full" aria-label="Distance de la source">
-                    <div class="flex justify-between text-xs mt-1">
-                        <span><span id="distance-value">1.0</span> m</span>
-                        <span>Perte : <span id="distance-loss">0.0</span> dB</span>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Interface 2 : Électrique <-> Numérique -->
-            <div class="mb-6 pb-6 border-b" style="border-color: var(--border-color)">
-                <h3 class="text-lg font-bold mb-3 text-purple-300">Interface 2 : Électrique ↔ Numérique</h3>
-
-                <!-- Niveau d'étalonnage -->
-                <div class="mb-4">
-                    <label class="block text-sm font-semibold mb-2">
-                        Niveau d'Étalonnage (Calibration)
-                        <span class="tooltip">
-                            <span class="text-sm">ℹ️</span>
-                            <span class="tooltiptext">
-                                L'étalonnage définit le "pont" entre le monde analogique et numérique.<br>
-                                Il indique quel niveau électrique (dBu) correspond à quel niveau numérique (dBFS).
-                            </span>
-                        </span>
-                    </label>
-                    <select id="calibration" class="w-full px-3 py-2 panel-inner-bg rounded" aria-label="Calibration">
-                        <optgroup label="Standards Européens">
-                            <option value="ebu" selected>EBU (Europe) : +4 dBu = -18 dBFS</option>
-                            <option value="bbc">BBC (UK) : +4 dBu = -18 dBFS</option>
-                            <option value="france">France Télévisions : +6 dBu = -18 dBFS</option>
-                        </optgroup>
-                        <optgroup label="Standards Nord-Américains">
-                            <option value="smpte">SMPTE (USA) : +4 dBu = -20 dBFS</option>
-                            <option value="atsc">ATSC (USA TV) : +4 dBu = -20 dBFS</option>
-                        </optgroup>
-                        <optgroup label="Standards Allemands">
-                            <option value="din">DIN (Allemagne) : +6 dBu = -15 dBFS</option>
-                            <option value="ard">ARD/ZDF : +6 dBu = -9 dBFS</option>
-                        </optgroup>
-                        <optgroup label="Standards Japonais">
-                            <option value="arib">ARIB (Japon) : +4 dBu = -18 dBFS</option>
-                        </optgroup>
-                        <optgroup label="Standards Nordiques">
-                            <option value="nordic">Nordic : +6 dBu = -18 dBFS</option>
-                        </optgroup>
-                        <optgroup label="Grand Public">
-                            <option value="consumer">Consommateur : -10 dBV = -12 dBFS</option>
-                        </optgroup>
-                    </select>
-                    <div class="text-xs mt-2" style="color: var(--text-secondary)" id="calibration-info">
-                        Référence analogique : +4 dBu, Référence numérique : -18 dBFS
-                    </div>
-                </div>
-            </div>
-
-            <!-- Interface 3 : Impédance -->
-            <div class="mb-6">
-                <h3 class="text-lg font-bold mb-3 text-yellow-300">Interface 3 : Impédance</h3>
-
-                <!-- Impédance de référence -->
-                <div class="mb-4">
-                    <label class="block text-sm font-semibold mb-2">
-                        Impédance de Référence (Z)
-                        <span class="tooltip">
-                            <span class="text-sm">ℹ️</span>
-                            <span class="tooltiptext">
-                                L'impédance est nécessaire pour calculer la puissance (P = V²/Z).<br>
-                                600 Ω est la référence historique en audio professionnel.<br>
-                                dBm = puissance en dB par rapport à 1 milliwatt.
-                            </span>
-                        </span>
-                    </label>
-                    <input type="number" id="impedance" min="1" max="10000" value="600"
-                           class="w-full px-3 py-2 panel-inner-bg rounded"
-                           aria-label="Impédance de référence">
-                    <div class="text-xs mt-1" style="color: var(--text-secondary)">Ohms (Ω)</div>
-                </div>
-            </div>
-
-            <!-- Info sur la source active -->
-            <div class="bg-blue-900 bg-opacity-30 rounded p-3 text-sm">
-                <div class="font-semibold mb-1">Source active :</div>
-                <div id="active-source" class="text-blue-300">Aucune (verrouiller un panneau)</div>
-            </div>
-        </div>
-        <!-- PANNEAU 2 : DOMAINE ACOUSTIQUE -->
-        <div id="panel-acoustic" class="panel-bg rounded-lg p-6 border-2">
-            <h2 class="text-2xl font-bold mb-4 text-blue-400">
-                🔊 Domaine Acoustique
-                <span class="tooltip">
-                    <span class="text-sm">ℹ️</span>
-                    <span class="tooltiptext">
-                        Le domaine acoustique représente la pression sonore dans l'air, mesurée en dB SPL (Sound Pressure Level).
-                        0 dB SPL = seuil d'audition, 94 dB SPL = 1 Pascal, 140 dB SPL = seuil de douleur.
-                    </span>
-                </span>
-            </h2>
-
-            <!-- Contrôle de verrouillage -->
-            <button id="lock-acoustic" class="w-full mb-4 px-4 py-2 panel-inner-bg hover:bg-blue-600 rounded transition">
-                🔓 Définir comme Source
-            </button>
-
-            <!-- Slider principal -->
-            <div class="mb-6">
-                <label class="block text-sm font-semibold mb-2">Niveau dB SPL</label>
-                <div class="flex justify-center items-center">
-                    <input type="range" id="spl-slider" min="0" max="140" value="94" step="0.1"
-                           class="vertical-slider" orient="vertical"
-                           aria-label="Niveau dB SPL">
-                </div>
                 <div class="text-center text-2xl font-bold mt-2">
                     <span id="spl-value">94.0</span> dB SPL
                 </div>
@@ -701,6 +481,9 @@
                 <div class="space-y-2">
                     <button onclick="setPreset('spl', 0)" class="w-full px-3 py-2 panel-inner-bg hover:opacity-80 rounded text-xs">
                         🔇 Seuil d'audition (0 dB)
+                    </button>
+                    <button onclick="setPreset('spl', 94)" class="w-full px-3 py-2 bg-blue-600 hover:bg-blue-500 rounded text-xs font-bold">
+                        📏 Référence Standard (94 dB SPL = 1 Pascal)
                     </button>
                     <button onclick="setPreset('spl', 30)" class="w-full px-3 py-2 panel-inner-bg hover:opacity-80 rounded text-xs">
                         🤫 Chuchotement (30 dB)
@@ -884,6 +667,25 @@
                 </div>
             </div>
 
+            <!-- Presets de Niveaux -->
+            <div class="mb-6">
+                <label class="block text-sm font-semibold mb-2">Presets de Niveaux</label>
+                <div class="space-y-2">
+                    <button onclick="setPreset('dbu', 0)" class="w-full px-3 py-2 bg-purple-600 hover:bg-purple-500 rounded text-xs font-bold">
+                        📏 Référence 0 dBu (0.775V)
+                    </button>
+                    <button onclick="setPreset('dbu', 4)" class="w-full px-3 py-2 panel-inner-bg hover:opacity-80 rounded text-xs">
+                        🎙️ Ligne Pro (+4 dBu)
+                    </button>
+                    <button onclick="setPreset('dbu', -10)" class="w-full px-3 py-2 panel-inner-bg hover:opacity-80 rounded text-xs">
+                        🏠 Ligne Consommateur (-10 dBV ≈ -7.8 dBu)
+                    </button>
+                    <button onclick="setPreset('dbu', 24)" class="w-full px-3 py-2 panel-inner-bg hover:opacity-80 rounded text-xs">
+                        ⚠️ Maximum (+24 dBu)
+                    </button>
+                </div>
+            </div>
+
             <!-- Calculs affichés -->
             <div class="panel-inner-bg rounded p-4 space-y-2 text-sm">
                 <div class="flex justify-between">
@@ -971,6 +773,28 @@
                     <div class="headroom-bar">
                         <div class="headroom-marker" id="headroom-marker"></div>
                     </div>
+                </div>
+            </div>
+
+            <!-- Presets de Niveaux -->
+            <div class="mb-6">
+                <label class="block text-sm font-semibold mb-2">Presets de Niveaux</label>
+                <div class="space-y-2">
+                    <button onclick="setPreset('dbfs', 0)" class="w-full px-3 py-2 panel-inner-bg hover:opacity-80 rounded text-xs">
+                        ⚠️ Maximum (0 dBFS - Clip!)
+                    </button>
+                    <button onclick="setPreset('dbfs', -9)" class="w-full px-3 py-2 bg-pink-600 hover:bg-pink-500 rounded text-xs font-bold">
+                        📏 Standard Broadcast (-9 dBFS)
+                    </button>
+                    <button onclick="setPreset('dbfs', -18)" class="w-full px-3 py-2 bg-pink-600 hover:bg-pink-500 rounded text-xs font-bold">
+                        📏 Standard Studio (-18 dBFS / EBU)
+                    </button>
+                    <button onclick="setPreset('dbfs', -20)" class="w-full px-3 py-2 panel-inner-bg hover:opacity-80 rounded text-xs">
+                        🇺🇸 Standard USA (-20 dBFS / SMPTE)
+                    </button>
+                    <button onclick="setPreset('dbfs', -23)" class="w-full px-3 py-2 panel-inner-bg hover:opacity-80 rounded text-xs">
+                        📺 LUFS Target (-23 LUFS ≈ -23 dBFS)
+                    </button>
                 </div>
             </div>
 
@@ -1581,6 +1405,9 @@
             // Source active : 'acoustic', 'electric', ou 'digital'
             activeSource: null,
 
+            // Slider actuellement en cours de déplacement
+            draggingSlider: null,
+
             // Valeurs actuelles
             dbSPL: 94,
             dBu: 4,
@@ -1953,7 +1780,9 @@
         function updateDisplay() {
             // Panneau Acoustique
             document.getElementById('spl-value').textContent = state.dbSPL.toFixed(1);
-            document.getElementById('spl-slider').value = state.dbSPL;
+            if (state.draggingSlider !== 'spl') {
+                document.getElementById('spl-slider').value = state.dbSPL;
+            }
             const pressure = splToPressure(state.dbSPL);
             document.getElementById('pressure-value').textContent = pressure.toFixed(3);
 
@@ -1969,7 +1798,9 @@
             const dBW = powerTodBW(power);
 
             document.getElementById('dbu-value').textContent = state.dBu >= 0 ? `+${state.dBu.toFixed(1)}` : state.dBu.toFixed(1);
-            document.getElementById('dbu-slider').value = state.dBu;
+            if (state.draggingSlider !== 'dbu') {
+                document.getElementById('dbu-slider').value = state.dBu;
+            }
             document.getElementById('voltage-value').textContent = voltage.toFixed(3);
             document.getElementById('dbu-display').textContent = state.dBu >= 0 ? `+${state.dBu.toFixed(1)}` : state.dBu.toFixed(1);
             document.getElementById('dbv-display').textContent = dBV >= 0 ? `+${dBV.toFixed(1)}` : dBV.toFixed(1);
@@ -1988,7 +1819,9 @@
 
             // Panneau Numérique
             document.getElementById('dbfs-value').textContent = state.dBFS.toFixed(1);
-            document.getElementById('dbfs-slider').value = state.dBFS;
+            if (state.draggingSlider !== 'dbfs') {
+                document.getElementById('dbfs-slider').value = state.dBFS;
+            }
             document.getElementById('peak-value').textContent = state.dBFS.toFixed(1);
 
             // Indicateur de clip
@@ -2274,6 +2107,25 @@
                     document.getElementById('spl-value').textContent = state.dbSPL.toFixed(1);
                     document.getElementById('spl-slider').value = state.dbSPL;
                 }
+            } else if (domain === 'dbu') {
+                state.dBu = value;
+
+                if (state.activeSource === 'electric') {
+                    updateAllDomains();
+                } else {
+                    document.getElementById('dbu-value').textContent = state.dBu >= 0 ? `+${state.dBu.toFixed(1)}` : state.dBu.toFixed(1);
+                    document.getElementById('dbu-slider').value = state.dBu;
+                }
+            } else if (domain === 'dbfs') {
+                state.dBFS = value;
+
+                if (state.activeSource === 'digital') {
+                    updateAllDomains();
+                } else {
+                    document.getElementById('dbfs-value').textContent = state.dBFS.toFixed(1);
+                    document.getElementById('dbfs-slider').value = state.dBFS;
+                    updateLoudness();
+                }
             }
         }
 
@@ -2429,6 +2281,37 @@
                 document.getElementById('dbfs-value').textContent = state.dBFS.toFixed(1);
                 updateLoudness(); // Mettre à jour LUFS quand dBFS change
             }
+        });
+
+        // Suivre le début et la fin du glissement pour éviter le flickering
+        document.getElementById('spl-slider').addEventListener('pointerdown', () => {
+            state.draggingSlider = 'spl';
+        });
+        document.getElementById('spl-slider').addEventListener('pointerup', () => {
+            state.draggingSlider = null;
+        });
+        document.getElementById('spl-slider').addEventListener('pointercancel', () => {
+            state.draggingSlider = null;
+        });
+
+        document.getElementById('dbu-slider').addEventListener('pointerdown', () => {
+            state.draggingSlider = 'dbu';
+        });
+        document.getElementById('dbu-slider').addEventListener('pointerup', () => {
+            state.draggingSlider = null;
+        });
+        document.getElementById('dbu-slider').addEventListener('pointercancel', () => {
+            state.draggingSlider = null;
+        });
+
+        document.getElementById('dbfs-slider').addEventListener('pointerdown', () => {
+            state.draggingSlider = 'dbfs';
+        });
+        document.getElementById('dbfs-slider').addEventListener('pointerup', () => {
+            state.draggingSlider = null;
+        });
+        document.getElementById('dbfs-slider').addEventListener('pointercancel', () => {
+            state.draggingSlider = null;
         });
 
         // Paramètres de conversion
