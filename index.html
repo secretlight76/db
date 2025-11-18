@@ -271,25 +271,31 @@
             padding: 1rem;
         }
 
-        /* Force 4-column grid layout */
+        /* Force 4-column grid layout - override Tailwind */
         .grid {
-            display: grid;
-            grid-template-columns: repeat(4, minmax(0, 1fr));
-            gap: 1.5rem;
-            max-width: 80rem;
-            margin-left: auto;
-            margin-right: auto;
+            display: grid !important;
+            grid-template-columns: repeat(4, minmax(0, 1fr)) !important;
+            gap: 1.5rem !important;
+            max-width: 80rem !important;
+            margin-left: auto !important;
+            margin-right: auto !important;
         }
 
         /* Responsive: 1 column on mobile, 2 on tablet, 4 on desktop */
         @media (max-width: 640px) {
             .grid {
-                grid-template-columns: 1fr;
+                grid-template-columns: 1fr !important;
             }
         }
         @media (min-width: 641px) and (max-width: 1023px) {
             .grid {
-                grid-template-columns: repeat(2, 1fr);
+                grid-template-columns: repeat(2, 1fr) !important;
+            }
+        }
+
+        @media (min-width: 1024px) {
+            .grid {
+                grid-template-columns: repeat(4, minmax(0, 1fr)) !important;
             }
         }
 
@@ -388,7 +394,7 @@
     <div class="signal-flow mb-8"></div>
 
     <!-- Conteneur principal avec 4 panneaux -->
-    <div class="grid grid-cols-1 lg:grid-cols-4 gap-6 max-w-7xl mx-auto">
+    <div class="grid">
 
         <!-- PANNEAU 1 : CŒUR DE CONVERSION (RÉGLAGES) -->
         <div class="panel-bg rounded-lg p-6 border-2 border-yellow-600">
