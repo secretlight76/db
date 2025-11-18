@@ -749,21 +749,21 @@
                         </span>
                     </label>
                     <select id="microphone-selector" class="w-full px-3 py-2 panel-inner-bg rounded" aria-label="Sélection du microphone">
-                        <optgroup label="Microphones Dynamiques">
-                            <option value="sm58">Shure SM58 - Vocal live (16 mV/Pa)</option>
-                            <option value="sm57">Shure SM57 - Instrument (16 mV/Pa)</option>
-                            <option value="sm7b">Shure SM7B - Studio premium (11 mV/Pa)</option>
-                            <option value="shure_ksm8">Shure KSM8 - Dynamique premium (18 mV/Pa)</option>
+                        <optgroup label="Microphones Dynamiques (16 mV/Pa max)">
+                            <option value="sm58">SM58 - Vocal live (16 mV/Pa)</option>
+                            <option value="sm57">SM57 - Instrument (16 mV/Pa)</option>
+                            <option value="sm7b">SM7B - Studio premium (11 mV/Pa)</option>
+                            <option value="shure_ksm8">KSM8 - Dynamique premium (18 mV/Pa)</option>
                         </optgroup>
-                        <optgroup label="Électrostatiques / Condensateurs">
-                            <option value="neumann_u87">Neumann U87 - Référence studio (12 mV/Pa)</option>
-                            <option value="akg_c414">AKG C414 - Polyvalent (14 mV/Pa)</option>
-                            <option value="rode_nt1">RODE NT1 - Bon rapport signal/bruit (20 mV/Pa)</option>
+                        <optgroup label="Électrostatiques (25+ mV/Pa - TRÈS sensibles!)">
+                            <option value="neumann_u87">Neumann U87 - Référence studio (26 mV/Pa)</option>
+                            <option value="akg_c414">AKG C414 - Polyvalent (28 mV/Pa) ⭐</option>
+                            <option value="rode_nt1">RODE NT1 - Budget (25 mV/Pa)</option>
                         </optgroup>
-                        <optgroup label="Microphones Ruban">
-                            <option value="royer_r121">Royer R-121 - Professionnel (1.5 mV/Pa)</option>
-                            <option value="coles_4038">Coles 4038 - Vintage (1.5 mV/Pa)</option>
-                            <option value="ribbonmike_sf24">Shure SF-24 - Ruban pro (2.0 mV/Pa)</option>
+                        <optgroup label="Ruban (2 mV/Pa max - peu sensibles)">
+                            <option value="royer_r121">Royer R-121 - Professionnel (2.0 mV/Pa)</option>
+                            <option value="coles_4038">Coles 4038 - Vintage (1.8 mV/Pa)</option>
+                            <option value="ribbonmike_sf24">SF-24 - Ruban pro (2.2 mV/Pa)</option>
                         </optgroup>
                         <optgroup label="Autre">
                             <option value="custom" selected>Personnalisé (réglable)</option>
@@ -1275,23 +1275,24 @@
             PRESSURE_1_PA: 1.0
         };
 
-        // Microphones courants avec leurs sensibilités
+        // Microphones courants avec leurs sensibilités (en mV/Pa)
+        // Les électrostatiques sont beaucoup plus sensibles que les dynamiques!
         const MICROPHONES = {
-            // Dynamiques
-            'sm58': { name: 'Shure SM58 (Dynamique)', sensitivity: 16, type: 'Dynamique', description: 'Microphone vocal standard en live' },
-            'sm57': { name: 'Shure SM57 (Dynamique)', sensitivity: 16, type: 'Dynamique', description: 'Instrument, guitare amplifiée' },
-            'sm7b': { name: 'Shure SM7B (Dynamique)', sensitivity: 11, type: 'Dynamique', description: 'Studio, voix, haut de gamme' },
-            'shure_ksm8': { name: 'Shure KSM8 (Dynamique)', sensitivity: 18, type: 'Dynamique', description: 'Condensateur dynamique premium' },
+            // Dynamiques (moins sensibles, nécessitent plus de gain)
+            'sm58': { name: 'Shure SM58 (Dynamique)', sensitivity: 16, type: 'Dynamique', description: 'Vocal live standard' },
+            'sm57': { name: 'Shure SM57 (Dynamique)', sensitivity: 16, type: 'Dynamique', description: 'Instrument, guitare' },
+            'sm7b': { name: 'Shure SM7B (Dynamique)', sensitivity: 11, type: 'Dynamique', description: 'Studio, voix premium' },
+            'shure_ksm8': { name: 'Shure KSM8 (Dynamique)', sensitivity: 18, type: 'Dynamique', description: 'Dynamique premium' },
 
-            // Électrostatiques/Condensateurs
-            'neumann_u87': { name: 'Neumann U87 (Électrostatique)', sensitivity: 12, type: 'Électrostatique', description: 'Référence studio, microphone vocal' },
-            'akg_c414': { name: 'AKG C414 (Électrostatique)', sensitivity: 14, type: 'Électrostatique', description: 'Studio, très polyvalent' },
-            'rode_nt1': { name: 'RODE NT1 (Électrostatique)', sensitivity: 20, type: 'Électrostatique', description: 'Rapport signal/bruit excellent' },
+            // Électrostatiques/Condensateurs (TRÈS sensibles, beaucoup moins de gain nécessaire)
+            'neumann_u87': { name: 'Neumann U87 (Électrostatique)', sensitivity: 26, type: 'Électrostatique', description: 'Référence studio, très sensible' },
+            'akg_c414': { name: 'AKG C414 (Électrostatique)', sensitivity: 28, type: 'Électrostatique', description: 'Polyvalent, très sensible' },
+            'rode_nt1': { name: 'RODE NT1 (Électrostatique)', sensitivity: 25, type: 'Électrostatique', description: 'Budget, très sensible' },
 
-            // Ruban
-            'royer_r121': { name: 'Royer R-121 (Ruban)', sensitivity: 1.5, type: 'Ruban', description: 'Son chaleureux, très sensible' },
-            'coles_4038': { name: 'Coles 4038 (Ruban)', sensitivity: 1.5, type: 'Ruban', description: 'Microphone ruban vintage classique' },
-            'ribbonmike_sf24': { name: 'Shure SF-24 (Ruban)', sensitivity: 2.0, type: 'Ruban', description: 'Ruban professionnel' },
+            // Ruban (peu sensibles, beaucoup de gain nécessaire)
+            'royer_r121': { name: 'Royer R-121 (Ruban)', sensitivity: 2.0, type: 'Ruban', description: 'Professionnel, chaleureux' },
+            'coles_4038': { name: 'Coles 4038 (Ruban)', sensitivity: 1.8, type: 'Ruban', description: 'Vintage, caractère' },
+            'ribbonmike_sf24': { name: 'Shure SF-24 (Ruban)', sensitivity: 2.2, type: 'Ruban', description: 'Ruban pro' },
 
             // Personnalisé
             'custom': { name: 'Personnalisé', sensitivity: 22, type: 'Personnalisé', description: 'Réglable manuellement' }
