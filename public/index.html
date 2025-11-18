@@ -387,9 +387,6 @@
         </p>
     </header>
 
-    <!-- Alertes de validation temps réel -->
-    <div id="validation-alerts" class="max-w-7xl mx-auto mb-4"></div>
-
     <!-- Flux du signal visuel -->
     <div class="signal-flow mb-8"></div>
 
@@ -445,144 +442,68 @@
                     </div>
                 </div>
 
-                <!-- Sensibilité du microphone -->
+                <!-- Sélection du préampli célèbre -->
                 <div class="mb-4">
                     <label class="block text-sm font-semibold mb-2">
-                        Sensibilité du Microphone
+                        Préampli Microphone (Modèles Célèbres)
                         <span class="tooltip">
                             <span class="text-sm">ℹ️</span>
                             <span class="tooltiptext">
-                                La sensibilité indique la tension produite par le micro pour une pression donnée.<br>
-                                Convention : donnée en mV/Pa ou en dBu @ 94 dB SPL (car 94 dB SPL = 1 Pascal).<br>
-                                Exemple : 22 mV/Pa = -37 dBu @ 94 dB SPL
+                                Le préampli amplifie le signal du microphone mais ajoute aussi du bruit.<br>
+                                EIN (Equivalent Input Noise) : niveau de bruit ramené à l'entrée.<br>
+                                SNR (Signal-to-Noise Ratio) : rapport signal/bruit.<br>
+                                Plus le SNR est élevé, meilleure est la qualité.
                             </span>
                         </span>
                     </label>
-                    <input type="range" id="mic-sensitivity" min="0.5" max="100" value="22" step="0.1"
-                           class="w-full" aria-label="Sensibilité du microphone">
-                    <div class="flex justify-between text-xs mt-1">
-                        <span><span id="mic-sensitivity-value">22.0</span> mV/Pa</span>
-                        <span><span id="mic-sensitivity-dbu">-37.0</span> dBu @ 94 dB SPL</span>
-                    </div>
-                </div>
-
-                <!-- Gain du microphone -->
-                <div class="mb-4">
-                    <label class="block text-sm font-semibold mb-2">
-                        Gain du Microphone (Préampli)
-                        <span class="tooltip">
-                            <span class="text-sm">ℹ️</span>
-                            <span class="tooltiptext">
-                                Gain appliqué au microphone (préampli/ampli d'entrée).<br>
-                                Plage : -12 dB à +90 dB. Permet d'amplifier des micros faibles.<br>
-                                Voir l'effet direct sur dBu et dBFS.
-                            </span>
-                        </span>
-                    </label>
-                    <input type="range" id="mic-gain" min="-12" max="90" value="0" step="0.1"
-                           class="w-full" aria-label="Gain du microphone">
-                    <div class="flex justify-between text-xs mt-1">
-                        <span>Gain : <span id="mic-gain-value">0.0</span> dB</span>
-                    </div>
-                </div>
-
-                <!-- Distance (Loi inverse du carré) -->
-                <div class="mb-4">
-                    <label class="block text-sm font-semibold mb-2">
-                        Distance de la source
-                        <span class="tooltip">
-                            <span class="text-sm">ℹ️</span>
-                            <span class="tooltiptext">
-                                Loi de l'inverse du carré : le niveau sonore diminue de 6 dB à chaque doublement de distance.<br>
-                                Distance x2 → -6 dB, Distance x4 → -12 dB
-                            </span>
-                        </span>
-                    </label>
-                    <input type="range" id="distance" min="0.5" max="16" value="1" step="0.5"
-                           class="w-full" aria-label="Distance de la source">
-                    <div class="flex justify-between text-xs mt-1">
-                        <span><span id="distance-value">1.0</span> m</span>
-                        <span>Perte : <span id="distance-loss">0.0</span> dB</span>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Interface 2 : Électrique <-> Numérique -->
-            <div class="mb-6 pb-6 border-b" style="border-color: var(--border-color)">
-                <h3 class="text-lg font-bold mb-3 text-purple-300">Interface 2 : Électrique ↔ Numérique</h3>
-
-                <!-- Niveau d'étalonnage -->
-                <div class="mb-4">
-                    <label class="block text-sm font-semibold mb-2">
-                        Niveau d'Étalonnage (Calibration)
-                        <span class="tooltip">
-                            <span class="text-sm">ℹ️</span>
-                            <span class="tooltiptext">
-                                L'étalonnage définit le "pont" entre le monde analogique et numérique.<br>
-                                Il indique quel niveau électrique (dBu) correspond à quel niveau numérique (dBFS).
-                            </span>
-                        </span>
-                    </label>
-                    <select id="calibration" class="w-full px-3 py-2 panel-inner-bg rounded" aria-label="Calibration">
-                        <optgroup label="Standards Européens">
-                            <option value="ebu" selected>EBU (Europe) : +4 dBu = -18 dBFS</option>
-                            <option value="bbc">BBC (UK) : +4 dBu = -18 dBFS</option>
-                            <option value="france">France Télévisions : +6 dBu = -18 dBFS</option>
+                    <select id="preamp-selector" class="w-full px-3 py-2 panel-inner-bg rounded" aria-label="Sélection du préampli">
+                        <optgroup label="🏆 Préamplis Premium (EIN < -128 dBu)">
+                            <option value="millennia">Millennia HV-3D (-131 dBu EIN) 🌟</option>
+                            <option value="grace">Grace m101 (-130 dBu EIN)</option>
+                            <option value="api">API 512c (-129 dBu EIN)</option>
                         </optgroup>
-                        <optgroup label="Standards Nord-Américains">
-                            <option value="smpte">SMPTE (USA) : +4 dBu = -20 dBFS</option>
-                            <option value="atsc">ATSC (USA TV) : +4 dBu = -20 dBFS</option>
+                        <optgroup label="⭐ Préamplis Professionnels (EIN -125 à -128 dBu)">
+                            <option value="neve" selected>Neve 1073 (-128 dBu EIN)</option>
+                            <option value="ssl">SSL VHD (-128 dBu EIN)</option>
+                            <option value="focusrite">Focusrite ISA (-128 dBu EIN)</option>
+                            <option value="universal">Universal Audio 610 (-127 dBu EIN)</option>
+                            <option value="rupert_neve">Rupert Neve Designs RNHP (-127 dBu EIN)</option>
                         </optgroup>
-                        <optgroup label="Standards Allemands">
-                            <option value="din">DIN (Allemagne) : +6 dBu = -15 dBFS</option>
-                            <option value="ard">ARD/ZDF : +6 dBu = -9 dBFS</option>
+                        <optgroup label="✓ Préamplis Standard (EIN -120 à -125 dBu)">
+                            <option value="focusrite_scarlett">Focusrite Scarlett 2i2 (-125 dBu EIN)</option>
+                            <option value="motu">MOTU UltraLite (-124 dBu EIN)</option>
+                            <option value="presonus">PreSonus AudioBox (-123 dBu EIN)</option>
+                            <option value="steinberg">Steinberg UR22 (-122 dBu EIN)</option>
+                            <option value="behringer">Behringer UMC (-120 dBu EIN)</option>
                         </optgroup>
-                        <optgroup label="Standards Japonais">
-                            <option value="arib">ARIB (Japon) : +4 dBu = -18 dBFS</option>
+                        <optgroup label="⚠️ Préamplis Entrée de Gamme (EIN -110 à -120 dBu)">
+                            <option value="zoom_h6">Zoom H6 (-118 dBu EIN)</option>
+                            <option value="tascam_dr40">Tascam DR-40 (-116 dBu EIN)</option>
+                            <option value="zoom_h4n">Zoom H4n (-115 dBu EIN)</option>
+                            <option value="behringer_um2">Behringer UM2 (-112 dBu EIN)</option>
                         </optgroup>
-                        <optgroup label="Standards Nordiques">
-                            <option value="nordic">Nordic : +6 dBu = -18 dBFS</option>
+                        <optgroup label="❌ Préamplis Bas de Gamme (EIN > -110 dBu)">
+                            <option value="usb_basic">Interface USB Basique (-108 dBu EIN)</option>
+                            <option value="laptop_builtin">Carte son intégrée PC (-105 dBu EIN)</option>
+                            <option value="old_soundcard">Ancienne carte son (-100 dBu EIN)</option>
                         </optgroup>
-                        <optgroup label="Grand Public">
-                            <option value="consumer">Consommateur : -10 dBV = -12 dBFS</option>
+                        <optgroup label="⚙️ Personnalisé">
+                            <option value="custom">Personnalisé (réglable)</option>
                         </optgroup>
                     </select>
-                    <div class="text-xs mt-2" style="color: var(--text-secondary)" id="calibration-info">
-                        Référence analogique : +4 dBu, Référence numérique : -18 dBFS
+                    <div class="text-xs mt-2" style="color: var(--text-secondary)">
+                        EIN : <span id="preamp-ein" class="font-bold">-128.0</span> dBu
+                    </div>
+                    <div class="text-xs mt-1" style="color: var(--text-secondary)">
+                        Bruit de fond : <span id="noise-floor-calculated" class="font-bold">40.0</span> dB SPL
+                    </div>
+                    <div class="text-xs mt-1 font-semibold" style="color: #4ade80">
+                        SNR (Signal/Bruit) : <span id="snr-value" class="font-bold">54.0</span> dB
                     </div>
                 </div>
             </div>
-
-            <!-- Interface 3 : Impédance -->
-            <div class="mb-6">
-                <h3 class="text-lg font-bold mb-3 text-yellow-300">Interface 3 : Impédance</h3>
-
-                <!-- Impédance de référence -->
-                <div class="mb-4">
-                    <label class="block text-sm font-semibold mb-2">
-                        Impédance de Référence (Z)
-                        <span class="tooltip">
-                            <span class="text-sm">ℹ️</span>
-                            <span class="tooltiptext">
-                                L'impédance est nécessaire pour calculer la puissance (P = V²/Z).<br>
-                                600 Ω est la référence historique en audio professionnel.<br>
-                                dBm = puissance en dB par rapport à 1 milliwatt.
-                            </span>
-                        </span>
-                    </label>
-                    <input type="number" id="impedance" min="1" max="10000" value="600"
-                           class="w-full px-3 py-2 panel-inner-bg rounded"
-                           aria-label="Impédance de référence">
-                    <div class="text-xs mt-1" style="color: var(--text-secondary)">Ohms (Ω)</div>
-                </div>
-            </div>
-
-            <!-- Info sur la source active -->
-            <div class="bg-blue-900 bg-opacity-30 rounded p-3 text-sm">
-                <div class="font-semibold mb-1">Source active :</div>
-                <div id="active-source" class="text-blue-300">Aucune (verrouiller un panneau)</div>
-            </div>
         </div>
+
         <!-- PANNEAU 2 : DOMAINE ACOUSTIQUE -->
         <div id="panel-acoustic" class="panel-bg rounded-lg p-6 border-2">
             <h2 class="text-2xl font-bold mb-4 text-blue-400">
@@ -612,6 +533,20 @@
                 <div class="text-center text-2xl font-bold mt-2">
                     <span id="spl-value">94.0</span> dB SPL
                 </div>
+
+                <!-- Zone de warning SPL (hauteur fixe) -->
+                <div class="mt-2" style="min-height: 50px;">
+                    <div id="spl-warning" class="hidden"></div>
+                </div>
+
+                <div class="flex justify-center gap-2 mt-2">
+                    <button onclick="adjustLevel('spl', -6)" class="px-3 py-1 panel-inner-bg hover:bg-blue-600 rounded text-xs" title="Diviser par 2 (-6 dB)">
+                        ÷2 (-6dB)
+                    </button>
+                    <button onclick="adjustLevel('spl', 6)" class="px-3 py-1 panel-inner-bg hover:bg-blue-600 rounded text-xs" title="Multiplier par 2 (+6 dB)">
+                        ×2 (+6dB)
+                    </button>
+                </div>
             </div>
 
             <!-- Presets enrichis -->
@@ -620,6 +555,9 @@
                 <div class="space-y-2">
                     <button onclick="setPreset('spl', 0)" class="w-full px-3 py-2 panel-inner-bg hover:opacity-80 rounded text-xs">
                         🔇 Seuil d'audition (0 dB)
+                    </button>
+                    <button onclick="setPreset('spl', 94)" class="w-full px-3 py-2 bg-blue-600 hover:bg-blue-500 rounded text-xs font-bold">
+                        📏 Référence Standard (94 dB SPL = 1 Pascal)
                     </button>
                     <button onclick="setPreset('spl', 30)" class="w-full px-3 py-2 panel-inner-bg hover:opacity-80 rounded text-xs">
                         🤫 Chuchotement (30 dB)
@@ -723,34 +661,22 @@
                 </div>
             </div>
 
-            <!-- Simulation de bruit -->
-            <div class="mb-6 panel-inner-bg rounded p-3">
-                <label class="block text-sm font-semibold mb-2">
-                    Simulation de Bruit
-                    <span class="tooltip">
-                        <span class="text-sm">ℹ️</span>
-                        <span class="tooltiptext">
-                            Le bruit de fond réduit la plage dynamique utile.<br>
-                            SNR (Signal-to-Noise Ratio) = rapport signal/bruit.<br>
-                            Un bon SNR > 60 dB pour de l'audio professionnel.
-                        </span>
-                    </span>
-                </label>
-                <input type="range" id="noise-floor" min="20" max="80" value="40" step="1" class="w-full">
-                <div class="flex justify-between text-xs mt-1">
-                    <span>Bruit de fond : <span id="noise-value">40</span> dB SPL</span>
-                </div>
-                <div class="text-xs mt-2">
-                    SNR : <span id="snr-value" class="font-bold">54.0</span> dB
-                </div>
-            </div>
-
             <!-- Calculs affichés -->
             <div class="panel-inner-bg rounded p-4 space-y-2 text-sm">
                 <div class="flex justify-between">
                     <span>Pression :</span>
                     <span class="font-mono font-bold" id="pressure-value">1.000</span>
                     <span>Pa</span>
+                </div>
+                <div class="flex justify-between border-t pt-2" style="border-color: var(--border-color)">
+                    <span>Plancher de bruit :</span>
+                    <span class="font-mono font-bold" id="noise-floor-display">40.0</span>
+                    <span>dB SPL</span>
+                </div>
+                <div class="flex justify-between">
+                    <span>SNR (Signal/Bruit) :</span>
+                    <span class="font-mono font-bold" id="snr-display">54.0</span>
+                    <span>dB</span>
                 </div>
             </div>
         </div>
@@ -784,6 +710,20 @@
                 <div class="text-center text-2xl font-bold mt-2">
                     <span id="dbu-value">+4.0</span> dBu
                 </div>
+
+                <!-- Zone de warning SNR (hauteur fixe) -->
+                <div class="mt-2" style="min-height: 50px;">
+                    <div id="snr-warning" class="hidden"></div>
+                </div>
+
+                <div class="flex justify-center gap-2 mt-2">
+                    <button onclick="adjustLevel('dbu', -6)" class="px-3 py-1 panel-inner-bg hover:bg-purple-600 rounded text-xs" title="Diviser par 2 (-6 dB)">
+                        ÷2 (-6dB)
+                    </button>
+                    <button onclick="adjustLevel('dbu', 6)" class="px-3 py-1 panel-inner-bg hover:bg-purple-600 rounded text-xs" title="Multiplier par 2 (+6 dB)">
+                        ×2 (+6dB)
+                    </button>
+                </div>
             </div>
 
             <!-- VU Meter -->
@@ -800,6 +740,25 @@
                 </label>
                 <div class="vu-meter">
                     <div class="vu-needle" id="vu-needle"></div>
+                </div>
+            </div>
+
+            <!-- Presets de Niveaux -->
+            <div class="mb-6">
+                <label class="block text-sm font-semibold mb-2">Presets de Niveaux</label>
+                <div class="space-y-2">
+                    <button onclick="setPreset('dbu', 0)" class="w-full px-3 py-2 bg-purple-600 hover:bg-purple-500 rounded text-xs font-bold">
+                        📏 Référence 0 dBu (0.775V)
+                    </button>
+                    <button onclick="setPreset('dbu', 4)" class="w-full px-3 py-2 panel-inner-bg hover:opacity-80 rounded text-xs">
+                        🎙️ Ligne Pro (+4 dBu)
+                    </button>
+                    <button onclick="setPreset('dbu', -10)" class="w-full px-3 py-2 panel-inner-bg hover:opacity-80 rounded text-xs">
+                        🏠 Ligne Consommateur (-10 dBV ≈ -7.8 dBu)
+                    </button>
+                    <button onclick="setPreset('dbu', 24)" class="w-full px-3 py-2 panel-inner-bg hover:opacity-80 rounded text-xs">
+                        ⚠️ Maximum (+24 dBu)
+                    </button>
                 </div>
             </div>
 
@@ -840,6 +799,23 @@
                     <span class="font-mono font-bold" id="vu-display">0</span>
                     <span>dBVU</span>
                 </div>
+                <div class="border-t pt-2 mt-2" style="border-color: var(--border-color)">
+                    <div class="flex justify-between">
+                        <span>Plancher de bruit :</span>
+                        <span class="font-mono font-bold" id="noise-floor-dbu">-124.0</span>
+                        <span>dBu</span>
+                    </div>
+                    <div class="flex justify-between mt-1">
+                        <span>SNR (Signal/Bruit) :</span>
+                        <span class="font-mono font-bold text-green-400" id="snr-electric">128.0</span>
+                        <span>dB</span>
+                    </div>
+                    <div class="flex justify-between mt-1">
+                        <span>Dynamique (crête) :</span>
+                        <span class="font-mono font-bold text-blue-400" id="dynamic-range-electric">128.0</span>
+                        <span>dB</span>
+                    </div>
+                </div>
             </div>
         </div>
 
@@ -872,6 +848,20 @@
                 <div class="text-center text-2xl font-bold mt-2">
                     <span id="dbfs-value">-18.0</span> dBFS
                 </div>
+
+                <!-- Zone de warning clip/headroom (hauteur fixe) -->
+                <div class="mt-2" style="min-height: 50px;">
+                    <div id="clip-warning" class="hidden"></div>
+                </div>
+
+                <div class="flex justify-center gap-2 mt-2">
+                    <button onclick="adjustLevel('dbfs', -6)" class="px-3 py-1 panel-inner-bg hover:bg-pink-600 rounded text-xs" title="Diviser par 2 (-6 dB)">
+                        ÷2 (-6dB)
+                    </button>
+                    <button onclick="adjustLevel('dbfs', 6)" class="px-3 py-1 panel-inner-bg hover:bg-pink-600 rounded text-xs" title="Multiplier par 2 (+6 dB)">
+                        ×2 (+6dB)
+                    </button>
+                </div>
             </div>
 
             <!-- Indicateur de clip et headroom -->
@@ -890,6 +880,28 @@
                     <div class="headroom-bar">
                         <div class="headroom-marker" id="headroom-marker"></div>
                     </div>
+                </div>
+            </div>
+
+            <!-- Presets de Niveaux -->
+            <div class="mb-6">
+                <label class="block text-sm font-semibold mb-2">Presets de Niveaux</label>
+                <div class="space-y-2">
+                    <button onclick="setPreset('dbfs', 0)" class="w-full px-3 py-2 panel-inner-bg hover:opacity-80 rounded text-xs">
+                        ⚠️ Maximum (0 dBFS - Clip!)
+                    </button>
+                    <button onclick="setPreset('dbfs', -9)" class="w-full px-3 py-2 bg-pink-600 hover:bg-pink-500 rounded text-xs font-bold">
+                        📏 Standard Broadcast (-9 dBFS)
+                    </button>
+                    <button onclick="setPreset('dbfs', -18)" class="w-full px-3 py-2 bg-pink-600 hover:bg-pink-500 rounded text-xs font-bold">
+                        📏 Standard Studio (-18 dBFS / EBU)
+                    </button>
+                    <button onclick="setPreset('dbfs', -20)" class="w-full px-3 py-2 panel-inner-bg hover:opacity-80 rounded text-xs">
+                        🇺🇸 Standard USA (-20 dBFS / SMPTE)
+                    </button>
+                    <button onclick="setPreset('dbfs', -23)" class="w-full px-3 py-2 panel-inner-bg hover:opacity-80 rounded text-xs">
+                        📺 LUFS Target (-23 LUFS ≈ -23 dBFS)
+                    </button>
                 </div>
             </div>
 
@@ -921,6 +933,23 @@
                     <span>Niveau de Crête :</span>
                     <span class="font-mono font-bold" id="peak-value">-18.0</span>
                     <span>dBFS</span>
+                </div>
+                <div class="border-t pt-2 mt-2" style="border-color: var(--border-color)">
+                    <div class="flex justify-between">
+                        <span>Plancher de bruit :</span>
+                        <span class="font-mono font-bold" id="noise-floor-dbfs">-96.0</span>
+                        <span>dBFS</span>
+                    </div>
+                    <div class="flex justify-between mt-1">
+                        <span>SNR (Signal/Bruit) :</span>
+                        <span class="font-mono font-bold text-green-400" id="snr-digital">78.0</span>
+                        <span>dB</span>
+                    </div>
+                    <div class="flex justify-between mt-1">
+                        <span>Dynamique (plancher→crête) :</span>
+                        <span class="font-mono font-bold text-blue-400" id="dynamic-range-digital">78.0</span>
+                        <span>dB</span>
+                    </div>
                 </div>
             </div>
 
@@ -1500,6 +1529,9 @@
             // Source active : 'acoustic', 'electric', ou 'digital'
             activeSource: null,
 
+            // Slider actuellement en cours de déplacement
+            draggingSlider: null,
+
             // Valeurs actuelles
             dbSPL: 94,
             dBu: 4,
@@ -1513,7 +1545,8 @@
             impedance: 600, // Ohms
             bitDepth: 24,
             weighting: 'Z',
-            noiseFloor: 40, // dB SPL
+            noiseFloor: 40, // dB SPL (calculé automatiquement)
+            preampEIN: -128, // dBu (Equivalent Input Noise du préampli)
             lufsProfile: 'generic', // Profil de contenu pour LUFS
             inputFrequency: '1000', // Fréquence d'entrée pour pondération
 
@@ -1581,6 +1614,44 @@
 
             // Personnalisé
             'custom': { name: 'Personnalisé', sensitivity: 22, type: 'Personnalisé', description: 'Réglable manuellement' }
+        };
+
+        // Préamplis microphone avec leur EIN (Equivalent Input Noise en dBu)
+        // Un EIN plus bas = moins de bruit = meilleur préampli
+        // SNR augmente avec un meilleur préampli
+        const PREAMPS = {
+            // Premium (EIN < -128 dBu) - Meilleur SNR
+            'millennia': { name: 'Millennia HV-3D', ein: -131, category: 'Premium' },
+            'grace': { name: 'Grace m101', ein: -130, category: 'Premium' },
+            'api': { name: 'API 512c', ein: -129, category: 'Premium' },
+
+            // Professionnel (EIN -125 à -128 dBu) - Très bon SNR
+            'neve': { name: 'Neve 1073', ein: -128, category: 'Professionnel' },
+            'ssl': { name: 'SSL VHD', ein: -128, category: 'Professionnel' },
+            'focusrite': { name: 'Focusrite ISA', ein: -128, category: 'Professionnel' },
+            'universal': { name: 'Universal Audio 610', ein: -127, category: 'Professionnel' },
+            'rupert_neve': { name: 'Rupert Neve Designs RNHP', ein: -127, category: 'Professionnel' },
+
+            // Standard (EIN -120 à -125 dBu) - Bon SNR
+            'focusrite_scarlett': { name: 'Focusrite Scarlett 2i2', ein: -125, category: 'Standard' },
+            'motu': { name: 'MOTU UltraLite', ein: -124, category: 'Standard' },
+            'presonus': { name: 'PreSonus AudioBox', ein: -123, category: 'Standard' },
+            'steinberg': { name: 'Steinberg UR22', ein: -122, category: 'Standard' },
+            'behringer': { name: 'Behringer UMC', ein: -120, category: 'Standard' },
+
+            // Entrée de Gamme (EIN -110 à -120 dBu) - SNR moyen
+            'zoom_h6': { name: 'Zoom H6', ein: -118, category: 'Entrée de Gamme' },
+            'tascam_dr40': { name: 'Tascam DR-40', ein: -116, category: 'Entrée de Gamme' },
+            'zoom_h4n': { name: 'Zoom H4n', ein: -115, category: 'Entrée de Gamme' },
+            'behringer_um2': { name: 'Behringer UM2', ein: -112, category: 'Entrée de Gamme' },
+
+            // Bas de Gamme (EIN > -110 dBu) - SNR faible
+            'usb_basic': { name: 'Interface USB Basique', ein: -108, category: 'Bas de Gamme' },
+            'laptop_builtin': { name: 'Carte son intégrée PC', ein: -105, category: 'Bas de Gamme' },
+            'old_soundcard': { name: 'Ancienne carte son', ein: -100, category: 'Bas de Gamme' },
+
+            // Personnalisé
+            'custom': { name: 'Personnalisé', ein: -128, category: 'Custom' }
         };
 
         // Profils de contenu pour LUFS (dépendant de la distribution fréquentielle)
@@ -1774,75 +1845,52 @@
         // ========================================
 
         function validateAndAlert() {
-            const alertsContainer = document.getElementById('validation-alerts');
-            alertsContainer.innerHTML = '';
+            // Mise à jour des warnings dans chaque panneau (zones à hauteur fixe, pas de scintillement)
 
-            const alerts = [];
-
-            // Vérification clip numérique
-            if (state.dBFS > -0.1) {
-                alerts.push({
-                    type: 'danger',
-                    message: '🔴 DANGER : Niveau numérique au clip ou très proche ! Réduisez le gain immédiatement.'
-                });
-            } else if (state.dBFS > -3) {
-                alerts.push({
-                    type: 'warning',
-                    message: '⚠️ ATTENTION : Très proche du clip numérique. Seulement ' + Math.abs(state.dBFS).toFixed(1) + ' dB de marge.'
-                });
-            }
-
-            // Vérification SPL dangereux
+            // === WARNING SPL (Panneau Acoustique) ===
+            const splWarning = document.getElementById('spl-warning');
             if (state.dbSPL > 120) {
-                alerts.push({
-                    type: 'danger',
-                    message: '🔴 DANGER : Niveau SPL dangereux pour l\'audition ! >120 dB peut causer des dommages immédiats.'
-                });
+                splWarning.className = 'alert alert-danger text-xs';
+                splWarning.textContent = '🔴 DANGER : Niveau SPL dangereux pour l\'audition ! >120 dB peut causer des dommages immédiats.';
             } else if (state.dbSPL > 85) {
-                alerts.push({
-                    type: 'warning',
-                    message: '⚠️ ATTENTION : Exposition prolongée >85 dB peut endommager l\'audition. Limitez le temps d\'exposition.'
-                });
+                splWarning.className = 'alert alert-warning text-xs';
+                splWarning.textContent = '⚠️ ATTENTION : Exposition prolongée >85 dB peut endommager l\'audition. Limitez le temps d\'exposition.';
+            } else {
+                splWarning.className = 'hidden';
+                splWarning.textContent = '';
             }
 
-            // Vérification SNR
+            // === WARNING SNR (Panneau Électrique) ===
             const snr = state.dbSPL - state.noiseFloor;
+            const snrWarning = document.getElementById('snr-warning');
             if (snr < 30 && state.dbSPL > 0) {
-                alerts.push({
-                    type: 'warning',
-                    message: '⚠️ SNR faible (' + snr.toFixed(1) + ' dB). Le bruit de fond sera audible. Augmentez le signal ou réduisez le bruit.'
-                });
+                snrWarning.className = 'alert alert-warning text-xs';
+                snrWarning.textContent = '⚠️ SNR faible (' + snr.toFixed(1) + ' dB). Le bruit de fond sera audible. Augmentez le signal ou réduisez le bruit.';
             } else if (snr > 80) {
-                alerts.push({
-                    type: 'success',
-                    message: '✅ Excellent SNR (' + snr.toFixed(1) + ' dB). Signal très propre.'
-                });
+                snrWarning.className = 'alert alert-success text-xs';
+                snrWarning.textContent = '✅ Excellent SNR (' + snr.toFixed(1) + ' dB). Signal très propre.';
+            } else {
+                snrWarning.className = 'hidden';
+                snrWarning.textContent = '';
             }
 
-            // Vérification headroom
+            // === WARNING CLIP/HEADROOM (Panneau Numérique) ===
+            const clipWarning = document.getElementById('clip-warning');
             const headroom = 0 - state.dBFS;
-            if (headroom < 6 && state.dBFS < 0) {
-                alerts.push({
-                    type: 'warning',
-                    message: '⚠️ Headroom faible (' + headroom.toFixed(1) + ' dB). Risque de clip sur les transitoires.'
-                });
-            }
 
-            // Vérification distance excessive
-            if (state.distance > 8) {
-                alerts.push({
-                    type: 'info',
-                    message: 'ℹ️ À cette distance (' + state.distance + ' m), le bruit ambiant domine probablement le signal.'
-                });
+            if (state.dBFS > -0.1) {
+                clipWarning.className = 'alert alert-danger text-xs';
+                clipWarning.textContent = '🔴 DANGER : Niveau numérique au clip ou très proche ! Réduisez le gain immédiatement.';
+            } else if (state.dBFS > -3) {
+                clipWarning.className = 'alert alert-danger text-xs';
+                clipWarning.textContent = '⚠️ ATTENTION : Très proche du clip numérique. Seulement ' + Math.abs(state.dBFS).toFixed(1) + ' dB de marge.';
+            } else if (headroom < 6 && state.dBFS < 0) {
+                clipWarning.className = 'alert alert-warning text-xs';
+                clipWarning.textContent = '⚠️ Headroom faible (' + headroom.toFixed(1) + ' dB). Risque de clip sur les transitoires.';
+            } else {
+                clipWarning.className = 'hidden';
+                clipWarning.textContent = '';
             }
-
-            // Afficher les alertes
-            alerts.forEach(alert => {
-                const div = document.createElement('div');
-                div.className = `alert alert-${alert.type}`;
-                div.textContent = alert.message;
-                alertsContainer.appendChild(div);
-            });
         }
 
         // ========================================
@@ -1872,13 +1920,17 @@
         function updateDisplay() {
             // Panneau Acoustique
             document.getElementById('spl-value').textContent = state.dbSPL.toFixed(1);
-            document.getElementById('spl-slider').value = state.dbSPL;
+            if (state.draggingSlider !== 'spl') {
+                document.getElementById('spl-slider').value = state.dbSPL;
+            }
             const pressure = splToPressure(state.dbSPL);
             document.getElementById('pressure-value').textContent = pressure.toFixed(3);
 
-            // SNR
+            // SNR et plancher de bruit
             const snr = state.dbSPL - state.noiseFloor;
             document.getElementById('snr-value').textContent = snr.toFixed(1);
+            document.getElementById('snr-display').textContent = snr.toFixed(1);
+            document.getElementById('noise-floor-display').textContent = state.noiseFloor.toFixed(1);
 
             // Panneau Électrique
             const voltage = dBuToVoltage(state.dBu);
@@ -1888,7 +1940,9 @@
             const dBW = powerTodBW(power);
 
             document.getElementById('dbu-value').textContent = state.dBu >= 0 ? `+${state.dBu.toFixed(1)}` : state.dBu.toFixed(1);
-            document.getElementById('dbu-slider').value = state.dBu;
+            if (state.draggingSlider !== 'dbu') {
+                document.getElementById('dbu-slider').value = state.dBu;
+            }
             document.getElementById('voltage-value').textContent = voltage.toFixed(3);
             document.getElementById('dbu-display').textContent = state.dBu >= 0 ? `+${state.dBu.toFixed(1)}` : state.dBu.toFixed(1);
             document.getElementById('dbv-display').textContent = dBV >= 0 ? `+${dBV.toFixed(1)}` : dBV.toFixed(1);
@@ -1905,9 +1959,23 @@
             const vuPosition = Math.max(0, Math.min(100, 60 + (vu * 2)));
             document.getElementById('vu-needle').style.left = vuPosition + '%';
 
+            // Plancher de bruit électrique (dBu) - Bruit du préampli à la sortie
+            const noiseFloorDBu = state.preampEIN + state.micGain;
+            document.getElementById('noise-floor-dbu').textContent = noiseFloorDBu.toFixed(1);
+
+            // SNR électrique (différence entre signal et bruit en dBu)
+            const snrElectric = state.dBu - noiseFloorDBu;
+            document.getElementById('snr-electric').textContent = snrElectric.toFixed(1);
+
+            // Dynamique électrique (de plancher de bruit à crête en dBu)
+            const dynamicElectric = state.dBu - noiseFloorDBu;
+            document.getElementById('dynamic-range-electric').textContent = dynamicElectric.toFixed(1);
+
             // Panneau Numérique
             document.getElementById('dbfs-value').textContent = state.dBFS.toFixed(1);
-            document.getElementById('dbfs-slider').value = state.dBFS;
+            if (state.draggingSlider !== 'dbfs') {
+                document.getElementById('dbfs-slider').value = state.dBFS;
+            }
             document.getElementById('peak-value').textContent = state.dBFS.toFixed(1);
 
             // Indicateur de clip
@@ -1931,8 +1999,23 @@
             const headroomPosition = Math.max(0, Math.min(100, (state.dBFS + 96) / 96 * 100));
             document.getElementById('headroom-marker').style.left = headroomPosition + '%';
 
+            // Plancher de bruit numérique (dBFS) - Conversion du bruit électrique
+            // Utilise le même calibrage que pour la conversion du signal
+            const calibPreset = state.calibrationPresets[state.calibration];
+            const noiseFloorDBFS = noiseFloorDBu - calibPreset.dBu + calibPreset.dBFS;
+            document.getElementById('noise-floor-dbfs').textContent = noiseFloorDBFS.toFixed(1);
+
+            // SNR numérique (différence entre signal et bruit en dBFS)
+            const snrDigital = state.dBFS - noiseFloorDBFS;
+            document.getElementById('snr-digital').textContent = snrDigital.toFixed(1);
+
+            // Dynamique numérique (de plancher de bruit à crête en dBFS)
+            const dynamicDigital = state.dBFS - noiseFloorDBFS;
+            document.getElementById('dynamic-range-digital').textContent = dynamicDigital.toFixed(1);
+
             updateDynamicRange();
             updateLoudness();
+            validateAndAlert(); // Mettre à jour les warnings en temps réel
         }
 
         function updateDynamicRange() {
@@ -2101,6 +2184,9 @@
             const dBuAt94 = micSensitivityTodBu(state.micSensitivity);
             document.getElementById('mic-sensitivity-dbu').textContent = dBuAt94.toFixed(1);
 
+            // Recalculer le bruit de fond car la sensibilité affecte la conversion dBu -> dB SPL
+            calculateNoiseFloor();
+
             if (state.activeSource) {
                 updateAllDomains();
             }
@@ -2109,6 +2195,9 @@
         function updateMicGain() {
             state.micGain = parseFloat(document.getElementById('mic-gain').value);
             document.getElementById('mic-gain-value').textContent = state.micGain >= 0 ? `+${state.micGain.toFixed(1)}` : state.micGain.toFixed(1);
+
+            // Recalculer le bruit de fond car le gain affecte le bruit du préampli
+            calculateNoiseFloor();
 
             if (state.activeSource) {
                 updateAllDomains();
@@ -2173,10 +2262,59 @@
             updateDynamicRange();
         }
 
-        function updateNoiseFloor() {
-            state.noiseFloor = parseFloat(document.getElementById('noise-floor').value);
-            document.getElementById('noise-value').textContent = state.noiseFloor.toFixed(0);
+        function updatePreampSelector() {
+            const selectedPreamp = document.getElementById('preamp-selector').value;
+            const preamp = PREAMPS[selectedPreamp];
+
+            if (preamp) {
+                state.preampEIN = preamp.ein;
+                document.getElementById('preamp-ein').textContent = preamp.ein.toFixed(1);
+                calculateNoiseFloor();
+            }
+        }
+
+        function calculateNoiseFloor() {
+            // Le bruit de fond en dB SPL dépend de :
+            // 1. L'EIN du préampli (en dBu)
+            // 2. Le gain du préampli
+            // 3. La sensibilité du micro (qui fait le lien entre dBu et dB SPL)
+
+            // Bruit électrique à la sortie du préampli (en dBu)
+            const preampNoiseOutput = state.preampEIN + state.micGain;
+
+            // Conversion de dBu en voltage
+            const noiseVoltage = dBuToVoltage(preampNoiseOutput);
+
+            // Calcul du dB SPL équivalent basé sur la sensibilité du micro
+            // La sensibilité du micro nous dit : X mV/Pa (pour 1 Pascal = 94 dB SPL)
+            // Formule inverse : dB SPL = 94 + 20*log10(V_noise / (sensitivity_mV / 1000))
+            const sensitivityV = state.micSensitivity / 1000; // conversion mV -> V
+            const pressureRatio = noiseVoltage / sensitivityV;
+            state.noiseFloor = 94 + 20 * Math.log10(pressureRatio);
+
+            // Limiter le bruit de fond à des valeurs réalistes (20-80 dB SPL)
+            state.noiseFloor = Math.max(20, Math.min(80, state.noiseFloor));
+
+            // Mise à jour de l'affichage
+            document.getElementById('noise-floor-calculated').textContent = state.noiseFloor.toFixed(1);
             updateDisplay();
+        }
+
+        // ========================================
+        // AJUSTEMENT DE NIVEAU (×2/÷2 = ±6 dB)
+        // ========================================
+
+        function adjustLevel(domain, deltaDB) {
+            if (domain === 'spl') {
+                const newValue = Math.max(0, Math.min(140, state.dbSPL + deltaDB));
+                setPreset('spl', newValue);
+            } else if (domain === 'dbu') {
+                const newValue = Math.max(-60, Math.min(24, state.dBu + deltaDB));
+                setPreset('dbu', newValue);
+            } else if (domain === 'dbfs') {
+                const newValue = Math.max(-96, Math.min(0, state.dBFS + deltaDB));
+                setPreset('dbfs', newValue);
+            }
         }
 
         // ========================================
@@ -2192,6 +2330,25 @@
                 } else {
                     document.getElementById('spl-value').textContent = state.dbSPL.toFixed(1);
                     document.getElementById('spl-slider').value = state.dbSPL;
+                }
+            } else if (domain === 'dbu') {
+                state.dBu = value;
+
+                if (state.activeSource === 'electric') {
+                    updateAllDomains();
+                } else {
+                    document.getElementById('dbu-value').textContent = state.dBu >= 0 ? `+${state.dBu.toFixed(1)}` : state.dBu.toFixed(1);
+                    document.getElementById('dbu-slider').value = state.dBu;
+                }
+            } else if (domain === 'dbfs') {
+                state.dBFS = value;
+
+                if (state.activeSource === 'digital') {
+                    updateAllDomains();
+                } else {
+                    document.getElementById('dbfs-value').textContent = state.dBFS.toFixed(1);
+                    document.getElementById('dbfs-slider').value = state.dBFS;
+                    updateLoudness();
                 }
             }
         }
@@ -2350,15 +2507,46 @@
             }
         });
 
+        // Suivre le début et la fin du glissement pour éviter le flickering
+        document.getElementById('spl-slider').addEventListener('pointerdown', () => {
+            state.draggingSlider = 'spl';
+        });
+        document.getElementById('spl-slider').addEventListener('pointerup', () => {
+            state.draggingSlider = null;
+        });
+        document.getElementById('spl-slider').addEventListener('pointercancel', () => {
+            state.draggingSlider = null;
+        });
+
+        document.getElementById('dbu-slider').addEventListener('pointerdown', () => {
+            state.draggingSlider = 'dbu';
+        });
+        document.getElementById('dbu-slider').addEventListener('pointerup', () => {
+            state.draggingSlider = null;
+        });
+        document.getElementById('dbu-slider').addEventListener('pointercancel', () => {
+            state.draggingSlider = null;
+        });
+
+        document.getElementById('dbfs-slider').addEventListener('pointerdown', () => {
+            state.draggingSlider = 'dbfs';
+        });
+        document.getElementById('dbfs-slider').addEventListener('pointerup', () => {
+            state.draggingSlider = null;
+        });
+        document.getElementById('dbfs-slider').addEventListener('pointercancel', () => {
+            state.draggingSlider = null;
+        });
+
         // Paramètres de conversion
         document.getElementById('microphone-selector').addEventListener('change', updateMicrophoneSelector);
+        document.getElementById('preamp-selector').addEventListener('change', updatePreampSelector);
         document.getElementById('mic-sensitivity').addEventListener('input', updateMicSensitivity);
         document.getElementById('mic-gain').addEventListener('input', updateMicGain);
         document.getElementById('distance').addEventListener('input', updateDistance);
         document.getElementById('calibration').addEventListener('change', updateCalibration);
         document.getElementById('impedance').addEventListener('input', updateImpedance);
         document.getElementById('bit-depth').addEventListener('change', updateBitDepth);
-        document.getElementById('noise-floor').addEventListener('input', updateNoiseFloor);
         document.getElementById('lufs-profile').addEventListener('change', updateLufsProfile);
 
         // Pondération
