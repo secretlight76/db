@@ -365,7 +365,7 @@
                 </div>
             </div>
 
-            <!-- Pondération -->
+            <!-- Pondération avec simulation de fréquence -->
             <div class="mb-6">
                 <label class="block text-sm font-semibold mb-2">
                     Pondération Fréquentielle
@@ -396,6 +396,37 @@
                         <input type="radio" name="weighting" value="C" class="mr-2">
                         dB(C) - Basses fréquences
                     </label>
+                </div>
+
+                <!-- Sélection de la fréquence d'entrée pour simuler l'effet -->
+                <div class="mt-4 mb-4">
+                    <label class="block text-sm font-semibold mb-2">
+                        Fréquence d'Entrée (pour tester la pondération)
+                        <span class="tooltip">
+                            <span class="text-sm">ℹ️</span>
+                            <span class="tooltiptext">
+                                Sélectionnez une fréquence pour voir l'atténuation appliquée.<br>
+                                Permet de tester l'effet réel de la pondération choisie.<br>
+                                Chaque fréquence aura une atténuation différente selon A, B ou C.
+                            </span>
+                        </span>
+                    </label>
+                    <select id="input-frequency" class="w-full px-3 py-2 panel-inner-bg rounded text-sm">
+                        <option value="31.5">31.5 Hz (Basses)</option>
+                        <option value="63">63 Hz (Graves)</option>
+                        <option value="125">125 Hz (Graves)</option>
+                        <option value="250">250 Hz (Graves-Médiums)</option>
+                        <option value="500">500 Hz (Médiums)</option>
+                        <option value="1000" selected>1 kHz (Médiums - Référence)</option>
+                        <option value="2000">2 kHz (Médiums-Aigus)</option>
+                        <option value="4000">4 kHz (Aigus)</option>
+                        <option value="8000">8 kHz (Aigus)</option>
+                        <option value="10000">10 kHz (Aigus)</option>
+                        <option value="20000">20 kHz (Ultra-aigus)</option>
+                    </select>
+                    <div class="text-xs mt-2" style="color: var(--text-secondary)">
+                        Atténuation appliquée : <span id="attenuation-value">0.0</span> dB
+                    </div>
                 </div>
 
                 <!-- Boutons pour voir les courbes -->
@@ -755,12 +786,12 @@
                             <span class="text-sm">ℹ️</span>
                             <span class="tooltiptext">
                                 Gain appliqué au microphone (préampli/ampli d'entrée).<br>
-                                Augmente ou réduit le niveau de sortie du micro avant conversion numérique.<br>
-                                Permet de voir l'effet direct sur dBu et dBFS.
+                                Plage : -12 dB à +90 dB. Permet d'amplifier des micros faibles.<br>
+                                Voir l'effet direct sur dBu et dBFS.
                             </span>
                         </span>
                     </label>
-                    <input type="range" id="mic-gain" min="-12" max="12" value="0" step="0.1"
+                    <input type="range" id="mic-gain" min="-12" max="90" value="0" step="0.1"
                            class="w-full" aria-label="Gain du microphone">
                     <div class="flex justify-between text-xs mt-1">
                         <span>Gain : <span id="mic-gain-value">0.0</span> dB</span>
@@ -1182,6 +1213,7 @@
             weighting: 'Z',
             noiseFloor: 40, // dB SPL
             lufsProfile: 'generic', // Profil de contenu pour LUFS
+            inputFrequency: '1000', // Fréquence d'entrée pour pondération
 
             // Thème
             theme: 'dark',
@@ -1255,6 +1287,62 @@
             'speech': { name: 'Parole', crestFactor: 7, peakToPower: 7, description: 'Énergie concentrée 200-2000 Hz' },
             'music': { name: 'Musique', crestFactor: 4, peakToPower: 4, description: 'Spectre complexe avec variations dynamiques' },
             'generic': { name: 'Générique', crestFactor: 5, peakToPower: 5, description: 'Profil par défaut' }
+        };
+
+        // Valeurs de pondération (atténuation en dB) par fréquence et type
+        const WEIGHTING_CURVES = {
+            'Z': { // Linéaire - pas d'atténuation
+                '31.5': 0.0,
+                '63': 0.0,
+                '125': 0.0,
+                '250': 0.0,
+                '500': 0.0,
+                '1000': 0.0,
+                '2000': 0.0,
+                '4000': 0.0,
+                '8000': 0.0,
+                '10000': 0.0,
+                '20000': 0.0
+            },
+            'A': { // Pondération A - perception humaine
+                '31.5': -39.0,
+                '63': -26.2,
+                '125': -16.1,
+                '250': -8.6,
+                '500': -3.2,
+                '1000': 0.0,
+                '2000': 1.2,
+                '4000': 1.0,
+                '8000': -1.1,
+                '10000': -2.5,
+                '20000': -10.9
+            },
+            'B': { // Pondération B - niveaux moyens
+                '31.5': -17.0,
+                '63': -9.0,
+                '125': -2.3,
+                '250': 0.5,
+                '500': 0.5,
+                '1000': 0.0,
+                '2000': -0.4,
+                '4000': -1.3,
+                '8000': -3.0,
+                '10000': -4.5,
+                '20000': -8.0
+            },
+            'C': { // Pondération C - basses fréquences
+                '31.5': -3.0,
+                '63': -0.8,
+                '125': 0.0,
+                '250': 0.0,
+                '500': 0.0,
+                '1000': 0.0,
+                '2000': 0.0,
+                '4000': -0.3,
+                '8000': -0.8,
+                '10000': -1.3,
+                '20000': -3.0
+            }
         };
 
         // ========================================
@@ -1574,6 +1662,34 @@
             if (profile) {
                 document.getElementById('lufs-profile-description').textContent = profile.description;
                 updateLoudness();
+            }
+        }
+
+        function updateInputFrequency() {
+            state.inputFrequency = document.getElementById('input-frequency').value;
+            updateAttenuationDisplay();
+        }
+
+        function updateAttenuationDisplay() {
+            const frequency = state.inputFrequency;
+            const weighting = state.weighting;
+            const curve = WEIGHTING_CURVES[weighting];
+
+            if (curve && curve[frequency] !== undefined) {
+                const attenuation = curve[frequency];
+                const attenuationElement = document.getElementById('attenuation-value');
+                attenuationElement.textContent = attenuation.toFixed(1);
+
+                // Colorer en fonction de l'atténuation
+                if (attenuation < -10) {
+                    attenuationElement.style.color = '#ef4444'; // Rouge - forte atténuation
+                } else if (attenuation < -5) {
+                    attenuationElement.style.color = '#fbbf24'; // Orange - atténuation modérée
+                } else if (attenuation > 0.5) {
+                    attenuationElement.style.color = '#22c55e'; // Vert - amplification
+                } else {
+                    attenuationElement.style.color = '#3b82f6'; // Bleu - pas/peu d'atténuation
+                }
             }
         }
 
@@ -1913,8 +2029,12 @@
         document.querySelectorAll('input[name="weighting"]').forEach(radio => {
             radio.addEventListener('change', (e) => {
                 state.weighting = e.target.value;
+                updateAttenuationDisplay();
             });
         });
+
+        // Fréquence d'entrée
+        document.getElementById('input-frequency').addEventListener('change', updateInputFrequency);
 
         // Bouton d'analyse loudness
         document.getElementById('analyze-loudness').addEventListener('click', analyzeLoudness);
@@ -1938,6 +2058,7 @@
             updateCalibration();
             updateNoiseFloor();
             updateDisplay();
+            updateAttenuationDisplay();
 
             // Verrouiller le panneau numérique par défaut
             lockPanel('digital');
