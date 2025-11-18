@@ -442,37 +442,52 @@
                     </div>
                 </div>
 
-                <!-- Sélection du préampli et simulation de bruit -->
+                <!-- Sélection du préampli célèbre -->
                 <div class="mb-4">
                     <label class="block text-sm font-semibold mb-2">
-                        Préampli Microphone
+                        Préampli Microphone (Modèles Célèbres)
                         <span class="tooltip">
                             <span class="text-sm">ℹ️</span>
                             <span class="tooltiptext">
                                 Le préampli amplifie le signal du microphone mais ajoute aussi du bruit.<br>
                                 EIN (Equivalent Input Noise) : niveau de bruit ramené à l'entrée.<br>
-                                Un bon préampli a un EIN < -128 dBu.
+                                SNR (Signal-to-Noise Ratio) : rapport signal/bruit.<br>
+                                Plus le SNR est élevé, meilleure est la qualité.
                             </span>
                         </span>
                     </label>
                     <select id="preamp-selector" class="w-full px-3 py-2 panel-inner-bg rounded" aria-label="Sélection du préampli">
-                        <optgroup label="Préamplis Premium (EIN < -128 dBu)">
+                        <optgroup label="🏆 Préamplis Premium (EIN < -128 dBu)">
                             <option value="millennia">Millennia HV-3D (-131 dBu EIN) 🌟</option>
                             <option value="grace">Grace m101 (-130 dBu EIN)</option>
                             <option value="api">API 512c (-129 dBu EIN)</option>
                         </optgroup>
-                        <optgroup label="Préamplis Professionnels (EIN -125 à -128 dBu)">
-                            <option value="neve" selected>Neve 1073 (-128 dBu EIN) ⭐</option>
+                        <optgroup label="⭐ Préamplis Professionnels (EIN -125 à -128 dBu)">
+                            <option value="neve" selected>Neve 1073 (-128 dBu EIN)</option>
                             <option value="ssl">SSL VHD (-128 dBu EIN)</option>
                             <option value="focusrite">Focusrite ISA (-128 dBu EIN)</option>
                             <option value="universal">Universal Audio 610 (-127 dBu EIN)</option>
+                            <option value="rupert_neve">Rupert Neve Designs RNHP (-127 dBu EIN)</option>
                         </optgroup>
-                        <optgroup label="Préamplis Standard (EIN -120 à -125 dBu)">
-                            <option value="focusrite_scarlett">Focusrite Scarlett (-125 dBu EIN)</option>
+                        <optgroup label="✓ Préamplis Standard (EIN -120 à -125 dBu)">
+                            <option value="focusrite_scarlett">Focusrite Scarlett 2i2 (-125 dBu EIN)</option>
                             <option value="motu">MOTU UltraLite (-124 dBu EIN)</option>
+                            <option value="presonus">PreSonus AudioBox (-123 dBu EIN)</option>
+                            <option value="steinberg">Steinberg UR22 (-122 dBu EIN)</option>
                             <option value="behringer">Behringer UMC (-120 dBu EIN)</option>
                         </optgroup>
-                        <optgroup label="Autre">
+                        <optgroup label="⚠️ Préamplis Entrée de Gamme (EIN -110 à -120 dBu)">
+                            <option value="zoom_h6">Zoom H6 (-118 dBu EIN)</option>
+                            <option value="tascam_dr40">Tascam DR-40 (-116 dBu EIN)</option>
+                            <option value="zoom_h4n">Zoom H4n (-115 dBu EIN)</option>
+                            <option value="behringer_um2">Behringer UM2 (-112 dBu EIN)</option>
+                        </optgroup>
+                        <optgroup label="❌ Préamplis Bas de Gamme (EIN > -110 dBu)">
+                            <option value="usb_basic">Interface USB Basique (-108 dBu EIN)</option>
+                            <option value="laptop_builtin">Carte son intégrée PC (-105 dBu EIN)</option>
+                            <option value="old_soundcard">Ancienne carte son (-100 dBu EIN)</option>
+                        </optgroup>
+                        <optgroup label="⚙️ Personnalisé">
                             <option value="custom">Personnalisé (réglable)</option>
                         </optgroup>
                     </select>
@@ -480,10 +495,10 @@
                         EIN : <span id="preamp-ein" class="font-bold">-128.0</span> dBu
                     </div>
                     <div class="text-xs mt-1" style="color: var(--text-secondary)">
-                        Bruit de fond calculé : <span id="noise-floor-calculated" class="font-bold">40.0</span> dB SPL
+                        Bruit de fond : <span id="noise-floor-calculated" class="font-bold">40.0</span> dB SPL
                     </div>
-                    <div class="text-xs mt-1" style="color: var(--text-secondary)">
-                        SNR : <span id="snr-value" class="font-bold">54.0</span> dB
+                    <div class="text-xs mt-1 font-semibold" style="color: #4ade80">
+                        SNR (Signal/Bruit) : <span id="snr-value" class="font-bold">54.0</span> dB
                     </div>
                 </div>
             </div>
@@ -784,6 +799,23 @@
                     <span class="font-mono font-bold" id="vu-display">0</span>
                     <span>dBVU</span>
                 </div>
+                <div class="border-t pt-2 mt-2" style="border-color: var(--border-color)">
+                    <div class="flex justify-between">
+                        <span>Plancher de bruit :</span>
+                        <span class="font-mono font-bold" id="noise-floor-dbu">-124.0</span>
+                        <span>dBu</span>
+                    </div>
+                    <div class="flex justify-between mt-1">
+                        <span>SNR (Signal/Bruit) :</span>
+                        <span class="font-mono font-bold text-green-400" id="snr-electric">128.0</span>
+                        <span>dB</span>
+                    </div>
+                    <div class="flex justify-between mt-1">
+                        <span>Dynamique (crête) :</span>
+                        <span class="font-mono font-bold text-blue-400" id="dynamic-range-electric">128.0</span>
+                        <span>dB</span>
+                    </div>
+                </div>
             </div>
         </div>
 
@@ -901,6 +933,23 @@
                     <span>Niveau de Crête :</span>
                     <span class="font-mono font-bold" id="peak-value">-18.0</span>
                     <span>dBFS</span>
+                </div>
+                <div class="border-t pt-2 mt-2" style="border-color: var(--border-color)">
+                    <div class="flex justify-between">
+                        <span>Plancher de bruit :</span>
+                        <span class="font-mono font-bold" id="noise-floor-dbfs">-96.0</span>
+                        <span>dBFS</span>
+                    </div>
+                    <div class="flex justify-between mt-1">
+                        <span>SNR (Signal/Bruit) :</span>
+                        <span class="font-mono font-bold text-green-400" id="snr-digital">78.0</span>
+                        <span>dB</span>
+                    </div>
+                    <div class="flex justify-between mt-1">
+                        <span>Dynamique (plancher→crête) :</span>
+                        <span class="font-mono font-bold text-blue-400" id="dynamic-range-digital">78.0</span>
+                        <span>dB</span>
+                    </div>
                 </div>
             </div>
 
@@ -1569,22 +1618,37 @@
 
         // Préamplis microphone avec leur EIN (Equivalent Input Noise en dBu)
         // Un EIN plus bas = moins de bruit = meilleur préampli
+        // SNR augmente avec un meilleur préampli
         const PREAMPS = {
-            // Premium (EIN < -128 dBu)
+            // Premium (EIN < -128 dBu) - Meilleur SNR
             'millennia': { name: 'Millennia HV-3D', ein: -131, category: 'Premium' },
             'grace': { name: 'Grace m101', ein: -130, category: 'Premium' },
             'api': { name: 'API 512c', ein: -129, category: 'Premium' },
 
-            // Professionnel (EIN -125 à -128 dBu)
+            // Professionnel (EIN -125 à -128 dBu) - Très bon SNR
             'neve': { name: 'Neve 1073', ein: -128, category: 'Professionnel' },
             'ssl': { name: 'SSL VHD', ein: -128, category: 'Professionnel' },
             'focusrite': { name: 'Focusrite ISA', ein: -128, category: 'Professionnel' },
             'universal': { name: 'Universal Audio 610', ein: -127, category: 'Professionnel' },
+            'rupert_neve': { name: 'Rupert Neve Designs RNHP', ein: -127, category: 'Professionnel' },
 
-            // Standard (EIN -120 à -125 dBu)
-            'focusrite_scarlett': { name: 'Focusrite Scarlett', ein: -125, category: 'Standard' },
+            // Standard (EIN -120 à -125 dBu) - Bon SNR
+            'focusrite_scarlett': { name: 'Focusrite Scarlett 2i2', ein: -125, category: 'Standard' },
             'motu': { name: 'MOTU UltraLite', ein: -124, category: 'Standard' },
+            'presonus': { name: 'PreSonus AudioBox', ein: -123, category: 'Standard' },
+            'steinberg': { name: 'Steinberg UR22', ein: -122, category: 'Standard' },
             'behringer': { name: 'Behringer UMC', ein: -120, category: 'Standard' },
+
+            // Entrée de Gamme (EIN -110 à -120 dBu) - SNR moyen
+            'zoom_h6': { name: 'Zoom H6', ein: -118, category: 'Entrée de Gamme' },
+            'tascam_dr40': { name: 'Tascam DR-40', ein: -116, category: 'Entrée de Gamme' },
+            'zoom_h4n': { name: 'Zoom H4n', ein: -115, category: 'Entrée de Gamme' },
+            'behringer_um2': { name: 'Behringer UM2', ein: -112, category: 'Entrée de Gamme' },
+
+            // Bas de Gamme (EIN > -110 dBu) - SNR faible
+            'usb_basic': { name: 'Interface USB Basique', ein: -108, category: 'Bas de Gamme' },
+            'laptop_builtin': { name: 'Carte son intégrée PC', ein: -105, category: 'Bas de Gamme' },
+            'old_soundcard': { name: 'Ancienne carte son', ein: -100, category: 'Bas de Gamme' },
 
             // Personnalisé
             'custom': { name: 'Personnalisé', ein: -128, category: 'Custom' }
@@ -1895,6 +1959,18 @@
             const vuPosition = Math.max(0, Math.min(100, 60 + (vu * 2)));
             document.getElementById('vu-needle').style.left = vuPosition + '%';
 
+            // Plancher de bruit électrique (dBu) - Bruit du préampli à la sortie
+            const noiseFloorDBu = state.preampEIN + state.micGain;
+            document.getElementById('noise-floor-dbu').textContent = noiseFloorDBu.toFixed(1);
+
+            // SNR électrique (différence entre signal et bruit en dBu)
+            const snrElectric = state.dBu - noiseFloorDBu;
+            document.getElementById('snr-electric').textContent = snrElectric.toFixed(1);
+
+            // Dynamique électrique (de plancher de bruit à crête en dBu)
+            const dynamicElectric = state.dBu - noiseFloorDBu;
+            document.getElementById('dynamic-range-electric').textContent = dynamicElectric.toFixed(1);
+
             // Panneau Numérique
             document.getElementById('dbfs-value').textContent = state.dBFS.toFixed(1);
             if (state.draggingSlider !== 'dbfs') {
@@ -1922,6 +1998,20 @@
             // Headroom marker (0 dBFS = 100%)
             const headroomPosition = Math.max(0, Math.min(100, (state.dBFS + 96) / 96 * 100));
             document.getElementById('headroom-marker').style.left = headroomPosition + '%';
+
+            // Plancher de bruit numérique (dBFS) - Conversion du bruit électrique
+            // Utilise le même calibrage que pour la conversion du signal
+            const calibPreset = state.calibrationPresets[state.calibration];
+            const noiseFloorDBFS = noiseFloorDBu - calibPreset.dBu + calibPreset.dBFS;
+            document.getElementById('noise-floor-dbfs').textContent = noiseFloorDBFS.toFixed(1);
+
+            // SNR numérique (différence entre signal et bruit en dBFS)
+            const snrDigital = state.dBFS - noiseFloorDBFS;
+            document.getElementById('snr-digital').textContent = snrDigital.toFixed(1);
+
+            // Dynamique numérique (de plancher de bruit à crête en dBFS)
+            const dynamicDigital = state.dBFS - noiseFloorDBFS;
+            document.getElementById('dynamic-range-digital').textContent = dynamicDigital.toFixed(1);
 
             updateDynamicRange();
             updateLoudness();
