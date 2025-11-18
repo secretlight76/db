@@ -331,18 +331,36 @@
                 </div>
             </div>
 
-            <!-- Presets -->
+            <!-- Presets enrichis -->
             <div class="mb-6">
-                <label class="block text-sm font-semibold mb-2">Presets</label>
+                <label class="block text-sm font-semibold mb-2">Presets de Niveaux</label>
                 <div class="space-y-2">
-                    <button onclick="setPreset('spl', 30)" class="w-full px-3 py-2 panel-inner-bg hover:opacity-80 rounded text-sm">
-                        Chuchotement (30 dB)
+                    <button onclick="setPreset('spl', 0)" class="w-full px-3 py-2 panel-inner-bg hover:opacity-80 rounded text-xs">
+                        🔇 Seuil d'audition (0 dB)
                     </button>
-                    <button onclick="setPreset('spl', 65)" class="w-full px-3 py-2 panel-inner-bg hover:opacity-80 rounded text-sm">
-                        Voix Normale (65 dB)
+                    <button onclick="setPreset('spl', 30)" class="w-full px-3 py-2 panel-inner-bg hover:opacity-80 rounded text-xs">
+                        🤫 Chuchotement (30 dB)
                     </button>
-                    <button onclick="setPreset('spl', 115)" class="w-full px-3 py-2 panel-inner-bg hover:opacity-80 rounded text-sm">
-                        Concert Rock (115 dB)
+                    <button onclick="setPreset('spl', 50)" class="w-full px-3 py-2 panel-inner-bg hover:opacity-80 rounded text-xs">
+                        📖 Bureau très calme (50 dB)
+                    </button>
+                    <button onclick="setPreset('spl', 65)" class="w-full px-3 py-2 panel-inner-bg hover:opacity-80 rounded text-xs">
+                        🗣️ Conversation normale (65 dB)
+                    </button>
+                    <button onclick="setPreset('spl', 70)" class="w-full px-3 py-2 panel-inner-bg hover:opacity-80 rounded text-xs">
+                        📺 Télévision (70 dB)
+                    </button>
+                    <button onclick="setPreset('spl', 80)" class="w-full px-3 py-2 panel-inner-bg hover:opacity-80 rounded text-xs">
+                        🍳 Cuisine en activité (80 dB)
+                    </button>
+                    <button onclick="setPreset('spl', 85)" class="w-full px-3 py-2 panel-inner-bg hover:opacity-80 rounded text-xs">
+                        🚗 Circulation routière (85 dB)
+                    </button>
+                    <button onclick="setPreset('spl', 115)" class="w-full px-3 py-2 panel-inner-bg hover:opacity-80 rounded text-xs">
+                        🎸 Concert rock (115 dB)
+                    </button>
+                    <button onclick="setPreset('spl', 130)" class="w-full px-3 py-2 panel-inner-bg hover:opacity-80 rounded text-xs">
+                        ✈️ Décollage avion (130 dB)
                     </button>
                 </div>
             </div>
@@ -350,30 +368,43 @@
             <!-- Pondération -->
             <div class="mb-6">
                 <label class="block text-sm font-semibold mb-2">
-                    Pondération
+                    Pondération Fréquentielle
                     <span class="tooltip">
                         <span class="text-sm">ℹ️</span>
                         <span class="tooltiptext">
-                            dB(Z) ou Linéaire : mesure plate, toutes fréquences égales.<br>
-                            dB(A) : filtre qui simule la sensibilité de l'oreille humaine (atténue les graves et aigus extrêmes).
+                            dB(Z) : mesure plate, toutes fréquences égales.<br>
+                            dB(A) : général, perception humaine moyenne.<br>
+                            dB(B) : niveaux moyens (rarement utilisée).<br>
+                            dB(C) : basses fréquences, impacts, bruits industriels.
                         </span>
                     </span>
                 </label>
-                <div class="space-x-4">
+                <div class="space-y-2">
                     <label class="inline-flex items-center">
                         <input type="radio" name="weighting" value="Z" checked class="mr-2">
-                        dB(Z) / Linéaire
+                        dB(Z) - Linéaire
                     </label>
                     <label class="inline-flex items-center">
                         <input type="radio" name="weighting" value="A" class="mr-2">
-                        dB(A)
+                        dB(A) - Perception humaine
+                    </label>
+                    <label class="inline-flex items-center">
+                        <input type="radio" name="weighting" value="B" class="mr-2">
+                        dB(B) - Niveaux moyens
+                    </label>
+                    <label class="inline-flex items-center">
+                        <input type="radio" name="weighting" value="C" class="mr-2">
+                        dB(C) - Basses fréquences
                     </label>
                 </div>
 
-                <!-- Graphique de pondération A -->
-                <div class="mt-3">
-                    <button id="show-weighting-chart" class="text-xs text-blue-400 hover:underline">
-                        📊 Voir la courbe de pondération A
+                <!-- Boutons pour voir les courbes -->
+                <div class="mt-3 space-y-2">
+                    <button id="show-weighting-a" class="text-xs text-blue-400 hover:underline block">
+                        📊 Courbe de Pondération A
+                    </button>
+                    <button id="show-weighting-bc" class="text-xs text-blue-400 hover:underline block">
+                        📊 Courbes B et C
                     </button>
                 </div>
             </div>
@@ -593,9 +624,35 @@
                         </span>
                     </span>
                 </h3>
+
+                <!-- Sélection du profil de contenu -->
+                <div class="mb-4">
+                    <label class="block text-sm font-semibold mb-2">
+                        Profil de Contenu
+                        <span class="tooltip">
+                            <span class="text-sm">ℹ️</span>
+                            <span class="tooltiptext">
+                                Le profil affecte comment le LUFS est calculé.<br>
+                                Différents types de contenu ont des distributions fréquentielles différentes.<br>
+                                Cela impacte la relation entre niveau de crête (dBFS) et loudness (LUFS).
+                            </span>
+                        </span>
+                    </label>
+                    <select id="lufs-profile" class="w-full px-3 py-2 panel-inner-bg rounded text-sm">
+                        <option value="generic">Générique (standard)</option>
+                        <option value="whitenoise">Bruit blanc (spectre plat)</option>
+                        <option value="sine1k">Sinusoïdale 1 kHz (onde pure)</option>
+                        <option value="speech">Parole (200-2000 Hz)</option>
+                        <option value="music">Musique (complexe)</option>
+                    </select>
+                    <div class="text-xs mt-1" style="color: var(--text-secondary)" id="lufs-profile-description">
+                        Profil par défaut
+                    </div>
+                </div>
+
                 <p class="text-xs mb-3" style="color: var(--text-secondary)">
                     Le dBFS mesure les crêtes (peaks), le LUFS mesure le volume perçu (average/loudness).
-                    Cette simulation estime le LUFS basé sur le niveau actuel.
+                    Cette simulation estime le LUFS basé sur le niveau actuel et le profil.
                 </p>
                 <button id="analyze-loudness" class="w-full px-3 py-2 bg-pink-600 hover:bg-pink-700 rounded mb-3 text-white">
                     📊 Analyser le signal
@@ -630,6 +687,45 @@
             <div class="mb-6 pb-6 border-b" style="border-color: var(--border-color)">
                 <h3 class="text-lg font-bold mb-3 text-blue-300">Interface 1 : Acoustique ↔ Électrique</h3>
 
+                <!-- Sélection du microphone type -->
+                <div class="mb-4">
+                    <label class="block text-sm font-semibold mb-2">
+                        Sélection du Microphone
+                        <span class="tooltip">
+                            <span class="text-sm">ℹ️</span>
+                            <span class="tooltiptext">
+                                Choisissez un microphone type pour charger sa sensibilité prédéfinie.<br>
+                                Les micros dynamiques et électrostatiques ont des sensibilités différentes.<br>
+                                Les micros ruban ont une sensibilité très faible et nécessitent un préampli.
+                            </span>
+                        </span>
+                    </label>
+                    <select id="microphone-selector" class="w-full px-3 py-2 panel-inner-bg rounded" aria-label="Sélection du microphone">
+                        <optgroup label="Microphones Dynamiques">
+                            <option value="sm58">Shure SM58 - Vocal live (16 mV/Pa)</option>
+                            <option value="sm57">Shure SM57 - Instrument (16 mV/Pa)</option>
+                            <option value="sm7b">Shure SM7B - Studio premium (11 mV/Pa)</option>
+                            <option value="shure_ksm8">Shure KSM8 - Dynamique premium (18 mV/Pa)</option>
+                        </optgroup>
+                        <optgroup label="Électrostatiques / Condensateurs">
+                            <option value="neumann_u87">Neumann U87 - Référence studio (12 mV/Pa)</option>
+                            <option value="akg_c414">AKG C414 - Polyvalent (14 mV/Pa)</option>
+                            <option value="rode_nt1">RODE NT1 - Bon rapport signal/bruit (20 mV/Pa)</option>
+                        </optgroup>
+                        <optgroup label="Microphones Ruban">
+                            <option value="royer_r121">Royer R-121 - Professionnel (1.5 mV/Pa)</option>
+                            <option value="coles_4038">Coles 4038 - Vintage (1.5 mV/Pa)</option>
+                            <option value="ribbonmike_sf24">Shure SF-24 - Ruban pro (2.0 mV/Pa)</option>
+                        </optgroup>
+                        <optgroup label="Autre">
+                            <option value="custom" selected>Personnalisé (réglable)</option>
+                        </optgroup>
+                    </select>
+                    <div class="text-xs mt-1" style="color: var(--text-secondary)" id="microphone-description">
+                        Réglable manuellement
+                    </div>
+                </div>
+
                 <!-- Sensibilité du microphone -->
                 <div class="mb-4">
                     <label class="block text-sm font-semibold mb-2">
@@ -643,11 +739,31 @@
                             </span>
                         </span>
                     </label>
-                    <input type="range" id="mic-sensitivity" min="1" max="100" value="22" step="0.1"
+                    <input type="range" id="mic-sensitivity" min="0.5" max="100" value="22" step="0.1"
                            class="w-full" aria-label="Sensibilité du microphone">
                     <div class="flex justify-between text-xs mt-1">
                         <span><span id="mic-sensitivity-value">22.0</span> mV/Pa</span>
                         <span><span id="mic-sensitivity-dbu">-37.0</span> dBu @ 94 dB SPL</span>
+                    </div>
+                </div>
+
+                <!-- Gain du microphone -->
+                <div class="mb-4">
+                    <label class="block text-sm font-semibold mb-2">
+                        Gain du Microphone (Préampli)
+                        <span class="tooltip">
+                            <span class="text-sm">ℹ️</span>
+                            <span class="tooltiptext">
+                                Gain appliqué au microphone (préampli/ampli d'entrée).<br>
+                                Augmente ou réduit le niveau de sortie du micro avant conversion numérique.<br>
+                                Permet de voir l'effet direct sur dBu et dBFS.
+                            </span>
+                        </span>
+                    </label>
+                    <input type="range" id="mic-gain" min="-12" max="12" value="0" step="0.1"
+                           class="w-full" aria-label="Gain du microphone">
+                    <div class="flex justify-between text-xs mt-1">
+                        <span>Gain : <span id="mic-gain-value">0.0</span> dB</span>
                     </div>
                 </div>
 
@@ -887,17 +1003,18 @@
     </div>
 
     <!-- Modal Courbe de Pondération A -->
-    <div id="weighting-modal" class="modal" role="dialog" aria-labelledby="weighting-modal-title" aria-modal="true">
+    <div id="weighting-modal-a" class="modal" role="dialog" aria-labelledby="weighting-modal-a-title" aria-modal="true">
         <div class="modal-content">
             <div class="flex justify-between items-center mb-4">
-                <h2 id="weighting-modal-title" class="text-xl font-bold">📊 Courbe de Pondération A</h2>
-                <button id="close-weighting" class="text-3xl hover:opacity-70" aria-label="Fermer">&times;</button>
+                <h2 id="weighting-modal-a-title" class="text-xl font-bold">📊 Pondération A</h2>
+                <button id="close-weighting-a" class="text-3xl hover:opacity-70" aria-label="Fermer">&times;</button>
             </div>
 
             <div class="mb-4">
+                <h3 class="text-lg font-bold mb-2">dB(A) - Perception Humaine</h3>
                 <p class="text-sm mb-3">
-                    La pondération A simule la réponse de l'oreille humaine aux différentes fréquences.
-                    Elle atténue les graves (<200 Hz) et les aigus extrêmes (>10 kHz).
+                    La pondération A simule la sensibilité de l'oreille humaine aux différentes fréquences.
+                    Elle est la plus couramment utilisée en audio professionnel et pour les mesures de bruit ambiant.
                 </p>
                 <svg width="100%" height="300" viewBox="0 0 600 300" class="panel-inner-bg rounded">
                     <!-- Axes -->
@@ -931,10 +1048,102 @@
                     <text x="310" y="235" fill="#22c55e" font-size="12">Max sensibilité (1-4 kHz)</text>
                 </svg>
 
-                <p class="text-xs mt-3" style="color: var(--text-secondary)">
-                    L'oreille humaine est plus sensible entre 1 kHz et 4 kHz. Les basses fréquences (<100 Hz)
-                    et hautes fréquences (>10 kHz) sont atténuées dans la mesure dB(A).
-                </p>
+                <div class="mt-4 space-y-2 text-sm">
+                    <p><strong>Caractéristiques :</strong></p>
+                    <ul class="list-disc list-inside space-y-1">
+                        <li>Atténue les basses fréquences : -39 dB @ 31.5 Hz, -10 dB @ 100 Hz</li>
+                        <li>Sensibilité maximale entre 1 kHz et 4 kHz (0 dB)</li>
+                        <li>Atténue les aigus : -0.8 dB @ 10 kHz, -6 dB @ 20 kHz</li>
+                        <li>Utilisation : mesures de bruit, audio broadcast, général</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal Courbes B et C -->
+    <div id="weighting-modal-bc" class="modal" role="dialog" aria-labelledby="weighting-modal-bc-title" aria-modal="true">
+        <div class="modal-content">
+            <div class="flex justify-between items-center mb-4">
+                <h2 id="weighting-modal-bc-title" class="text-xl font-bold">📊 Pondérations B et C</h2>
+                <button id="close-weighting-bc" class="text-3xl hover:opacity-70" aria-label="Fermer">&times;</button>
+            </div>
+
+            <div class="space-y-6">
+                <!-- Pondération B -->
+                <div>
+                    <h3 class="text-lg font-bold mb-2 text-purple-400">dB(B) - Niveaux Moyens</h3>
+                    <p class="text-sm mb-3">
+                        La pondération B est rarement utilisée aujourd'hui. Elle était prévue pour les niveaux sonores moyens,
+                        entre A et C. Elle atténue moins les basses fréquences que A mais plus que C.
+                    </p>
+                    <svg width="100%" height="250" viewBox="0 0 600 250" class="panel-inner-bg rounded">
+                        <!-- Axes -->
+                        <line x1="50" y1="200" x2="550" y2="200" stroke="currentColor" stroke-width="2"/>
+                        <line x1="50" y1="200" x2="50" y2="30" stroke="currentColor" stroke-width="2"/>
+
+                        <!-- Graduations -->
+                        <text x="50" y="220" text-anchor="middle" fill="currentColor" font-size="10">10</text>
+                        <text x="150" y="220" text-anchor="middle" fill="currentColor" font-size="10">100</text>
+                        <text x="300" y="220" text-anchor="middle" fill="currentColor" font-size="10">1k</text>
+                        <text x="450" y="220" text-anchor="middle" fill="currentColor" font-size="10">10k</text>
+                        <text x="550" y="220" text-anchor="middle" fill="currentColor" font-size="10">20k</text>
+
+                        <!-- Courbe B (entre A et C) -->
+                        <path d="M 50,60 Q 100,80 150,160 T 300,195 Q 400,198 450,190 T 550,150"
+                              stroke="#a855f7" stroke-width="3" fill="none"/>
+                    </svg>
+                    <p class="text-xs mt-2" style="color: var(--text-secondary)">
+                        Utilisation rare - Principalement historique. Atténuation de -17 dB @ 31.5 Hz
+                    </p>
+                </div>
+
+                <!-- Pondération C -->
+                <div>
+                    <h3 class="text-lg font-bold mb-2 text-orange-400">dB(C) - Basses Fréquences & Impacts</h3>
+                    <p class="text-sm mb-3">
+                        La pondération C atténue très peu les basses et moyennes fréquences. Elle est utilisée pour mesurer
+                        les bruits graves, les impacts, les bruits industriels, et les installations de climatisation.
+                    </p>
+                    <svg width="100%" height="250" viewBox="0 0 600 250" class="panel-inner-bg rounded">
+                        <!-- Axes -->
+                        <line x1="50" y1="200" x2="550" y2="200" stroke="currentColor" stroke-width="2"/>
+                        <line x1="50" y1="200" x2="50" y2="30" stroke="currentColor" stroke-width="2"/>
+
+                        <!-- Graduations -->
+                        <text x="50" y="220" text-anchor="middle" fill="currentColor" font-size="10">10</text>
+                        <text x="150" y="220" text-anchor="middle" fill="currentColor" font-size="10">100</text>
+                        <text x="300" y="220" text-anchor="middle" fill="currentColor" font-size="10">1k</text>
+                        <text x="450" y="220" text-anchor="middle" fill="currentColor" font-size="10">10k</text>
+                        <text x="550" y="220" text-anchor="middle" fill="currentColor" font-size="10">20k</text>
+
+                        <!-- Courbe C (plate pour graves, atténue aigus) -->
+                        <path d="M 50,190 Q 100,190 150,190 L 300,195 Q 400,197 450,180 T 550,120"
+                              stroke="#f97316" stroke-width="3" fill="none"/>
+                    </svg>
+                    <p class="text-xs mt-2" style="color: var(--text-secondary)">
+                        Utilisation : bruits graves, impacts, climatisation. Atténuation de seulement -3 dB @ 31.5 Hz
+                    </p>
+                </div>
+
+                <!-- Comparaison -->
+                <div class="bg-blue-900 bg-opacity-30 rounded p-4">
+                    <h4 class="font-bold mb-2">Tableau Comparatif @ 31.5 Hz</h4>
+                    <table class="text-sm w-full">
+                        <tr>
+                            <td class="pr-4">dB(A)</td>
+                            <td>-39 dB (forte atténuation)</td>
+                        </tr>
+                        <tr>
+                            <td class="pr-4">dB(B)</td>
+                            <td>-17 dB (atténuation modérée)</td>
+                        </tr>
+                        <tr>
+                            <td class="pr-4">dB(C)</td>
+                            <td>-3 dB (très peu d'atténuation)</td>
+                        </tr>
+                    </table>
+                </div>
             </div>
         </div>
     </div>
@@ -965,12 +1174,14 @@
 
             // Paramètres de conversion
             micSensitivity: 22, // mV/Pa
+            micGain: 0, // dB (gain du préampli)
             distance: 1, // mètres
             calibration: 'ebu',
             impedance: 600, // Ohms
             bitDepth: 24,
             weighting: 'Z',
             noiseFloor: 40, // dB SPL
+            lufsProfile: 'generic', // Profil de contenu pour LUFS
 
             // Thème
             theme: 'dark',
@@ -1013,6 +1224,37 @@
             P_REF_DBW: 1.0, // Watts
             SPL_94_DB: 94,
             PRESSURE_1_PA: 1.0
+        };
+
+        // Microphones courants avec leurs sensibilités
+        const MICROPHONES = {
+            // Dynamiques
+            'sm58': { name: 'Shure SM58 (Dynamique)', sensitivity: 16, type: 'Dynamique', description: 'Microphone vocal standard en live' },
+            'sm57': { name: 'Shure SM57 (Dynamique)', sensitivity: 16, type: 'Dynamique', description: 'Instrument, guitare amplifiée' },
+            'sm7b': { name: 'Shure SM7B (Dynamique)', sensitivity: 11, type: 'Dynamique', description: 'Studio, voix, haut de gamme' },
+            'shure_ksm8': { name: 'Shure KSM8 (Dynamique)', sensitivity: 18, type: 'Dynamique', description: 'Condensateur dynamique premium' },
+
+            // Électrostatiques/Condensateurs
+            'neumann_u87': { name: 'Neumann U87 (Électrostatique)', sensitivity: 12, type: 'Électrostatique', description: 'Référence studio, microphone vocal' },
+            'akg_c414': { name: 'AKG C414 (Électrostatique)', sensitivity: 14, type: 'Électrostatique', description: 'Studio, très polyvalent' },
+            'rode_nt1': { name: 'RODE NT1 (Électrostatique)', sensitivity: 20, type: 'Électrostatique', description: 'Rapport signal/bruit excellent' },
+
+            // Ruban
+            'royer_r121': { name: 'Royer R-121 (Ruban)', sensitivity: 1.5, type: 'Ruban', description: 'Son chaleureux, très sensible' },
+            'coles_4038': { name: 'Coles 4038 (Ruban)', sensitivity: 1.5, type: 'Ruban', description: 'Microphone ruban vintage classique' },
+            'ribbonmike_sf24': { name: 'Shure SF-24 (Ruban)', sensitivity: 2.0, type: 'Ruban', description: 'Ruban professionnel' },
+
+            // Personnalisé
+            'custom': { name: 'Personnalisé', sensitivity: 22, type: 'Personnalisé', description: 'Réglable manuellement' }
+        };
+
+        // Profils de contenu pour LUFS (dépendant de la distribution fréquentielle)
+        const LUFS_PROFILES = {
+            'whitenoise': { name: 'Bruit blanc', crestFactor: 3, peakToPower: 3, description: 'Spectre plat, tous fréquences égales' },
+            'sine1k': { name: 'Sinusoïdale 1 kHz', crestFactor: 5, peakToPower: 5, description: 'Onde pure, pas de dynamique' },
+            'speech': { name: 'Parole', crestFactor: 7, peakToPower: 7, description: 'Énergie concentrée 200-2000 Hz' },
+            'music': { name: 'Musique', crestFactor: 4, peakToPower: 4, description: 'Spectre complexe avec variations dynamiques' },
+            'generic': { name: 'Générique', crestFactor: 5, peakToPower: 5, description: 'Profil par défaut' }
         };
 
         // ========================================
@@ -1084,15 +1326,25 @@
             return voltageTodBu(voltageAt1Pa);
         }
 
-        function splTodBuViaMic(dbSPL, micSensitivityMvPerPa, distance) {
+        function splTodBuViaMic(dbSPL, micSensitivityMvPerPa, distance, micGainDb = 0) {
             const adjustedSPL = dbSPL - calculateDistanceLoss(distance);
             const pressure = splToPressure(adjustedSPL);
-            const voltage = (micSensitivityMvPerPa / 1000) * pressure;
+            let voltage = (micSensitivityMvPerPa / 1000) * pressure;
+
+            // Appliquer le gain du microphone (convertir dB en multiplicateur linéaire)
+            const gainMultiplier = Math.pow(10, micGainDb / 20);
+            voltage = voltage * gainMultiplier;
+
             return voltageTodBu(voltage);
         }
 
-        function dBuToSPLViaMic(dBu, micSensitivityMvPerPa, distance) {
-            const voltage = dBuToVoltage(dBu);
+        function dBuToSPLViaMic(dBu, micSensitivityMvPerPa, distance, micGainDb = 0) {
+            let voltage = dBuToVoltage(dBu);
+
+            // Inverser le gain du microphone pour retrouver le voltage original avant amplification
+            const gainMultiplier = Math.pow(10, micGainDb / 20);
+            voltage = voltage / gainMultiplier;
+
             const pressure = voltage / (micSensitivityMvPerPa / 1000);
             const spl = pressureToSPL(pressure);
             return spl + calculateDistanceLoss(distance);
@@ -1208,14 +1460,14 @@
 
         function updateAllDomains() {
             if (state.activeSource === 'acoustic') {
-                state.dBu = splTodBuViaMic(state.dbSPL, state.micSensitivity, state.distance);
+                state.dBu = splTodBuViaMic(state.dbSPL, state.micSensitivity, state.distance, state.micGain);
                 state.dBFS = dBuTodBFS(state.dBu, state.calibration);
             } else if (state.activeSource === 'electric') {
                 state.dBFS = dBuTodBFS(state.dBu, state.calibration);
-                state.dbSPL = dBuToSPLViaMic(state.dBu, state.micSensitivity, state.distance);
+                state.dbSPL = dBuToSPLViaMic(state.dBu, state.micSensitivity, state.distance, state.micGain);
             } else if (state.activeSource === 'digital') {
                 state.dBu = dBFSTodBu(state.dBFS, state.calibration);
-                state.dbSPL = dBuToSPLViaMic(state.dBu, state.micSensitivity, state.distance);
+                state.dbSPL = dBuToSPLViaMic(state.dBu, state.micSensitivity, state.distance, state.micGain);
             }
 
             updateDisplay();
@@ -1304,10 +1556,25 @@
         }
 
         function updateLoudness() {
-            const estimatedLUFS = state.dBFS - 5;
+            const profile = LUFS_PROFILES[state.lufsProfile];
+            // Estimer le LUFS en fonction du profil
+            // LUFS = dBFS - peakToPower (différence entre crête et puissance moyenne)
+            const peakToPowerOffset = profile ? profile.peakToPower : 5;
+            const estimatedLUFS = state.dBFS - peakToPowerOffset;
+
             document.getElementById('lufs-value').textContent = estimatedLUFS.toFixed(1);
             document.getElementById('truepeak-value').textContent = state.dBFS.toFixed(1);
             document.getElementById('lra-value').textContent = '6.0';
+        }
+
+        function updateLufsProfile() {
+            state.lufsProfile = document.getElementById('lufs-profile').value;
+            const profile = LUFS_PROFILES[state.lufsProfile];
+
+            if (profile) {
+                document.getElementById('lufs-profile-description').textContent = profile.description;
+                updateLoudness();
+            }
         }
 
         // ========================================
@@ -1388,6 +1655,32 @@
 
             if (state.activeSource) {
                 updateAllDomains();
+            }
+        }
+
+        function updateMicGain() {
+            state.micGain = parseFloat(document.getElementById('mic-gain').value);
+            document.getElementById('mic-gain-value').textContent = state.micGain >= 0 ? `+${state.micGain.toFixed(1)}` : state.micGain.toFixed(1);
+
+            if (state.activeSource) {
+                updateAllDomains();
+            }
+        }
+
+        function updateMicrophoneSelector() {
+            const selectedMic = document.getElementById('microphone-selector').value;
+            const microphone = MICROPHONES[selectedMic];
+
+            if (microphone) {
+                // Mettre à jour la description
+                document.getElementById('microphone-description').textContent = `${microphone.type} • ${microphone.description}`;
+
+                // Mettre à jour la sensibilité si ce n'est pas le custom
+                if (selectedMic !== 'custom') {
+                    state.micSensitivity = microphone.sensitivity;
+                    document.getElementById('mic-sensitivity').value = microphone.sensitivity;
+                    updateMicSensitivity();
+                }
             }
         }
 
@@ -1559,8 +1852,11 @@
         document.getElementById('history-btn').addEventListener('click', () => openModal('history-modal'));
         document.getElementById('close-history').addEventListener('click', () => closeModal('history-modal'));
 
-        document.getElementById('show-weighting-chart').addEventListener('click', () => openModal('weighting-modal'));
-        document.getElementById('close-weighting').addEventListener('click', () => closeModal('weighting-modal'));
+        document.getElementById('show-weighting-a').addEventListener('click', () => openModal('weighting-modal-a'));
+        document.getElementById('close-weighting-a').addEventListener('click', () => closeModal('weighting-modal-a'));
+
+        document.getElementById('show-weighting-bc').addEventListener('click', () => openModal('weighting-modal-bc'));
+        document.getElementById('close-weighting-bc').addEventListener('click', () => closeModal('weighting-modal-bc'));
 
         // Fermer les modals en cliquant en dehors
         window.addEventListener('click', (e) => {
@@ -1603,12 +1899,15 @@
         });
 
         // Paramètres de conversion
+        document.getElementById('microphone-selector').addEventListener('change', updateMicrophoneSelector);
         document.getElementById('mic-sensitivity').addEventListener('input', updateMicSensitivity);
+        document.getElementById('mic-gain').addEventListener('input', updateMicGain);
         document.getElementById('distance').addEventListener('input', updateDistance);
         document.getElementById('calibration').addEventListener('change', updateCalibration);
         document.getElementById('impedance').addEventListener('input', updateImpedance);
         document.getElementById('bit-depth').addEventListener('change', updateBitDepth);
         document.getElementById('noise-floor').addEventListener('input', updateNoiseFloor);
+        document.getElementById('lufs-profile').addEventListener('change', updateLufsProfile);
 
         // Pondération
         document.querySelectorAll('input[name="weighting"]').forEach(radio => {
