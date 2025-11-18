@@ -205,6 +205,11 @@
             border-radius: 2px;
         }
 
+        /* Utility classes */
+        .hidden {
+            display: none !important;
+        }
+
         /* Alert box */
         .alert {
             padding: 6px 8px;
@@ -788,6 +793,31 @@
                     <label class="block text-sm font-semibold">Niveau dBu</label>
                     <div id="electric-clip-indicator" class="led-indicator led-off" style="width: 20px; height: 20px;" title="Saturation Analogique"></div>
                 </div>
+
+            <!-- 📚 Explications Pédagogiques Acoustique -->
+            <details class="mt-3 panel-inner-bg rounded p-3">
+                <summary class="text-xs font-semibold cursor-pointer text-blue-400 hover:underline">
+                    📚 Comment sont calculées ces valeurs ?
+                </summary>
+                <div class="mt-2 space-y-2 text-xs" style="color: var(--text-secondary); line-height: 1.6;">
+                    <div class="border-l-2 border-blue-400 pl-2">
+                        <strong class="text-blue-400">Pression (Pa) :</strong><br>
+                        P = P₀ × 10^(SPL/20) où P₀ = 20 µPa
+                    </div>
+                    <div class="border-l-2 border-green-400 pl-2">
+                        <strong class="text-green-400">Niveau Pondéré :</strong><br>
+                        SPL pondéré = SPL + correction dB(A/B/C)
+                    </div>
+                    <div class="border-l-2 border-yellow-400 pl-2">
+                        <strong class="text-yellow-400">Bruit de fond :</strong><br>
+                        Bruit = 94 + 20×log₁₀(V_noise / V_sens)
+                    </div>
+                    <div class="border-l-2 border-purple-400 pl-2">
+                        <strong class="text-purple-400">SNR (Signal/Bruit) :</strong><br>
+                        SNR = SPL - Bruit (dB)
+                    </div>
+                </div>
+            </details>
                 <div class="flex justify-center items-center gap-3">
                     <button onclick="adjustLevel('dbu', -6)" class="px-2 py-1 panel-inner-bg hover:bg-purple-600 rounded text-xs" title="÷2 (-6 dB)">÷2</button>
                     <input type="range" id="dbu-slider" min="-60" max="24" value="4" step="0.1"
@@ -883,6 +913,31 @@
                         <span class="font-mono font-bold text-blue-400" id="dynamic-range-electric">128.0</span>
                         <span>dB</span>
                     </div>
+
+            <!-- 📚 Explications Pédagogiques Électrique -->
+            <details class="mt-3 panel-inner-bg rounded p-3">
+                <summary class="text-xs font-semibold cursor-pointer text-purple-400 hover:underline">
+                    📚 Comment sont calculées ces valeurs ?
+                </summary>
+                <div class="mt-2 space-y-2 text-xs" style="color: var(--text-secondary); line-height: 1.6;">
+                    <div class="border-l-2 border-blue-400 pl-2">
+                        <strong class="text-blue-400">Tension (V) :</strong><br>
+                        V = 0.775 × 10^(dBu/20)
+                    </div>
+                    <div class="border-l-2 border-green-400 pl-2">
+                        <strong class="text-green-400">dBu ↔ dBV :</strong><br>
+                        dBV = dBu - 2.2 dB
+                    </div>
+                    <div class="border-l-2 border-yellow-400 pl-2">
+                        <strong class="text-yellow-400">Puissance :</strong><br>
+                        P = V² / Z, dBm = 10×log₁₀(P / 1mW)
+                    </div>
+                    <div class="border-l-2 border-purple-400 pl-2">
+                        <strong class="text-purple-400">SNR Électrique :</strong><br>
+                        SNR = Signal - (EIN + Gain)
+                    </div>
+                </div>
+            </details>
                 </div>
             </div>
         </div>
@@ -2095,7 +2150,10 @@
             document.getElementById('noise-floor-dbfs').textContent = noiseFloorDBFS.toFixed(1);
 
             // SNR numérique (différence entre signal et bruit en dBFS)
-            const snrDigital = state.dBFS - noiseFloorDBFS;
+            // Limité par la profondeur de bits (6.02 dB par bit + 1.76 dB théorique)
+            const theoreticalMaxSNR = state.bitDepth === 32 ? 1500 : (6.02 * state.bitDepth + 1.76);
+            let snrDigital = state.dBFS - noiseFloorDBFS;
+            snrDigital = Math.min(snrDigital, theoreticalMaxSNR);
             document.getElementById('snr-digital').textContent = snrDigital.toFixed(1);
 
             // Dynamique numérique (de plancher de bruit à crête en dBFS)
