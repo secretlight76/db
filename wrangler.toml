@@ -2,23 +2,13 @@
 # Ensures consistent deployment to the same production environment
 # Production URL: https://audio-level-converter.pages.dev
 
-# Project configuration
 name = "audio-level-converter"
 pages_build_output_dir = "public"
-
-# Build command
-[build]
-command = "npm run build"
-cwd = "./"
 
 # Production environment
 [env.production]
 vars = { ENVIRONMENT = "production", ENABLE_ANALYTICS = "true", APP_VERSION = "1.0.0" }
 
-# Staging environment (preview URLs)
-[env.staging]
-vars = { ENVIRONMENT = "staging", ENABLE_ANALYTICS = "false", APP_VERSION = "1.0.0-rc" }
-
-# Development environment
-[env.development]
-vars = { ENVIRONMENT = "development", ENABLE_ANALYTICS = "false", ENABLE_DEBUG = "true", APP_VERSION = "1.0.0-dev" }
+# Preview environment (for pull requests)
+[env.preview]
+vars = { ENVIRONMENT = "preview", ENABLE_ANALYTICS = "false", APP_VERSION = "1.0.0-preview" }
