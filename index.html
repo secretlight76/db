@@ -2454,8 +2454,13 @@
             // Recalculer le bruit de fond car la sensibilité affecte la conversion dBu -> dB SPL
             calculateNoiseFloor();
 
-            if (state.activeSource) {
+            // La sensibilité micro n'affecte QUE la conversion acoustique->électrique
+            // Donc on ne recalcule que si la source active est acoustique
+            if (state.activeSource === 'acoustic') {
                 updateAllDomains();
+            } else {
+                // Sinon, juste mettre à jour l'affichage (SNR, bruit de fond, etc.)
+                updateDisplay();
             }
         }
 
@@ -2466,11 +2471,12 @@
             // Recalculer le bruit de fond car le gain affecte le bruit du préampli
             calculateNoiseFloor();
 
-            // Toujours recalculer tous les domaines car le gain affecte la conversion
-            if (state.activeSource) {
+            // Le gain de préampli n'affecte QUE la conversion acoustique->électrique
+            // Donc on ne recalcule que si la source active est acoustique
+            if (state.activeSource === 'acoustic') {
                 updateAllDomains();
             } else {
-                // Si aucune source n'est active, au moins mettre à jour l'affichage
+                // Sinon, juste mettre à jour l'affichage (SNR, bruit de fond, etc.)
                 updateDisplay();
             }
         }
@@ -2499,8 +2505,13 @@
             const loss = calculateDistanceLoss(state.distance);
             document.getElementById('distance-loss').textContent = loss.toFixed(1);
 
-            if (state.activeSource) {
+            // La distance n'affecte QUE la conversion acoustique->électrique
+            // Donc on ne recalcule que si la source active est acoustique
+            if (state.activeSource === 'acoustic') {
                 updateAllDomains();
+            } else {
+                // Sinon, juste mettre à jour l'affichage
+                updateDisplay();
             }
         }
 
