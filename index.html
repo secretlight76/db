@@ -712,9 +712,9 @@
             </div>
 
             <!-- Pondération avec simulation de fréquence -->
-            <div class="mb-6">
-                <label class="block text-sm font-semibold mb-2">
-                    Pondération Fréquentielle
+            <div class="mb-4">
+                <label class="block text-xs font-semibold mb-1" style="color: var(--text-secondary)">
+                    Pondération
                     <span class="tooltip">
                         <span class="text-sm">ℹ️</span>
                         <span class="tooltiptext">
@@ -725,53 +725,46 @@
                         </span>
                     </span>
                 </label>
-                <select id="weighting" class="w-full px-3 py-2 panel-inner-bg rounded text-sm">
-                    <option value="Z" selected>dB(Z) - Linéaire</option>
-                    <option value="A">dB(A) - Perception humaine</option>
-                    <option value="B">dB(B) - Niveaux moyens</option>
-                    <option value="C">dB(C) - Basses fréquences</option>
+                <select id="weighting" class="w-full px-2 py-1 panel-inner-bg rounded text-xs">
+                    <option value="Z" selected>dB(Z)</option>
+                    <option value="A">dB(A)</option>
+                    <option value="B">dB(B)</option>
+                    <option value="C">dB(C)</option>
                 </select>
 
                 <!-- Sélection de la fréquence d'entrée pour simuler l'effet -->
-                <div class="mt-4 mb-4">
-                    <label class="block text-sm font-semibold mb-2">
-                        Fréquence d'Entrée (pour tester la pondération)
-                        <span class="tooltip">
-                            <span class="text-sm">ℹ️</span>
-                            <span class="tooltiptext">
-                                Sélectionnez une fréquence pour voir l'atténuation appliquée.<br>
-                                Permet de tester l'effet réel de la pondération choisie.<br>
-                                Chaque fréquence aura une atténuation différente selon A, B ou C.
-                            </span>
-                        </span>
-                    </label>
-                    <select id="input-frequency" class="w-full px-3 py-2 panel-inner-bg rounded text-sm">
-                        <option value="31.5">31.5 Hz (Basses)</option>
-                        <option value="63">63 Hz (Graves)</option>
-                        <option value="125">125 Hz (Graves)</option>
-                        <option value="250">250 Hz (Graves-Médiums)</option>
-                        <option value="500">500 Hz (Médiums)</option>
-                        <option value="1000" selected>1 kHz (Médiums - Référence)</option>
-                        <option value="2000">2 kHz (Médiums-Aigus)</option>
-                        <option value="4000">4 kHz (Aigus)</option>
-                        <option value="8000">8 kHz (Aigus)</option>
-                        <option value="10000">10 kHz (Aigus)</option>
-                        <option value="20000">20 kHz (Ultra-aigus)</option>
-                    </select>
-                    <div class="text-xs mt-2" style="color: var(--text-secondary)">
-                        Atténuation appliquée : <span id="attenuation-value">0.0</span> dB
+                <details class="mt-2">
+                    <summary class="text-xs cursor-pointer text-blue-400 hover:underline">⚙️ Options avancées</summary>
+                    <div class="mt-2">
+                        <label class="block text-xs mb-1" style="color: var(--text-secondary)">
+                            Fréquence test
+                        </label>
+                        <select id="input-frequency" class="w-full px-2 py-1 panel-inner-bg rounded text-xs">
+                            <option value="31.5">31.5 Hz</option>
+                            <option value="63">63 Hz</option>
+                            <option value="125">125 Hz</option>
+                            <option value="250">250 Hz</option>
+                            <option value="500">500 Hz</option>
+                            <option value="1000" selected>1 kHz</option>
+                            <option value="2000">2 kHz</option>
+                            <option value="4000">4 kHz</option>
+                            <option value="8000">8 kHz</option>
+                            <option value="10000">10 kHz</option>
+                            <option value="20000">20 kHz</option>
+                        </select>
+                        <div class="text-xs mt-1" style="color: var(--text-secondary)">
+                            Atténuation : <span id="attenuation-value">0.0</span> dB
+                        </div>
+                        <div class="mt-2 space-y-1">
+                            <button id="show-weighting-a" class="text-xs text-blue-400 hover:underline block">
+                                📊 Courbes A
+                            </button>
+                            <button id="show-weighting-bc" class="text-xs text-blue-400 hover:underline block">
+                                📊 Courbes B/C
+                            </button>
+                        </div>
                     </div>
-                </div>
-
-                <!-- Boutons pour voir les courbes -->
-                <div class="mt-3 space-y-2">
-                    <button id="show-weighting-a" class="text-xs text-blue-400 hover:underline block">
-                        📊 Courbe de Pondération A
-                    </button>
-                    <button id="show-weighting-bc" class="text-xs text-blue-400 hover:underline block">
-                        📊 Courbes B et C
-                    </button>
-                </div>
+                </details>
             </div>
 
             <!-- Calculs affichés -->
@@ -815,7 +808,10 @@
             <!-- Contrôle de verrouillage -->
             <!-- Slider principal -->
             <div class="mb-3">
-                <label class="block text-sm font-semibold mb-1">Niveau dBu</label>
+                <div class="flex justify-between items-center mb-1">
+                    <label class="block text-sm font-semibold">Niveau dBu</label>
+                    <div id="electric-clip-indicator" class="led-indicator led-off" style="width: 20px; height: 20px;" title="Saturation Analogique"></div>
+                </div>
                 <div class="flex justify-center items-center gap-3">
                     <button onclick="adjustLevel('dbu', -6)" class="px-2 py-1 panel-inner-bg hover:bg-purple-600 rounded text-xs" title="÷2 (-6 dB)">÷2</button>
                     <input type="range" id="dbu-slider" min="-60" max="24" value="4" step="0.1"
@@ -826,6 +822,9 @@
                 <div class="text-center text-xl font-bold mt-1">
                     <span id="dbu-value">+4.0</span> dBu
                 </div>
+                <div class="text-xs text-center mt-1" style="color: var(--text-secondary)">
+                    Headroom: <span id="electric-headroom-value" class="font-bold">20.0</span> dB
+                </div>
 
                 <!-- Zone de warning SNR (hauteur fixe) -->
                 <div class="mt-1" style="min-height: 28px;">
@@ -833,39 +832,13 @@
                 </div>
             </div>
 
-            <!-- VU Meter -->
+            <!-- VU Meter compact -->
             <div class="mb-4">
-                <label class="block text-sm font-semibold mb-2">
+                <label class="block text-xs font-semibold mb-1" style="color: var(--text-secondary)">
                     VU Meter
-                    <span class="tooltip">
-                        <span class="text-sm">ℹ️</span>
-                        <span class="tooltiptext">
-                            Le VU-mètre (Volume Unit) est calibré selon les réglages.
-                            Typiquement, 0 VU = +4 dBu en studio professionnel.
-                        </span>
-                    </span>
                 </label>
                 <div class="vu-meter">
                     <div class="vu-needle" id="vu-needle"></div>
-                </div>
-            </div>
-
-            <!-- Indicateur de saturation et headroom électrique -->
-            <div class="mb-6">
-                <label class="block text-sm font-semibold mb-2">Indicateur Saturation & Headroom</label>
-                <div class="text-center mb-3">
-                    <div id="electric-clip-indicator" class="led-indicator led-off mx-auto"></div>
-                    <div class="text-xs mt-2" style="color: var(--text-secondary)">Saturation Analogique</div>
-                </div>
-
-                <!-- Headroom électrique visuel -->
-                <div class="mt-3">
-                    <div class="text-xs mb-1" style="color: var(--text-secondary)">
-                        Headroom : <span id="electric-headroom-value" class="font-bold">20.0</span> dB
-                    </div>
-                    <div class="headroom-bar">
-                        <div class="headroom-marker" id="electric-headroom-marker"></div>
-                    </div>
                 </div>
             </div>
 
@@ -954,7 +927,10 @@
             <!-- Contrôle de verrouillage -->
             <!-- Slider principal -->
             <div class="mb-3">
-                <label class="block text-sm font-semibold mb-1">Niveau dBFS</label>
+                <div class="flex justify-between items-center mb-1">
+                    <label class="block text-sm font-semibold">Niveau dBFS</label>
+                    <div id="clip-indicator" class="led-indicator led-off" style="width: 20px; height: 20px;" title="Digital Clipping"></div>
+                </div>
                 <div class="flex justify-center items-center gap-3">
                     <button onclick="adjustLevel('dbfs', -6)" class="px-2 py-1 panel-inner-bg hover:bg-pink-600 rounded text-xs" title="÷2 (-6 dB)">÷2</button>
                     <input type="range" id="dbfs-slider" min="-96" max="0" value="-18" step="0.1"
@@ -965,6 +941,9 @@
                 <div class="text-center text-xl font-bold mt-1">
                     <span id="dbfs-value">-18.0</span> dBFS
                 </div>
+                <div class="text-xs text-center mt-1" style="color: var(--text-secondary)">
+                    Headroom: <span id="headroom-value" class="font-bold">18.0</span> dB
+                </div>
 
                 <!-- Zone de warning clip/headroom (hauteur fixe) -->
                 <div class="mt-1" style="min-height: 28px;">
@@ -972,43 +951,16 @@
                 </div>
             </div>
 
-            <!-- Crête-mètre (Peak Meter) -->
+            <!-- Crête-mètre (Peak Meter) compact -->
             <div class="mb-4">
-                <label class="block text-sm font-semibold mb-2">
-                    Crête-mètre (Peak Meter)
-                    <span class="tooltip">
-                        <span class="text-sm">ℹ️</span>
-                        <span class="tooltiptext">
-                            Le crête-mètre affiche le niveau maximum instantané en dBFS.<br>
-                            0 dBFS = maximum numérique (clip).<br>
-                            Zone verte : sûr, jaune : attention, rouge : clip.
-                        </span>
-                    </span>
+                <label class="block text-xs font-semibold mb-1" style="color: var(--text-secondary)">
+                    Peak Meter
                 </label>
                 <div class="vu-meter">
                     <div class="vu-needle" id="peak-needle"></div>
                 </div>
                 <div class="text-xs text-center mt-1" style="color: var(--text-secondary)">
                     Crête : <span id="peak-meter-value" class="font-bold">-18.0</span> dBFS
-                </div>
-            </div>
-
-            <!-- Indicateur de clip et headroom -->
-            <div class="mb-6">
-                <label class="block text-sm font-semibold mb-2">Indicateur CLIP & Headroom</label>
-                <div class="text-center mb-3">
-                    <div id="clip-indicator" class="led-indicator led-off mx-auto"></div>
-                    <div class="text-xs mt-2" style="color: var(--text-secondary)">Digital Clipping</div>
-                </div>
-
-                <!-- Headroom visuel -->
-                <div class="mt-3">
-                    <div class="text-xs mb-1" style="color: var(--text-secondary)">
-                        Headroom : <span id="headroom-value" class="font-bold">18.0</span> dB
-                    </div>
-                    <div class="headroom-bar">
-                        <div class="headroom-marker" id="headroom-marker"></div>
-                    </div>
                 </div>
             </div>
 
@@ -1974,10 +1926,10 @@
             const splWarning = document.getElementById('spl-warning');
             if (state.dbSPL >= 120) {
                 splWarning.className = 'alert alert-danger';
-                splWarning.textContent = '🔴 DANGER ! ≥120 dB : Dommages auditifs immédiats possibles';
-            } else if (state.dbSPL > 85) {
+                splWarning.textContent = '🔴 ≥120 dB : Dommages immédiats possibles';
+            } else if (state.dbSPL >= 85) {
                 splWarning.className = 'alert alert-warning';
-                splWarning.textContent = '⚠️ >85 dB : Limitez le temps d\'exposition';
+                splWarning.textContent = '⚠️ ≥85 dB : Limitez exposition';
             } else {
                 splWarning.className = 'hidden';
                 splWarning.textContent = '';
@@ -1988,10 +1940,10 @@
             const snrWarning = document.getElementById('snr-warning');
             if (snr >= 80) {
                 snrWarning.className = 'alert alert-success';
-                snrWarning.textContent = '✅ SNR excellent (' + snr.toFixed(0) + ' dB)';
+                snrWarning.textContent = '✅ SNR excellent (' + snr.toFixed(1) + ' dB)';
             } else if (snr < 30 && state.dbSPL > 0) {
                 snrWarning.className = 'alert alert-warning';
-                snrWarning.textContent = '⚠️ SNR faible (' + snr.toFixed(0) + ' dB). Bruit audible';
+                snrWarning.textContent = '⚠️ SNR faible (' + snr.toFixed(1) + ' dB)';
             } else {
                 snrWarning.className = 'hidden';
                 snrWarning.textContent = '';
@@ -2003,13 +1955,13 @@
 
             if (state.dBFS > -0.1) {
                 clipWarning.className = 'alert alert-danger';
-                clipWarning.textContent = '🔴 CLIP ! Réduisez le gain immédiatement';
+                clipWarning.textContent = '🔴 CLIP ! Réduisez gain';
             } else if (state.dBFS > -3) {
                 clipWarning.className = 'alert alert-danger';
-                clipWarning.textContent = '⚠️ Très proche du clip (' + Math.abs(state.dBFS).toFixed(1) + ' dB)';
+                clipWarning.textContent = '⚠️ Proche clip (' + Math.abs(state.dBFS).toFixed(1) + ' dB)';
             } else if (headroom < 6 && state.dBFS < 0) {
                 clipWarning.className = 'alert alert-warning';
-                clipWarning.textContent = '⚠️ Headroom faible (' + headroom.toFixed(0) + ' dB)';
+                clipWarning.textContent = '⚠️ Headroom faible (' + headroom.toFixed(1) + ' dB)';
             } else {
                 clipWarning.className = 'hidden';
                 clipWarning.textContent = '';
@@ -2426,6 +2378,9 @@
         function updateBitDepth() {
             state.bitDepth = parseInt(document.getElementById('bit-depth').value);
             updateDynamicRange();
+            if (state.activeSource) {
+                updateAllDomains();
+            }
         }
 
         function updatePreampSelector() {
@@ -2447,6 +2402,9 @@
                     document.getElementById('preamp-ein').textContent = preamp.ein.toFixed(1);
                 }
                 calculateNoiseFloor();
+                if (state.activeSource) {
+                    updateAllDomains();
+                }
             }
         }
 
@@ -2455,6 +2413,9 @@
             state.preampEIN = customEIN;
             document.getElementById('preamp-ein').textContent = customEIN.toFixed(1);
             calculateNoiseFloor();
+            if (state.activeSource) {
+                updateAllDomains();
+            }
         }
 
         function calculateNoiseFloor() {
@@ -2476,12 +2437,11 @@
             const pressureRatio = noiseVoltage / sensitivityV;
             state.noiseFloor = 94 + 20 * Math.log10(pressureRatio);
 
-            // Limiter le bruit de fond à des valeurs réalistes (20-80 dB SPL)
-            state.noiseFloor = Math.max(20, Math.min(80, state.noiseFloor));
+            // Limiter le bruit de fond à des valeurs réalistes (10-100 dB SPL)
+            state.noiseFloor = Math.max(10, Math.min(100, state.noiseFloor));
 
             // Mise à jour de l'affichage
             document.getElementById('noise-floor-calculated').textContent = state.noiseFloor.toFixed(1);
-            updateDisplay();
         }
 
         // ========================================
