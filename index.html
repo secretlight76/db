@@ -694,9 +694,9 @@
             </div>
 
             <!-- Presets enrichis -->
-            <div class="mb-4">
-                <label class="block text-sm font-semibold mb-2">Presets de Niveaux</label>
-                <select id="spl-preset" class="w-full px-3 py-2 panel-inner-bg rounded text-sm" onchange="setPreset('spl', parseFloat(this.value))">
+            <div class="mb-3">
+                <label class="block text-xs font-semibold mb-1" style="color: var(--text-secondary)">Presets</label>
+                <select id="spl-preset" class="w-full px-2 py-1 panel-inner-bg rounded text-xs" onchange="setPreset('spl', parseFloat(this.value))">
                     <option value="">-- Choisir un preset --</option>
                     <option value="0">🔇 Seuil d'audition (0 dB)</option>
                     <option value="30">🤫 Chuchotement (30 dB)</option>
@@ -712,7 +712,7 @@
             </div>
 
             <!-- Pondération avec simulation de fréquence -->
-            <div class="mb-4">
+            <div class="mb-3">
                 <label class="block text-xs font-semibold mb-1" style="color: var(--text-secondary)">
                     Pondération
                     <span class="tooltip">
@@ -726,45 +726,21 @@
                     </span>
                 </label>
                 <select id="weighting" class="w-full px-2 py-1 panel-inner-bg rounded text-xs">
-                    <option value="Z" selected>dB(Z)</option>
-                    <option value="A">dB(A)</option>
-                    <option value="B">dB(B)</option>
-                    <option value="C">dB(C)</option>
+                    <option value="Z" selected>dB(Z) - Linéaire</option>
+                    <option value="A">dB(A) - Perception humaine</option>
+                    <option value="B">dB(B) - Niveaux moyens</option>
+                    <option value="C">dB(C) - Basses fréquences</option>
                 </select>
+            </div>
 
-                <!-- Sélection de la fréquence d'entrée pour simuler l'effet -->
-                <details class="mt-2">
-                    <summary class="text-xs cursor-pointer text-blue-400 hover:underline">⚙️ Options avancées</summary>
-                    <div class="mt-2">
-                        <label class="block text-xs mb-1" style="color: var(--text-secondary)">
-                            Fréquence test
-                        </label>
-                        <select id="input-frequency" class="w-full px-2 py-1 panel-inner-bg rounded text-xs">
-                            <option value="31.5">31.5 Hz</option>
-                            <option value="63">63 Hz</option>
-                            <option value="125">125 Hz</option>
-                            <option value="250">250 Hz</option>
-                            <option value="500">500 Hz</option>
-                            <option value="1000" selected>1 kHz</option>
-                            <option value="2000">2 kHz</option>
-                            <option value="4000">4 kHz</option>
-                            <option value="8000">8 kHz</option>
-                            <option value="10000">10 kHz</option>
-                            <option value="20000">20 kHz</option>
-                        </select>
-                        <div class="text-xs mt-1" style="color: var(--text-secondary)">
-                            Atténuation : <span id="attenuation-value">0.0</span> dB
-                        </div>
-                        <div class="mt-2 space-y-1">
-                            <button id="show-weighting-a" class="text-xs text-blue-400 hover:underline block">
-                                📊 Courbes A
-                            </button>
-                            <button id="show-weighting-bc" class="text-xs text-blue-400 hover:underline block">
-                                📊 Courbes B/C
-                            </button>
-                        </div>
-                    </div>
-                </details>
+            <!-- Fréquence de test (caché par défaut) -->
+            <div style="display: none;">
+                <select id="input-frequency">
+                    <option value="1000" selected>1 kHz</option>
+                </select>
+                <span id="attenuation-value">0.0</span>
+                <button id="show-weighting-a"></button>
+                <button id="show-weighting-bc"></button>
             </div>
 
             <!-- Calculs affichés -->
@@ -843,9 +819,9 @@
             </div>
 
             <!-- Presets de Niveaux -->
-            <div class="mb-6">
-                <label class="block text-sm font-semibold mb-2">Presets de Niveaux</label>
-                <select id="dbu-preset" class="w-full px-3 py-2 panel-inner-bg rounded text-sm" onchange="setPreset('dbu', parseFloat(this.value))">
+            <div class="mb-3">
+                <label class="block text-xs font-semibold mb-1" style="color: var(--text-secondary)">Presets</label>
+                <select id="dbu-preset" class="w-full px-2 py-1 panel-inner-bg rounded text-xs" onchange="setPreset('dbu', parseFloat(this.value))">
                     <option value="">-- Choisir un preset --</option>
                     <option value="-10">🏠 Ligne Consommateur (-10 dBV ≈ -7.8 dBu)</option>
                     <option value="0" selected>📏 Référence 0 dBu (0.775V)</option>
@@ -965,9 +941,9 @@
             </div>
 
             <!-- Presets de Niveaux -->
-            <div class="mb-6">
-                <label class="block text-sm font-semibold mb-2">Presets de Niveaux</label>
-                <select id="dbfs-preset" class="w-full px-3 py-2 panel-inner-bg rounded text-sm" onchange="setPreset('dbfs', parseFloat(this.value))">
+            <div class="mb-3">
+                <label class="block text-xs font-semibold mb-1" style="color: var(--text-secondary)">Presets</label>
+                <select id="dbfs-preset" class="w-full px-2 py-1 panel-inner-bg rounded text-xs" onchange="setPreset('dbfs', parseFloat(this.value))">
                     <option value="">-- Choisir un preset --</option>
                     <option value="-23">📺 LUFS Target (-23 LUFS ≈ -23 dBFS)</option>
                     <option value="-20">🇺🇸 Standard USA (-20 dBFS / SMPTE)</option>
@@ -2372,7 +2348,9 @@
         function updateImpedance() {
             state.impedance = parseFloat(document.getElementById('impedance').value);
             document.getElementById('impedance-value').textContent = state.impedance.toFixed(0);
-            updateDisplay();
+            if (state.activeSource) {
+                updateAllDomains();
+            }
         }
 
         function updateBitDepth() {
