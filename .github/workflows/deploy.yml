@@ -1,0 +1,89 @@
+name: Deploy to Cloudflare Pages
+
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+    branches:
+      - main
+
+env:
+  NODE_VERSION: '22'
+  NPM_VERSION: '10'
+
+jobs:
+  build-and-deploy:
+    runs-on: ubuntu-latest
+    environment: production
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: 'npm'
+
+      - name: Verify Node version
+        run: |
+          echo "Node version: $(node --version)"
+          echo "npm version: $(npm --version)"
+          node --version | grep -E "v22\." || (echo "ERROR: Node 22 required" && exit 1)
+
+      - name: Install dependencies
+        run: npm ci --prefer-offline --no-audit
+
+      - name: Run build
+        run: npm run build
+
+      - name: Deploy to Cloudflare Pages (Production)
+        if: github.ref == 'refs/heads/main' && github.event_name == 'push'
+        uses: cloudflare/pages-action@v1
+        with:
+          apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+          projectName: audio-level-converter
+          directory: public
+          productionBranch: main
+          wranglerVersion: '3'
+
+      - name: Deploy Preview (Pull Requests)
+        if: github.event_name == 'pull_request'
+        uses: cloudflare/pages-action@v1
+        with:
+          apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+          projectName: audio-level-converter
+          directory: public
+          wranglerVersion: '3'
+
+      - name: Verify Deployment
+        if: github.ref == 'refs/heads/main' && github.event_name == 'push'
+        run: |
+          echo "✅ Deployment to production environment completed"
+          echo "Production URL: https://audio-level-converter.pages.dev"
+          echo "Environment: PRODUCTION (consistent across deployments)"
+
+      - name: Slack Notification (Optional)
+        if: always()
+        uses: slackapi/slack-github-action@v1
+        with:
+          webhook-url: ${{ secrets.SLACK_WEBHOOK }}
+          payload: |
+            {
+              "text": "Audio Converter Deployment: ${{ job.status }}",
+              "blocks": [
+                {
+                  "type": "section",
+                  "text": {
+                    "type": "mrkdwn",
+                    "text": "*Audio Level Converter*\nDeployment: *${{ job.status }}*\nBranch: `${{ github.ref }}`\nCommit: `${{ github.sha }}`"
+                  }
+                }
+              ]
+            }

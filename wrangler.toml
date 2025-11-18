@@ -1,0 +1,52 @@
+# Cloudflare Pages Configuration
+# This ensures consistent deployment to the same production environment
+
+main = "public/index.html"
+site = { directory = "public" }
+
+# Define environments
+env.production = {
+  routes = [
+    { pattern = "gabrielfadavi.pages.dev", zone_name = "gabrielfadavi.pages.dev" }
+  ],
+  # Production variables available to public functions
+  vars = { ENVIRONMENT = "production" }
+}
+
+env.staging = {
+  routes = [
+    { pattern = "gabrielfadavi-staging.pages.dev", zone_name = "gabrielfadavi-staging.pages.dev" }
+  ],
+  vars = { ENVIRONMENT = "staging" }
+}
+
+env.development = {
+  # Local development
+  vars = { ENVIRONMENT = "development" }
+}
+
+# Global configuration
+name = "audio-level-converter"
+type = "javascript"
+account_id = "" # Set via environment variable or wrangler login
+project_name = "audio-level-converter"
+
+# Build configuration
+[build]
+command = "npm run build"
+cwd = "./"
+watch_paths = ["public/**/*", "src/**/*"]
+
+# Development
+[env.development.build]
+watch_paths = ["src/**/*", "public/**/*"]
+
+# Limits and settings
+limits = {
+  cpu_milliseconds = 50
+}
+
+# Observability
+observability = {
+  enabled = true
+}

@@ -2,15 +2,21 @@
   "name": "audio-level-converter",
   "version": "1.0.0",
   "description": "Le Convertisseur de Niveaux Audio : dB SPL, dBu, dBFS - Application éducative",
-  "main": "index.html",
+  "main": "public/index.html",
   "type": "module",
   "engines": {
-    "node": ">=22.0.0"
+    "node": ">=22.0.0",
+    "npm": ">=10.0.0"
   },
   "scripts": {
-    "dev": "npx http-server -p 8080",
-    "build": "echo 'Static site - no build needed'",
-    "preview": "npx http-server -p 8080"
+    "dev": "http-server public -p 8080 -c-1",
+    "build": "echo 'Static site - assets ready in public/'",
+    "preview": "http-server public -p 8080 -c-1",
+    "start": "npm run dev",
+    "deploy:staging": "wrangler pages deploy public --project-name audio-level-converter --branch staging",
+    "deploy:production": "wrangler pages deploy public --project-name audio-level-converter --branch main",
+    "verify": "node scripts/verify-env.js",
+    "env:check": "node -e \"console.log('Node:', process.version); console.log('npm:', require('child_process').execSync('npm -v').toString().trim()); console.log('Environment:', process.env.NODE_ENV || 'development')\""
   },
   "keywords": [
     "audio",
@@ -19,8 +25,16 @@
     "dBu",
     "dBFS",
     "education",
-    "audio-engineering"
+    "audio-engineering",
+    "psychoacoustics",
+    "loudness"
   ],
-  "author": "",
-  "license": "MIT"
+  "author": "Gabriel Fadavi",
+  "license": "MIT",
+  "devDependencies": {
+    "http-server": "^14.1.1"
+  },
+  "optionalDependencies": {
+    "wrangler": "^3.0.0"
+  }
 }
