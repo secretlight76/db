@@ -494,11 +494,70 @@
                     <div class="text-xs mt-2" style="color: var(--text-secondary)">
                         EIN : <span id="preamp-ein" class="font-bold">-128.0</span> dBu
                     </div>
+
+                    <!-- Champ personnalisé pour EIN (visible uniquement si "Personnalisé" est sélectionné) -->
+                    <div id="custom-ein-container" class="mt-3" style="display: none;">
+                        <label class="block text-xs font-semibold mb-1" style="color: var(--text-secondary)">
+                            EIN Personnalisé (dBu)
+                        </label>
+                        <input type="number" id="custom-ein" min="-140" max="-80" value="-128" step="0.5"
+                               class="w-full px-2 py-1 panel-inner-bg rounded text-sm"
+                               placeholder="-128"
+                               aria-label="EIN personnalisé">
+                        <div class="text-xs mt-1 opacity-70">
+                            Plage typique : -100 (bas de gamme) à -131 (premium)
+                        </div>
+                    </div>
+
                     <div class="text-xs mt-1" style="color: var(--text-secondary)">
                         Bruit de fond : <span id="noise-floor-calculated" class="font-bold">40.0</span> dB SPL
                     </div>
                     <div class="text-xs mt-1 font-semibold" style="color: #4ade80">
                         SNR (Signal/Bruit) : <span id="snr-value" class="font-bold">54.0</span> dB
+                    </div>
+                </div>
+
+                <!-- Sensibilité du Microphone (réglage manuel) -->
+                <div class="mb-4">
+                    <label class="block text-sm font-semibold mb-2">
+                        Sensibilité du Microphone
+                        <span class="tooltip">
+                            <span class="text-sm">ℹ️</span>
+                            <span class="tooltiptext">
+                                La sensibilité détermine la tension de sortie pour une pression donnée.<br>
+                                1 Pascal (94 dB SPL) produit X mV selon la sensibilité.<br>
+                                Dynamiques : 10-20 mV/Pa, Électrostatiques : 20-30 mV/Pa, Rubans : 1-3 mV/Pa
+                            </span>
+                        </span>
+                    </label>
+                    <input type="range" id="mic-sensitivity" min="1" max="40" value="22" step="0.1"
+                           class="w-full"
+                           aria-label="Sensibilité du microphone">
+                    <div class="flex justify-between text-xs mt-1" style="color: var(--text-secondary)">
+                        <span>Sensibilité : <span id="mic-sensitivity-value" class="font-bold">22.0</span> mV/Pa</span>
+                        <span>≈ <span id="mic-sensitivity-dbu" class="font-bold">-44.0</span> dBu @ 94 dB SPL</span>
+                    </div>
+                </div>
+
+                <!-- Gain du Préampli (réglage manuel) -->
+                <div class="mb-4">
+                    <label class="block text-sm font-semibold mb-2">
+                        Gain du Préampli
+                        <span class="tooltip">
+                            <span class="text-sm">ℹ️</span>
+                            <span class="tooltiptext">
+                                Le gain amplifie le signal du microphone mais amplifie aussi le bruit du préampli.<br>
+                                Typiquement : 20-60 dB pour la voix, 10-40 dB pour les instruments forts.<br>
+                                Attention : plus de gain = plus de bruit !
+                            </span>
+                        </span>
+                    </label>
+                    <input type="range" id="mic-gain" min="0" max="70" value="40" step="0.5"
+                           class="w-full"
+                           aria-label="Gain du préampli">
+                    <div class="flex justify-between text-xs mt-1" style="color: var(--text-secondary)">
+                        <span>Gain : <span id="mic-gain-value" class="font-bold">+40.0</span> dB</span>
+                        <span class="text-xs opacity-70">0-70 dB</span>
                     </div>
                 </div>
             </div>
@@ -552,38 +611,19 @@
             <!-- Presets enrichis -->
             <div class="mb-6">
                 <label class="block text-sm font-semibold mb-2">Presets de Niveaux</label>
-                <div class="space-y-2">
-                    <button onclick="setPreset('spl', 0)" class="w-full px-3 py-2 panel-inner-bg hover:opacity-80 rounded text-xs">
-                        🔇 Seuil d'audition (0 dB)
-                    </button>
-                    <button onclick="setPreset('spl', 94)" class="w-full px-3 py-2 bg-blue-600 hover:bg-blue-500 rounded text-xs font-bold">
-                        📏 Référence Standard (94 dB SPL = 1 Pascal)
-                    </button>
-                    <button onclick="setPreset('spl', 30)" class="w-full px-3 py-2 panel-inner-bg hover:opacity-80 rounded text-xs">
-                        🤫 Chuchotement (30 dB)
-                    </button>
-                    <button onclick="setPreset('spl', 50)" class="w-full px-3 py-2 panel-inner-bg hover:opacity-80 rounded text-xs">
-                        📖 Bureau très calme (50 dB)
-                    </button>
-                    <button onclick="setPreset('spl', 65)" class="w-full px-3 py-2 panel-inner-bg hover:opacity-80 rounded text-xs">
-                        🗣️ Conversation normale (65 dB)
-                    </button>
-                    <button onclick="setPreset('spl', 70)" class="w-full px-3 py-2 panel-inner-bg hover:opacity-80 rounded text-xs">
-                        📺 Télévision (70 dB)
-                    </button>
-                    <button onclick="setPreset('spl', 80)" class="w-full px-3 py-2 panel-inner-bg hover:opacity-80 rounded text-xs">
-                        🍳 Cuisine en activité (80 dB)
-                    </button>
-                    <button onclick="setPreset('spl', 85)" class="w-full px-3 py-2 panel-inner-bg hover:opacity-80 rounded text-xs">
-                        🚗 Circulation routière (85 dB)
-                    </button>
-                    <button onclick="setPreset('spl', 115)" class="w-full px-3 py-2 panel-inner-bg hover:opacity-80 rounded text-xs">
-                        🎸 Concert rock (115 dB)
-                    </button>
-                    <button onclick="setPreset('spl', 130)" class="w-full px-3 py-2 panel-inner-bg hover:opacity-80 rounded text-xs">
-                        ✈️ Décollage avion (130 dB)
-                    </button>
-                </div>
+                <select id="spl-preset" class="w-full px-3 py-2 panel-inner-bg rounded text-sm" onchange="setPreset('spl', parseFloat(this.value))">
+                    <option value="">-- Choisir un preset --</option>
+                    <option value="0">🔇 Seuil d'audition (0 dB)</option>
+                    <option value="30">🤫 Chuchotement (30 dB)</option>
+                    <option value="50">📖 Bureau très calme (50 dB)</option>
+                    <option value="65">🗣️ Conversation normale (65 dB)</option>
+                    <option value="70">📺 Télévision (70 dB)</option>
+                    <option value="80">🍳 Cuisine en activité (80 dB)</option>
+                    <option value="85">🚗 Circulation routière (85 dB)</option>
+                    <option value="94" selected>📏 Référence Standard (94 dB SPL = 1 Pascal)</option>
+                    <option value="115">🎸 Concert rock (115 dB)</option>
+                    <option value="130">✈️ Décollage avion (130 dB)</option>
+                </select>
             </div>
 
             <!-- Pondération avec simulation de fréquence -->
@@ -743,23 +783,35 @@
                 </div>
             </div>
 
+            <!-- Indicateur de saturation et headroom électrique -->
+            <div class="mb-6">
+                <label class="block text-sm font-semibold mb-2">Indicateur Saturation & Headroom</label>
+                <div class="text-center mb-3">
+                    <div id="electric-clip-indicator" class="led-indicator led-off mx-auto"></div>
+                    <div class="text-xs mt-2" style="color: var(--text-secondary)">Saturation Analogique</div>
+                </div>
+
+                <!-- Headroom électrique visuel -->
+                <div class="mt-3">
+                    <div class="text-xs mb-1" style="color: var(--text-secondary)">
+                        Headroom : <span id="electric-headroom-value" class="font-bold">20.0</span> dB
+                    </div>
+                    <div class="headroom-bar">
+                        <div class="headroom-marker" id="electric-headroom-marker"></div>
+                    </div>
+                </div>
+            </div>
+
             <!-- Presets de Niveaux -->
             <div class="mb-6">
                 <label class="block text-sm font-semibold mb-2">Presets de Niveaux</label>
-                <div class="space-y-2">
-                    <button onclick="setPreset('dbu', 0)" class="w-full px-3 py-2 bg-purple-600 hover:bg-purple-500 rounded text-xs font-bold">
-                        📏 Référence 0 dBu (0.775V)
-                    </button>
-                    <button onclick="setPreset('dbu', 4)" class="w-full px-3 py-2 panel-inner-bg hover:opacity-80 rounded text-xs">
-                        🎙️ Ligne Pro (+4 dBu)
-                    </button>
-                    <button onclick="setPreset('dbu', -10)" class="w-full px-3 py-2 panel-inner-bg hover:opacity-80 rounded text-xs">
-                        🏠 Ligne Consommateur (-10 dBV ≈ -7.8 dBu)
-                    </button>
-                    <button onclick="setPreset('dbu', 24)" class="w-full px-3 py-2 panel-inner-bg hover:opacity-80 rounded text-xs">
-                        ⚠️ Maximum (+24 dBu)
-                    </button>
-                </div>
+                <select id="dbu-preset" class="w-full px-3 py-2 panel-inner-bg rounded text-sm" onchange="setPreset('dbu', parseFloat(this.value))">
+                    <option value="">-- Choisir un preset --</option>
+                    <option value="-10">🏠 Ligne Consommateur (-10 dBV ≈ -7.8 dBu)</option>
+                    <option value="0" selected>📏 Référence 0 dBu (0.775V)</option>
+                    <option value="4">🎙️ Ligne Pro (+4 dBu)</option>
+                    <option value="24">⚠️ Maximum (+24 dBu)</option>
+                </select>
             </div>
 
             <!-- Calculs affichés -->
@@ -886,23 +938,14 @@
             <!-- Presets de Niveaux -->
             <div class="mb-6">
                 <label class="block text-sm font-semibold mb-2">Presets de Niveaux</label>
-                <div class="space-y-2">
-                    <button onclick="setPreset('dbfs', 0)" class="w-full px-3 py-2 panel-inner-bg hover:opacity-80 rounded text-xs">
-                        ⚠️ Maximum (0 dBFS - Clip!)
-                    </button>
-                    <button onclick="setPreset('dbfs', -9)" class="w-full px-3 py-2 bg-pink-600 hover:bg-pink-500 rounded text-xs font-bold">
-                        📏 Standard Broadcast (-9 dBFS)
-                    </button>
-                    <button onclick="setPreset('dbfs', -18)" class="w-full px-3 py-2 bg-pink-600 hover:bg-pink-500 rounded text-xs font-bold">
-                        📏 Standard Studio (-18 dBFS / EBU)
-                    </button>
-                    <button onclick="setPreset('dbfs', -20)" class="w-full px-3 py-2 panel-inner-bg hover:opacity-80 rounded text-xs">
-                        🇺🇸 Standard USA (-20 dBFS / SMPTE)
-                    </button>
-                    <button onclick="setPreset('dbfs', -23)" class="w-full px-3 py-2 panel-inner-bg hover:opacity-80 rounded text-xs">
-                        📺 LUFS Target (-23 LUFS ≈ -23 dBFS)
-                    </button>
-                </div>
+                <select id="dbfs-preset" class="w-full px-3 py-2 panel-inner-bg rounded text-sm" onchange="setPreset('dbfs', parseFloat(this.value))">
+                    <option value="">-- Choisir un preset --</option>
+                    <option value="-23">📺 LUFS Target (-23 LUFS ≈ -23 dBFS)</option>
+                    <option value="-20">🇺🇸 Standard USA (-20 dBFS / SMPTE)</option>
+                    <option value="-18" selected>📏 Standard Studio (-18 dBFS / EBU)</option>
+                    <option value="-9">📏 Standard Broadcast (-9 dBFS)</option>
+                    <option value="0">⚠️ Maximum (0 dBFS - Clip!)</option>
+                </select>
             </div>
 
             <!-- Profondeur de bits -->
@@ -1959,6 +2002,29 @@
             const vuPosition = Math.max(0, Math.min(100, 60 + (vu * 2)));
             document.getElementById('vu-needle').style.left = vuPosition + '%';
 
+            // Indicateur de saturation électrique
+            // Le niveau maximal typique pour l'électrique est +24 dBu
+            const electricMaxLevel = 24;
+            const electricClipIndicator = document.getElementById('electric-clip-indicator');
+            if (state.dBu > electricMaxLevel) {
+                electricClipIndicator.classList.remove('led-off', 'led-warning');
+                electricClipIndicator.classList.add('led-on');
+            } else if (state.dBu > electricMaxLevel - 3) {
+                electricClipIndicator.classList.remove('led-off', 'led-on');
+                electricClipIndicator.classList.add('led-warning');
+            } else {
+                electricClipIndicator.classList.remove('led-on', 'led-warning');
+                electricClipIndicator.classList.add('led-off');
+            }
+
+            // Headroom électrique
+            const electricHeadroom = electricMaxLevel - state.dBu;
+            document.getElementById('electric-headroom-value').textContent = electricHeadroom.toFixed(1);
+
+            // Headroom marker (24 dBu = 100%)
+            const electricHeadroomPosition = Math.max(0, Math.min(100, (state.dBu + 60) / 84 * 100));
+            document.getElementById('electric-headroom-marker').style.left = electricHeadroomPosition + '%';
+
             // Plancher de bruit électrique (dBu) - Bruit du préampli à la sortie
             const noiseFloorDBu = state.preampEIN + state.micGain;
             document.getElementById('noise-floor-dbu').textContent = noiseFloorDBu.toFixed(1);
@@ -2265,12 +2331,30 @@
         function updatePreampSelector() {
             const selectedPreamp = document.getElementById('preamp-selector').value;
             const preamp = PREAMPS[selectedPreamp];
+            const customContainer = document.getElementById('custom-ein-container');
 
             if (preamp) {
-                state.preampEIN = preamp.ein;
-                document.getElementById('preamp-ein').textContent = preamp.ein.toFixed(1);
+                // Si "Personnalisé" est sélectionné, montrer le champ de saisie
+                if (selectedPreamp === 'custom') {
+                    customContainer.style.display = 'block';
+                    // Utiliser la valeur du champ personnalisé
+                    const customEIN = parseFloat(document.getElementById('custom-ein').value);
+                    state.preampEIN = customEIN;
+                    document.getElementById('preamp-ein').textContent = customEIN.toFixed(1);
+                } else {
+                    customContainer.style.display = 'none';
+                    state.preampEIN = preamp.ein;
+                    document.getElementById('preamp-ein').textContent = preamp.ein.toFixed(1);
+                }
                 calculateNoiseFloor();
             }
+        }
+
+        function updateCustomEIN() {
+            const customEIN = parseFloat(document.getElementById('custom-ein').value);
+            state.preampEIN = customEIN;
+            document.getElementById('preamp-ein').textContent = customEIN.toFixed(1);
+            calculateNoiseFloor();
         }
 
         function calculateNoiseFloor() {
@@ -2541,6 +2625,7 @@
         // Paramètres de conversion
         document.getElementById('microphone-selector').addEventListener('change', updateMicrophoneSelector);
         document.getElementById('preamp-selector').addEventListener('change', updatePreampSelector);
+        document.getElementById('custom-ein').addEventListener('input', updateCustomEIN);
         document.getElementById('mic-sensitivity').addEventListener('input', updateMicSensitivity);
         document.getElementById('mic-gain').addEventListener('input', updateMicGain);
         document.getElementById('distance').addEventListener('input', updateDistance);
