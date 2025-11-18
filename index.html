@@ -205,6 +205,11 @@
             border-radius: 2px;
         }
 
+        /* Utility classes */
+        .hidden {
+            display: none !important;
+        }
+
         /* Alert box */
         .alert {
             padding: 6px 8px;
@@ -246,6 +251,32 @@
             position: relative;
         }
 
+
+        /* Alert animations */
+        @keyframes pulse-alert {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.7; }
+        }
+
+        .alert-pulse {
+            animation: pulse-alert 2s ease-in-out infinite;
+        }
+
+        .alerts-panel {
+            max-height: 90vh;
+            overflow-y: auto;
+            position: sticky;
+            top: 20px;
+        }
+
+        /* Grid 5 colonnes sur desktop */
+        @media (min-width: 1280px) {
+            .main-grid {
+                display: grid;
+                grid-template-columns: 1fr 1fr 1fr 1fr 300px;
+                gap: 1rem;
+            }
+        }
         /* Accessibility */
         .sr-only {
             position: absolute;
@@ -788,6 +819,31 @@
                     <label class="block text-sm font-semibold">Niveau dBu</label>
                     <div id="electric-clip-indicator" class="led-indicator led-off" style="width: 20px; height: 20px;" title="Saturation Analogique"></div>
                 </div>
+
+            <!-- 📚 Explications Pédagogiques Acoustique -->
+            <details class="mt-3 panel-inner-bg rounded p-3">
+                <summary class="text-xs font-semibold cursor-pointer text-blue-400 hover:underline">
+                    📚 Comment sont calculées ces valeurs ?
+                </summary>
+                <div class="mt-2 space-y-2 text-xs" style="color: var(--text-secondary); line-height: 1.6;">
+                    <div class="border-l-2 border-blue-400 pl-2">
+                        <strong class="text-blue-400">Pression (Pa) :</strong><br>
+                        P = P₀ × 10^(SPL/20) où P₀ = 20 µPa
+                    </div>
+                    <div class="border-l-2 border-green-400 pl-2">
+                        <strong class="text-green-400">Niveau Pondéré :</strong><br>
+                        SPL pondéré = SPL + correction dB(A/B/C)
+                    </div>
+                    <div class="border-l-2 border-yellow-400 pl-2">
+                        <strong class="text-yellow-400">Bruit de fond :</strong><br>
+                        Bruit = 94 + 20×log₁₀(V_noise / V_sens)
+                    </div>
+                    <div class="border-l-2 border-purple-400 pl-2">
+                        <strong class="text-purple-400">SNR (Signal/Bruit) :</strong><br>
+                        SNR = SPL - Bruit (dB)
+                    </div>
+                </div>
+            </details>
                 <div class="flex justify-center items-center gap-3">
                     <button onclick="adjustLevel('dbu', -6)" class="px-2 py-1 panel-inner-bg hover:bg-purple-600 rounded text-xs" title="÷2 (-6 dB)">÷2</button>
                     <input type="range" id="dbu-slider" min="-60" max="24" value="4" step="0.1"
@@ -883,6 +939,31 @@
                         <span class="font-mono font-bold text-blue-400" id="dynamic-range-electric">128.0</span>
                         <span>dB</span>
                     </div>
+
+            <!-- 📚 Explications Pédagogiques Électrique -->
+            <details class="mt-3 panel-inner-bg rounded p-3">
+                <summary class="text-xs font-semibold cursor-pointer text-purple-400 hover:underline">
+                    📚 Comment sont calculées ces valeurs ?
+                </summary>
+                <div class="mt-2 space-y-2 text-xs" style="color: var(--text-secondary); line-height: 1.6;">
+                    <div class="border-l-2 border-blue-400 pl-2">
+                        <strong class="text-blue-400">Tension (V) :</strong><br>
+                        V = 0.775 × 10^(dBu/20)
+                    </div>
+                    <div class="border-l-2 border-green-400 pl-2">
+                        <strong class="text-green-400">dBu ↔ dBV :</strong><br>
+                        dBV = dBu - 2.2 dB
+                    </div>
+                    <div class="border-l-2 border-yellow-400 pl-2">
+                        <strong class="text-yellow-400">Puissance :</strong><br>
+                        P = V² / Z, dBm = 10×log₁₀(P / 1mW)
+                    </div>
+                    <div class="border-l-2 border-purple-400 pl-2">
+                        <strong class="text-purple-400">SNR Électrique :</strong><br>
+                        SNR = Signal - (EIN + Gain)
+                    </div>
+                </div>
+            </details>
                 </div>
             </div>
         </div>
@@ -1895,6 +1976,83 @@
         // VALIDATION TEMPS RÉEL
         // ========================================
 
+
+        // ========================================
+        // SYSTÈME D'ALERTES CENTRALISÉ
+        // ========================================
+
+        function updateCentralAlerts() {
+            const alerts = [];
+            const snr = state.dbSPL - state.noiseFloor;
+            const headroom = 0 - state.dBFS;
+            const electricHeadroom = 24 - state.dBu;
+
+            // DANGER - Niveau critique
+            if (state.dbSPL >= 120) {
+                alerts.push({ type: 'danger', icon: '🔴', text: 'DANGER ! ≥120 dB SPL : Dommages auditifs immédiats possibles', pulse: true });
+            }
+            if (state.dBFS > -0.1) {
+                alerts.push({ type: 'danger', icon: '🔴', text: 'CLIP NUMÉRIQUE ! Réduisez immédiatement le gain', pulse: true });
+            }
+            if (state.dBu > 24) {
+                alerts.push({ type: 'danger', icon: '🔴', text: 'SATURATION ANALOGIQUE ! Signal électrique > +24 dBu', pulse: true });
+            }
+
+            // WARNING - Attention requise
+            if (state.dbSPL >= 85 && state.dbSPL < 120) {
+                alerts.push({ type: 'warning', icon: '⚠️', text: `Exposition ${state.dbSPL.toFixed(0)} dB : Limitez le temps d'exposition` });
+            }
+            if (state.dBFS > -3 && state.dBFS <= -0.1) {
+                alerts.push({ type: 'warning', icon: '⚠️', text: `Proche du clip numérique (${Math.abs(state.dBFS).toFixed(1)} dB de marge)` });
+            }
+            if (headroom < 6 && state.dBFS < -3) {
+                alerts.push({ type: 'warning', icon: '⚠️', text: `Headroom numérique faible (${headroom.toFixed(1)} dB)` });
+            }
+            if (electricHeadroom < 3 && state.dBu <= 24) {
+                alerts.push({ type: 'warning', icon: '⚠️', text: `Headroom analogique faible (${electricHeadroom.toFixed(1)} dB avant saturation)` });
+            }
+            if (snr < 30 && state.dbSPL > 0) {
+                alerts.push({ type: 'warning', icon: '⚠️', text: `SNR faible (${snr.toFixed(1)} dB) : Bruit de fond audible` });
+            }
+            if (state.micGain > 70) {
+                const noiseFloorDBu = state.preampEIN + state.micGain;
+                alerts.push({ type: 'warning', icon: '⚠️', text: `Gain excessif (${state.micGain.toFixed(0)} dB) : Bruit préampli à ${noiseFloorDBu.toFixed(1)} dBu` });
+            }
+
+            // INFO - Informations utiles
+            const distance20log = 20 * Math.log10(state.distance);
+            if (distance20log > 20) {
+                alerts.push({ type: 'info', icon: 'ℹ️', text: `Distance élevée (${state.distance.toFixed(1)}m) : Perte de ${distance20log.toFixed(1)} dB` });
+            }
+            
+            // Standard professionnel
+            if (state.dBu >= 3 && state.dBu <= 5 && state.calibration === 'ebu') {
+                alerts.push({ type: 'info', icon: 'ℹ️', text: 'Niveau ligne professionnel (+4 dBu) : Standard EBU R68' });
+            }
+
+            // SUCCESS - Configuration optimale
+            if (snr >= 80) {
+                alerts.push({ type: 'success', icon: '✅', text: `SNR excellent (${snr.toFixed(1)} dB) : Signal très propre` });
+            }
+            if (headroom >= 12 && headroom <= 20 && state.dBFS < -6) {
+                alerts.push({ type: 'success', icon: '✅', text: `Headroom optimal (${headroom.toFixed(1)} dB) : Marge sécurisée` });
+            }
+            if (state.dbSPL >= 60 && state.dbSPL < 85 && snr > 50) {
+                alerts.push({ type: 'success', icon: '✅', text: 'Niveau acoustique idéal pour enregistrement voix/instruments' });
+            }
+
+            // Afficher les alertes
+            const container = document.getElementById('alerts-container');
+            if (alerts.length === 0) {
+                container.innerHTML = '<div class="alert alert-info">ℹ️ Aucune alerte : Tous les paramètres sont dans les normes</div>';
+            } else {
+                container.innerHTML = alerts.map(alert => {
+                    const pulseClass = alert.pulse ? 'alert-pulse' : '';
+                    return `<div class="alert alert-${alert.type} ${pulseClass}">${alert.icon} ${alert.text}</div>`;
+                }).join('');
+            }
+        }
+
         function validateAndAlert() {
             // Mise à jour des warnings dans chaque panneau (zones à hauteur fixe, pas de scintillement)
 
@@ -1942,6 +2100,9 @@
                 clipWarning.className = 'hidden';
                 clipWarning.textContent = '';
             }
+
+            // Mettre à jour les alertes centralisées
+            updateCentralAlerts();
         }
 
         // ========================================
@@ -2095,7 +2256,10 @@
             document.getElementById('noise-floor-dbfs').textContent = noiseFloorDBFS.toFixed(1);
 
             // SNR numérique (différence entre signal et bruit en dBFS)
-            const snrDigital = state.dBFS - noiseFloorDBFS;
+            // Limité par la profondeur de bits (6.02 dB par bit + 1.76 dB théorique)
+            const theoreticalMaxSNR = state.bitDepth === 32 ? 1500 : (6.02 * state.bitDepth + 1.76);
+            let snrDigital = state.dBFS - noiseFloorDBFS;
+            snrDigital = Math.min(snrDigital, theoreticalMaxSNR);
             document.getElementById('snr-digital').textContent = snrDigital.toFixed(1);
 
             // Dynamique numérique (de plancher de bruit à crête en dBFS)
