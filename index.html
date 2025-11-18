@@ -797,28 +797,6 @@
                     <span>dB</span>
                 </div>
             </div>
-        </div>
-
-        <!-- PANNEAU 3 : DOMAINE ÉLECTRIQUE -->
-        <div id="panel-electric" class="panel-bg rounded-lg p-6 border-2">
-            <h2 class="text-2xl font-bold mb-4 text-purple-400">
-                ⚡ Domaine Électrique
-                <span class="tooltip">
-                    <span class="text-sm">ℹ️</span>
-                    <span class="tooltiptext">
-                        Le domaine électrique représente la tension dans les câbles audio.
-                        dBu : référence 0.775V, dBV : référence 1V, dBm : puissance sur impédance.
-                    </span>
-                </span>
-            </h2>
-
-            <!-- Contrôle de verrouillage -->
-            <!-- Slider principal -->
-            <div class="mb-3">
-                <div class="flex justify-between items-center mb-1">
-                    <label class="block text-sm font-semibold">Niveau dBu</label>
-                    <div id="electric-clip-indicator" class="led-indicator led-off" style="width: 20px; height: 20px;" title="Saturation Analogique"></div>
-                </div>
 
             <!-- 📚 Explications Pédagogiques Acoustique -->
             <details class="mt-3 panel-inner-bg rounded p-3">
@@ -844,6 +822,28 @@
                     </div>
                 </div>
             </details>
+        </div>
+
+        <!-- PANNEAU 3 : DOMAINE ÉLECTRIQUE -->
+        <div id="panel-electric" class="panel-bg rounded-lg p-6 border-2">
+            <h2 class="text-2xl font-bold mb-4 text-purple-400">
+                ⚡ Domaine Électrique
+                <span class="tooltip">
+                    <span class="text-sm">ℹ️</span>
+                    <span class="tooltiptext">
+                        Le domaine électrique représente la tension dans les câbles audio.
+                        dBu : référence 0.775V, dBV : référence 1V, dBm : puissance sur impédance.
+                    </span>
+                </span>
+            </h2>
+
+            <!-- Contrôle de verrouillage -->
+            <!-- Slider principal -->
+            <div class="mb-3">
+                <div class="flex justify-between items-center mb-1">
+                    <label class="block text-sm font-semibold">Niveau dBu</label>
+                    <div id="electric-clip-indicator" class="led-indicator led-off" style="width: 20px; height: 20px;" title="Saturation Analogique"></div>
+                </div>
                 <div class="flex justify-center items-center gap-3">
                     <button onclick="adjustLevel('dbu', -6)" class="px-2 py-1 panel-inner-bg hover:bg-purple-600 rounded text-xs" title="÷2 (-6 dB)">÷2</button>
                     <input type="range" id="dbu-slider" min="-60" max="24" value="4" step="0.1"
@@ -2610,32 +2610,16 @@
         function setPreset(domain, value) {
             if (domain === 'spl') {
                 state.dbSPL = value;
-
-                if (state.activeSource === 'acoustic') {
-                    updateAllDomains();
-                } else {
-                    document.getElementById('spl-value').textContent = state.dbSPL.toFixed(1);
-                    document.getElementById('spl-slider').value = state.dbSPL;
-                }
+                state.activeSource = 'acoustic';
+                updateAllDomains();
             } else if (domain === 'dbu') {
                 state.dBu = value;
-
-                if (state.activeSource === 'electric') {
-                    updateAllDomains();
-                } else {
-                    document.getElementById('dbu-value').textContent = state.dBu >= 0 ? `+${state.dBu.toFixed(1)}` : state.dBu.toFixed(1);
-                    document.getElementById('dbu-slider').value = state.dBu;
-                }
+                state.activeSource = 'electric';
+                updateAllDomains();
             } else if (domain === 'dbfs') {
                 state.dBFS = value;
-
-                if (state.activeSource === 'digital') {
-                    updateAllDomains();
-                } else {
-                    document.getElementById('dbfs-value').textContent = state.dBFS.toFixed(1);
-                    document.getElementById('dbfs-slider').value = state.dBFS;
-                    updateLoudness();
-                }
+                state.activeSource = 'digital';
+                updateAllDomains();
             }
         }
 
