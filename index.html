@@ -2201,8 +2201,8 @@
             document.getElementById('electric-headroom-value').textContent = electricHeadroom.toFixed(1);
 
             // Headroom marker (24 dBu = 100%)
-            const electricHeadroomPosition = Math.max(0, Math.min(100, (state.dBu + 60) / 84 * 100));
-            document.getElementById('electric-headroom-marker').style.left = electricHeadroomPosition + '%';
+            // const electricHeadroomPosition = Math.max(0, Math.min(100, (state.dBu + 60) / 84 * 100));
+            // document.getElementById('electric-headroom-marker').style.left = electricHeadroomPosition + '%';
 
             // Plancher de bruit électrique (dBu) - Bruit du préampli à la sortie
             const noiseFloorDBu = state.preampEIN + state.micGain;
@@ -2248,8 +2248,8 @@
             document.getElementById('headroom-value').textContent = headroom.toFixed(1);
 
             // Headroom marker (0 dBFS = 100%)
-            const headroomPosition = Math.max(0, Math.min(100, (state.dBFS + 96) / 96 * 100));
-            document.getElementById('headroom-marker').style.left = headroomPosition + '%';
+            // const headroomPosition = Math.max(0, Math.min(100, (state.dBFS + 96) / 96 * 100));
+            // document.getElementById('headroom-marker').style.left = headroomPosition + '%';
 
             // Plancher de bruit numérique (dBFS) - Conversion du bruit électrique
             // Utilise le même calibrage que pour la conversion du signal
@@ -2854,7 +2854,7 @@
             updateMicSensitivity();
             updateDistance();
             updateCalibration();
-            updateNoiseFloor();
+            calculateNoiseFloor();
             updateDisplay();
             updateAttenuationDisplay();
 
