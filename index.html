@@ -698,8 +698,9 @@
                 </div>
 
                 <p class="text-xs mb-3" style="color: var(--text-secondary)">
-                    Le dBFS mesure les crêtes (peaks), le LUFS mesure le volume perçu (average/loudness).
-                    Cette simulation estime le LUFS basé sur le niveau actuel et le profil.
+                    Le dBFS mesure les crêtes (peaks), le LUFS mesure le volume perçu (average/loudness).<br>
+                    <strong>Note :</strong> Le LUFS est calculé en tenant compte de la <strong>fréquence d'entrée</strong> et de la <strong>pondération</strong> sélectionnées.
+                    À 31.5 Hz en dB(A), le LUFS diminue fortement (-39 dB). À 1 kHz, le LUFS est à sa valeur maximale.
                 </p>
                 <button id="analyze-loudness" class="w-full px-3 py-2 bg-pink-600 hover:bg-pink-700 rounded mb-3 text-white">
                     📊 Analyser le signal
@@ -1661,14 +1662,42 @@
 
         function updateLoudness() {
             const profile = LUFS_PROFILES[state.lufsProfile];
-            // Estimer le LUFS en fonction du profil
+
+            // Calcul LUFS de base avec profil de contenu
             // LUFS = dBFS - peakToPower (différence entre crête et puissance moyenne)
             const peakToPowerOffset = profile ? profile.peakToPower : 5;
-            const estimatedLUFS = state.dBFS - peakToPowerOffset;
+            let estimatedLUFS = state.dBFS - peakToPowerOffset;
 
+            // Appliquer la courbe d'isosonie (pondération fréquentielle) au calcul LUFS
+            // La pondération affecte la perception du loudness réel
+            const frequency = state.inputFrequency;
+            const weighting = state.weighting;
+            const curve = WEIGHTING_CURVES[weighting];
+
+            if (curve && curve[frequency] !== undefined) {
+                // L'atténuation de la pondération réduit le LUFS perçu
+                // Par exemple: -39 dB @ 31.5 Hz en dB(A) signifie une réduction de 39 dB du LUFS perçu
+                // Atténuation négative = amplification, donc LUFS augmente
+                const attenuationFactor = curve[frequency];
+                estimatedLUFS = estimatedLUFS + attenuationFactor; // Ajouter (car atténuation est négative)
+            }
+
+            // Afficher les résultats avec courbe d'isosonie appliquée
             document.getElementById('lufs-value').textContent = estimatedLUFS.toFixed(1);
             document.getElementById('truepeak-value').textContent = state.dBFS.toFixed(1);
-            document.getElementById('lra-value').textContent = '6.0';
+
+            // LRA (Loudness Range) dépend aussi de la fréquence et de la pondération
+            // À une fréquence très basse ou très haute, la dynamique perçue est moins importante
+            const frequency_num = parseFloat(frequency);
+            let lra = 6.0;
+            if (frequency_num <= 125) {
+                lra = 2.5; // Très peu de dynamique aux ultra-basses
+            } else if (frequency_num < 500) {
+                lra = 3.5; // Peu de dynamique aux basses
+            } else if (frequency_num > 10000) {
+                lra = 4.0; // Un peu moins aux aigus
+            }
+            document.getElementById('lra-value').textContent = lra.toFixed(1);
         }
 
         function updateLufsProfile() {
@@ -1684,6 +1713,7 @@
         function updateInputFrequency() {
             state.inputFrequency = document.getElementById('input-frequency').value;
             updateAttenuationDisplay();
+            updateLoudness(); // Recalculer LUFS avec la nouvelle fréquence
         }
 
         function updateAttenuationDisplay() {
@@ -2027,6 +2057,7 @@
                 updateAllDomains();
             } else {
                 document.getElementById('dbfs-value').textContent = state.dBFS.toFixed(1);
+                updateLoudness(); // Mettre à jour LUFS quand dBFS change
             }
         });
 
@@ -2046,6 +2077,7 @@
             radio.addEventListener('change', (e) => {
                 state.weighting = e.target.value;
                 updateAttenuationDisplay();
+                updateLoudness(); // Recalculer LUFS avec la nouvelle pondération
             });
         });
 
