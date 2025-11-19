@@ -2652,14 +2652,20 @@
                 state.dbSPL = value;
                 state.activeSource = 'acoustic';
                 updateAllDomains();
+                // Réinitialiser le select pour pouvoir rappeler le même preset
+                document.getElementById('spl-preset').value = '';
             } else if (domain === 'dbu') {
                 state.dBu = value;
                 state.activeSource = 'electric';
                 updateAllDomains();
+                // Réinitialiser le select pour pouvoir rappeler le même preset
+                document.getElementById('dbu-preset').value = '';
             } else if (domain === 'dbfs') {
                 state.dBFS = value;
                 state.activeSource = 'digital';
                 updateAllDomains();
+                // Réinitialiser le select pour pouvoir rappeler le même preset
+                document.getElementById('dbfs-preset').value = '';
             }
         }
 
