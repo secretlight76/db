@@ -2875,9 +2875,9 @@
             });
 
             // INITIALISATION
-            // Verrouiller le panneau numérique par défaut AVANT les autres initialisations
-            // pour que activeSource soit défini dès le début
-            lockPanel('digital');
+            // Définir la source active par défaut sans verrouiller les sliders
+            // (le système de lock n'est pas implémenté dans le HTML)
+            state.activeSource = 'digital';
 
             updateMicSensitivity();
             updateMicGain();
