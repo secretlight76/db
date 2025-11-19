@@ -2875,9 +2875,9 @@
             });
 
             // INITIALISATION
-            // Définir la source active par défaut sans verrouiller les sliders
-            // (le système de lock n'est pas implémenté dans le HTML)
-            state.activeSource = 'digital';
+            // Par défaut, le domaine acoustique est la source (niveau SPL fixe)
+            // Les changements de gain/distance/sensibilité recalculent electric et digital
+            state.activeSource = 'acoustic';
 
             updateMicSensitivity();
             updateMicGain();
