@@ -2041,13 +2041,15 @@
 
             // Afficher les alertes
             const container = document.getElementById('alerts-container');
-            if (alerts.length === 0) {
-                container.innerHTML = '<div class="alert alert-info">ℹ️ Aucune alerte : Tous les paramètres sont dans les normes</div>';
-            } else {
-                container.innerHTML = alerts.map(alert => {
-                    const pulseClass = alert.pulse ? 'alert-pulse' : '';
-                    return `<div class="alert alert-${alert.type} ${pulseClass}">${alert.icon} ${alert.text}</div>`;
-                }).join('');
+            if (container) {
+                if (alerts.length === 0) {
+                    container.innerHTML = '<div class="alert alert-info">ℹ️ Aucune alerte : Tous les paramètres sont dans les normes</div>';
+                } else {
+                    container.innerHTML = alerts.map(alert => {
+                        const pulseClass = alert.pulse ? 'alert-pulse' : '';
+                        return `<div class="alert alert-${alert.type} ${pulseClass}">${alert.icon} ${alert.text}</div>`;
+                    }).join('');
+                }
             }
         }
 
@@ -2401,12 +2403,18 @@
                 'digital': 'dbfs-slider'
             };
 
-            document.getElementById(panelIds[panel]).classList.add('panel-locked');
-            document.getElementById(lockButtons[panel]).innerHTML = '🔒 Source Active';
-            document.getElementById(lockButtons[panel]).classList.add('bg-blue-600');
+            const panelEl = document.getElementById(panelIds[panel]);
+            if (panelEl) panelEl.classList.add('panel-locked');
+
+            const lockBtn = document.getElementById(lockButtons[panel]);
+            if (lockBtn) {
+                lockBtn.innerHTML = '🔒 Source Active';
+                lockBtn.classList.add('bg-blue-600');
+            }
 
             Object.keys(sliders).forEach(key => {
-                document.getElementById(sliders[key]).disabled = (key !== panel);
+                const slider = document.getElementById(sliders[key]);
+                if (slider) slider.disabled = (key !== panel);
             });
 
             const sourceNames = {
@@ -2414,7 +2422,8 @@
                 'electric': 'Domaine Électrique (dBu)',
                 'digital': 'Domaine Numérique (dBFS)'
             };
-            document.getElementById('active-source').textContent = sourceNames[panel];
+            const activeSourceEl = document.getElementById('active-source');
+            if (activeSourceEl) activeSourceEl.textContent = sourceNames[panel];
 
             updateAllDomains();
         }
@@ -2429,15 +2438,21 @@
             const lockButtons = ['lock-acoustic', 'lock-electric', 'lock-digital'];
             lockButtons.forEach(id => {
                 const btn = document.getElementById(id);
-                btn.innerHTML = '🔓 Définir comme Source';
-                btn.classList.remove('bg-blue-600', 'bg-purple-600', 'bg-pink-600');
+                if (btn) {
+                    btn.innerHTML = '🔓 Définir comme Source';
+                    btn.classList.remove('bg-blue-600', 'bg-purple-600', 'bg-pink-600');
+                }
             });
 
-            document.getElementById('spl-slider').disabled = false;
-            document.getElementById('dbu-slider').disabled = false;
-            document.getElementById('dbfs-slider').disabled = false;
+            const splSlider = document.getElementById('spl-slider');
+            const dbuSlider = document.getElementById('dbu-slider');
+            const dbfsSlider = document.getElementById('dbfs-slider');
+            if (splSlider) splSlider.disabled = false;
+            if (dbuSlider) dbuSlider.disabled = false;
+            if (dbfsSlider) dbfsSlider.disabled = false;
 
-            document.getElementById('active-source').textContent = 'Aucune (verrouiller un panneau)';
+            const activeSourceEl = document.getElementById('active-source');
+            if (activeSourceEl) activeSourceEl.textContent = 'Aucune (verrouiller un panneau)';
         }
 
         // ========================================
